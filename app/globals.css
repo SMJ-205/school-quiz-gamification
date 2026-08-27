@@ -1,0 +1,324 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Outfit:wght@600;700;800;900&family=Pixelify+Sans:wght@400;500;600;700&family=VT323&family=Great+Vibes&display=swap');
+@import "tailwindcss";
+
+/* ─── CSS Variables: Classic Library & School Academy Theme ────────────────── */
+:root {
+  /* Warm Library Palette */
+  --wood-dark:     #1E120A;
+  --wood-mid:      #361F12;
+  --wood-warm:     #52311C;
+  --wood-light:    #7D4E2D;
+  --brick-dark:    #241513;
+  --brick-red:     #4A2320;
+  --parchment:     #F4E8C1;
+  --parchment-dark:#D8C496;
+  --parchment-deep:#B59D68;
+  --amber:         #FFB300;
+  --amber-light:   #FFE082;
+  --amber-glow:    rgba(255, 179, 0, 0.4);
+  --gold:          #FFD700;
+  --gold-dark:     #C99700;
+  --cyan-glow:     #00E5FF;
+  --cyan-deep:     #00838F;
+  --crimson:       #C0292B;
+  --crimson-dark:  #8A1417;
+  --green-emerald: #27AE60;
+
+  /* Neutrals & CRT */
+  --crt-bg:        #0E0B08;
+  --crt-bezel:     #1C1613;
+  --crt-bezel-rim: #2E2520;
+  --pixel-ink:     #100C09;
+  --white:         #FFFDF7;
+
+  /* Typography */
+  --font-pixel:    'Pixelify Sans', sans-serif;
+  --font-dialogue: 'VT323', monospace;
+  --font-cursive:  'Great Vibes', cursive;
+  --font-cert-head:'Cinzel', serif;
+  --font-cert-body:'Outfit', sans-serif;
+}
+
+/* ─── Global Reset & Font ─────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-pixel);
+}
+
+body {
+  font-family: var(--font-pixel);
+  background-color: var(--crt-bg);
+  color: var(--white);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ─── Pixel Scrollbar ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--wood-dark); }
+::-webkit-scrollbar-thumb { background: var(--wood-light); border: 2px solid var(--pixel-ink); }
+
+/* ─── Cozy Library Background ─────────────────────────────────────────────── */
+.bg-library-study {
+  background-color: #120C08;
+  background-image:
+    radial-gradient(ellipse at 50% 10%, rgba(255, 179, 0, 0.12) 0%, transparent 60%),
+    linear-gradient(rgba(255, 215, 0, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 215, 0, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+}
+
+/* ─── CRT Monitor / Arcade Cabinet Bezel ───────────────────────────────────── */
+.crt-arcade-frame {
+  background: var(--crt-bezel);
+  border: 8px solid var(--crt-bezel-rim);
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 4px var(--pixel-ink),
+    0 16px 40px rgba(0, 0, 0, 0.9),
+    inset 0 0 20px rgba(0, 0, 0, 0.8);
+  position: relative;
+  overflow: hidden;
+}
+
+/* CRT Scanlines subtle overlay */
+.crt-arcade-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.22) 2px,
+    rgba(0, 0, 0, 0.22) 4px
+  );
+  pointer-events: none;
+  z-index: 99;
+}
+
+/* ─── Retro Badge Pill ─────────────────────────────────────────────────────── */
+.retro-pill-badge {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 6px 14px;
+  background: #25283B;
+  color: #E2E8F0;
+  border: 3px solid #718096;
+  border-radius: 6px;
+  box-shadow:
+    -2px 0 0 var(--pixel-ink), 2px 0 0 var(--pixel-ink),
+    0 -2px 0 var(--pixel-ink), 0 2px 0 var(--pixel-ink),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+/* ─── Pixel Dialogue Box ──────────────────────────────────────────────────── */
+.pixel-dialogue-box {
+  background: #101018;
+  border: 4px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 16px 20px;
+  box-shadow:
+    -4px 0 0 var(--pixel-ink), 4px 0 0 var(--pixel-ink),
+    0 -4px 0 var(--pixel-ink), 0 4px 0 var(--pixel-ink),
+    0 8px 16px rgba(0, 0, 0, 0.7);
+  font-family: var(--font-dialogue);
+  color: var(--white);
+  line-height: 1.3;
+}
+
+/* ─── Tall Question & Answer Text ─────────────────────────────────────────── */
+.font-dialogue {
+  font-family: var(--font-dialogue);
+  letter-spacing: 0.5px;
+}
+
+/* ─── Pixel Border Utilities ──────────────────────────────────────────────── */
+.pixel-border-gold {
+  border: 4px solid var(--amber);
+  box-shadow:
+    -4px 0 0 var(--pixel-ink), 4px 0 0 var(--pixel-ink),
+    0 -4px 0 var(--pixel-ink), 0 4px 0 var(--pixel-ink),
+    0 0 20px var(--amber-glow);
+}
+
+.pixel-border-wood {
+  border: 4px solid var(--wood-light);
+  box-shadow:
+    -4px 0 0 var(--pixel-ink), 4px 0 0 var(--pixel-ink),
+    0 -4px 0 var(--pixel-ink), 0 4px 0 var(--pixel-ink);
+}
+
+/* ─── Pixel Buttons ──────────────────────────────────────────────────────── */
+.btn-pixel {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 18px;
+  background: var(--crimson);
+  color: var(--white);
+  border: 3px solid var(--crimson-dark);
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  box-shadow:
+    0 4px 0 var(--crimson-dark),
+    0 6px 0 var(--pixel-ink);
+  transition: transform 0.05s, box-shadow 0.05s;
+}
+
+.btn-pixel:hover {
+  background: #D32F2F;
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 0 var(--crimson-dark),
+    0 8px 0 var(--pixel-ink);
+}
+
+.btn-pixel:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 var(--pixel-ink);
+}
+
+.btn-pixel-gold {
+  background: var(--amber);
+  color: #211205;
+  border-color: var(--gold-dark);
+  box-shadow: 0 4px 0 var(--gold-dark), 0 6px 0 var(--pixel-ink);
+}
+.btn-pixel-gold:hover {
+  background: #FFCA28;
+  color: #150A02;
+}
+
+.btn-pixel-wood {
+  background: var(--wood-warm);
+  color: var(--parchment);
+  border-color: var(--wood-dark);
+  box-shadow: 0 4px 0 var(--wood-dark), 0 6px 0 var(--pixel-ink);
+}
+.btn-pixel-wood:hover { background: var(--wood-light); }
+
+.btn-pixel-teal {
+  background: #00838F;
+  color: var(--white);
+  border-color: #004D40;
+  box-shadow: 0 4px 0 #004D40, 0 6px 0 var(--pixel-ink);
+}
+.btn-pixel-teal:hover { background: #0097A7; }
+
+/* ─── Answer Options ──────────────────────────────────────────────────────── */
+.answer-option {
+  font-family: var(--font-dialogue);
+  font-size: 22px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 16px;
+  background: rgba(16, 16, 24, 0.95);
+  color: var(--white);
+  border: 3px solid #718096;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 0 var(--pixel-ink);
+}
+
+.answer-option:hover {
+  border-color: var(--amber);
+  background: rgba(255, 179, 0, 0.15);
+}
+
+.answer-option .opt-key {
+  color: var(--amber);
+  font-weight: bold;
+}
+
+.answer-option.correct {
+  background: rgba(39, 174, 96, 0.35);
+  border-color: #2ECC71;
+  color: #A8FF78;
+}
+
+.answer-option.correct .opt-key {
+  color: #A8FF78;
+}
+
+.answer-option.wrong {
+  background: rgba(192, 41, 43, 0.35);
+  border-color: var(--crimson);
+  color: #FFA4A6;
+}
+
+.answer-option.disabled {
+  pointer-events: none;
+}
+
+/* ─── Ancient Certificate Scroll ──────────────────────────────────────────── */
+.scroll-roll-left, .scroll-roll-right {
+  position: absolute;
+  top: -16px;
+  bottom: -16px;
+  width: 28px;
+  background: linear-gradient(90deg, #3A200E 0%, #6E4522 35%, #9E6838 50%, #6E4522 75%, #3A200E 100%);
+  border: 3px solid #231206;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+.scroll-roll-left { left: -14px; }
+.scroll-roll-right { right: -14px; }
+
+.scroll-roll-left::before, .scroll-roll-left::after,
+.scroll-roll-right::before, .scroll-roll-right::after {
+  content: '';
+  position: absolute;
+  width: 36px;
+  height: 14px;
+  left: -7px;
+  background: linear-gradient(90deg, #6E4522, #FFD700, #6E4522);
+  border: 2px solid #231206;
+  border-radius: 4px;
+}
+.scroll-roll-left::before, .scroll-roll-right::before { top: -8px; }
+.scroll-roll-left::after, .scroll-roll-right::after { bottom: -8px; }
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+@keyframes sparkleGlow {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50%       { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes lanternFlicker {
+  0%, 100% { opacity: 0.9; filter: drop-shadow(0 0 16px rgba(0, 229, 255, 0.8)); }
+  50%       { opacity: 0.7; filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.5)); }
+}
+
+@keyframes celebrateJump {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-16px); }
+}
+
+.anim-float { animation: float 2.5s ease-in-out infinite; }
+.anim-sparkle { animation: sparkleGlow 1.5s ease-in-out infinite; }
+.anim-lantern { animation: lanternFlicker 3s ease-in-out infinite; }
+.anim-jump { animation: celebrateJump 1.2s ease-in-out infinite; }
