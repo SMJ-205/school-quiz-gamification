@@ -2,17 +2,14 @@
  * audioEngine.ts
  * Web Audio API 8-Bit Retro RPG Synthesizer.
  * Features:
+ * - Independent BGM Mute (bgmMuted) and SFX Mute (sfxMuted) controls.
  * - 32-Second Tranquil & Serene Magical Library Soundtrack ("Lagu Perpustakaan Syahdu").
- *   - Soft celesta/music box lead melody (pure sine & warm triangle).
- *   - Dreamy candlelight arpeggios (Cmaj7 -> Em7 -> Fmaj7 -> G6 -> Am7 -> Dm7 -> Fmaj7 -> Cmaj7).
- *   - Warm, deep, soothing bassline.
- *   - 32-second loop duration.
- * - Global mute/unmute toggle.
  * - Interactive chiptune SFX for answers, stamps, and page turns.
  */
 
 let ctx: AudioContext | null = null;
-let muted = false;
+let bgmMuted = false;
+let sfxMuted = false;
 let isQuizBgmRunning = false;
 let quizTimer: NodeJS.Timeout | null = null;
 let quizBgmGain: GainNode | null = null;
@@ -33,31 +30,56 @@ function getCtx(): AudioContext | null {
   return ctx;
 }
 
-// ─── Global Mute Control ────────────────────────────────────────────────────
+// ─── Separate BGM and SFX Mute Controls ─────────────────────────────────────
 
-export function isAudioMuted(): boolean {
-  return muted;
+export function isBgmMuted(): boolean {
+  return bgmMuted;
 }
 
-export function setAudioMuted(val: boolean): boolean {
-  muted = val;
-  if (muted) {
-    stopQuizBGM();
-  }
-  return muted;
-}
-
-export function toggleAudioMute(): boolean {
-  muted = !muted;
-  if (muted) {
+export function setBgmMuted(val: boolean): boolean {
+  bgmMuted = val;
+  if (bgmMuted) {
     stopQuizBGM();
   } else {
     startQuizBGM();
   }
-  return muted;
+  return bgmMuted;
 }
 
-// ─── SFX Tone Synthesizer ───────────────────────────────────────────────────
+export function toggleBgmMute(): boolean {
+  bgmMuted = !bgmMuted;
+  if (bgmMuted) {
+    stopQuizBGM();
+  } else {
+    startQuizBGM();
+  }
+  return bgmMuted;
+}
+
+export function isSfxMuted(): boolean {
+  return sfxMuted;
+}
+
+export function setSfxMuted(val: boolean): boolean {
+  sfxMuted = val;
+  return sfxMuted;
+}
+
+export function toggleSfxMute(): boolean {
+  sfxMuted = !sfxMuted;
+  return sfxMuted;
+}
+
+// Backwards-compatible aliases
+export function isAudioMuted(): boolean {
+  return bgmMuted;
+}
+
+export function toggleAudioMute(): boolean {
+  return toggleBgmMute();
+}
+
+// ─── SFX Tone Synthesizer (Respects sfxMuted) ───────────────────────────────
 
 function playSfxTone(
   frequency: number,
@@ -67,7 +89,7 @@ function playSfxTone(
   volume: number = 0.1,
   gainEnvelope?: { attack?: number; decay?: number; sustain?: number; release?: number }
 ): void {
-  if (muted) return;
+  if (sfxMuted) return;
   const c = getCtx();
   if (!c) return;
 
@@ -98,7 +120,7 @@ function playSfxTone(
 }
 
 function playSfxNoise(duration: number, startTime: number, volume: number = 0.04): void {
-  if (muted) return;
+  if (sfxMuted) return;
   const c = getCtx();
   if (!c) return;
 
@@ -122,7 +144,7 @@ function playSfxNoise(duration: number, startTime: number, volume: number = 0.04
   } catch {}
 }
 
-// ─── BGM Tone Synthesizer (Serene Sine / Triangle Envelopes) ────────────────
+// ─── BGM Tone Synthesizer (Respects bgmMuted) ───────────────────────────────
 
 function playSereneTone(
   targetGain: GainNode,
@@ -135,7 +157,7 @@ function playSereneTone(
   decay: number = 0.15,
   release: number = 0.12
 ): void {
-  if (muted || !isQuizBgmRunning) return;
+  if (bgmMuted || !isQuizBgmRunning) return;
   const c = getCtx();
   if (!c) return;
 
@@ -176,14 +198,12 @@ interface NoteEvent {
   dur: number;
   type?: OscillatorType;
   vol?: number;
-  att?: number;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // 32-SECOND SERENE MAGICAL LIBRARY SOUNDTRACK ("Lagu Perpustakaan Syahdu")
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// 1. Soothing Celesta & Flute Lead Melody (Warm Sine / Triangle)
 const SERENE_LEAD_MELODY: NoteEvent[] = [
   // Phrase 1: Candlelight & Ancient Books (Cmaj7 -> Em7) [0.0s - 8.0s]
   { t: 0.0, freq: N.E4, dur: 1.4, vol: 0.04, type: 'sine' },
@@ -212,7 +232,6 @@ const SERENE_LEAD_MELODY: NoteEvent[] = [
   { t: 28.8, freq: N.C5, dur: 2.8, vol: 0.05, type: 'sine' },
 ];
 
-// 2. Soft Music Box & Dreamy Arpeggio Chords
 const SERENE_ARPEGGIOS: NoteEvent[] = [
   // 0s - 8s: Cmaj7 (0-4s) & Em7 (4-8s)
   { t: 0.0, freq: N.C4, dur: 0.8, vol: 0.018, type: 'sine' },
@@ -254,7 +273,6 @@ const SERENE_ARPEGGIOS: NoteEvent[] = [
   { t: 30.4, freq: N.C4, dur: 1.4, vol: 0.025, type: 'sine' },
 ];
 
-// 3. Warm, Gentle, Subdued Bassline (Deep Sine)
 const SERENE_BASS: NoteEvent[] = [
   { t: 0.0, freq: N.C3, dur: 3.5, vol: 0.035, type: 'sine' },
   { t: 4.0, freq: N.E3, dur: 3.5, vol: 0.035, type: 'sine' },
@@ -269,32 +287,28 @@ const SERENE_BASS: NoteEvent[] = [
 const SERENE_LOOP_DURATION = 32.0; // 32.0 seconds
 
 function scheduleSereneTrack(targetGain: GainNode, startT: number) {
-  if (muted || !isQuizBgmRunning) return;
+  if (bgmMuted || !isQuizBgmRunning) return;
 
-  // 1. Lead Melody
   SERENE_LEAD_MELODY.forEach((n) => {
     playSereneTone(targetGain, n.freq, n.dur, startT + n.t, n.type || 'sine', n.vol || 0.04, 0.08, 0.2, 0.15);
   });
 
-  // 2. Arpeggio Atmosphere
   SERENE_ARPEGGIOS.forEach((n) => {
     playSereneTone(targetGain, n.freq, n.dur, startT + n.t, 'sine', n.vol || 0.02, 0.05, 0.15, 0.12);
   });
 
-  // 3. Gentle Bass
   SERENE_BASS.forEach((n) => {
     playSereneTone(targetGain, n.freq, n.dur, startT + n.t, 'sine', n.vol || 0.035, 0.12, 0.3, 0.2);
   });
 }
 
 export function startQuizBGM(): void {
-  if (muted || isQuizBgmRunning) return;
+  if (bgmMuted || isQuizBgmRunning) return;
   const c = getCtx();
   if (!c) return;
 
   isQuizBgmRunning = true;
 
-  // Create isolated Gain Node for Quiz BGM
   if (quizBgmGain) {
     try {
       quizBgmGain.disconnect();
@@ -309,7 +323,7 @@ export function startQuizBGM(): void {
   scheduleSereneTrack(targetGain, now);
 
   function loop() {
-    if (muted || !isQuizBgmRunning || !quizBgmGain) return;
+    if (bgmMuted || !isQuizBgmRunning || !quizBgmGain) return;
     const ctxNow = getCtx();
     if (!ctxNow) return;
     scheduleSereneTrack(quizBgmGain, ctxNow.currentTime);

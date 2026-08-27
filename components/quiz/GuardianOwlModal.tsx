@@ -17,46 +17,47 @@ export default function GuardianOwlModal({ hint, onClose }: GuardianOwlModalProp
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-end p-4 md:p-8 pointer-events-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 pointer-events-none select-none">
       {/* Dark overlay backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-xs pointer-events-auto z-0"
+        className="fixed inset-0 bg-black/80 backdrop-blur-xs pointer-events-auto z-40"
         onClick={onClose}
       />
 
-      {/* Owl Dialogue Card */}
+      {/* Owl Dialogue Card (Centered, bounded height, zero bottom overlap) */}
       <div
         ref={ref}
         tabIndex={-1}
-        className="relative z-10 pointer-events-auto max-w-md w-full pixel-dialogue-box !border-4 !border-amber-400/80 shadow-2xl animate-fade-in"
+        className="relative z-50 pointer-events-auto max-w-md w-full max-h-[85vh] overflow-y-auto pixel-dialogue-box !border-4 !border-amber-400 shadow-2xl animate-fade-in p-4 sm:p-6 my-auto"
       >
-        <div className="flex items-start gap-4 mb-3">
-          <div className="text-5xl anim-float flex-shrink-0">
+        {/* Owl Avatar Header */}
+        <div className="flex items-center gap-3 sm:gap-4 mb-3">
+          <div className="text-4xl sm:text-5xl anim-float flex-shrink-0">
             🦉
           </div>
           <div>
             <div className="retro-pill-badge !text-xs !py-0.5 !px-2 text-amber-300 mb-1">
               PENJAGA ARSIP KUNO
             </div>
-            <p className="font-dialogue text-xl text-stone-200 leading-tight">
+            <p className="font-dialogue text-lg sm:text-xl text-stone-200 leading-tight">
               Jawaban belum tepat, tapi jangan berkecil hati! Bacalah petunjuk ini:
             </p>
           </div>
         </div>
 
-        {/* Hint Box */}
-        <div className="bg-amber-950/40 border-2 border-amber-500/40 p-3 rounded-lg mb-4">
-          <span className="font-dialogue text-base text-amber-400 font-bold block mb-1">
+        {/* Hint Content Box */}
+        <div className="bg-amber-950/60 border-2 border-amber-500/50 p-3.5 sm:p-4 rounded-lg mb-4 shadow-inner">
+          <span className="font-dialogue text-sm sm:text-base text-amber-400 font-bold block mb-1">
             💡 PETUNJUK PENGETAHUAN:
           </span>
-          <p className="font-dialogue text-2xl text-amber-100 leading-snug">
+          <p className="font-dialogue text-xl sm:text-2xl text-amber-100 leading-snug">
             {hint || 'Perhatikan kembali kata kunci dan konsep dalam materi pembelajaran.'}
           </p>
         </div>
 
         {/* Try Again Button */}
         <button
-          className="btn-pixel btn-pixel-gold w-full text-base py-3 flex items-center justify-center gap-2"
+          className="btn-pixel btn-pixel-gold w-full text-sm sm:text-base py-3 sm:py-3.5 flex items-center justify-center gap-2 cursor-pointer shadow-lg"
           onClick={onClose}
         >
           <span>🔄</span>
