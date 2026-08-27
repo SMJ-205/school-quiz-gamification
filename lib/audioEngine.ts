@@ -1,19 +1,21 @@
 /**
  * audioEngine.ts
- * Web Audio API 8-Bit Retro RPG Adventure Synthesizer.
- * Zero external audio files — 100% programmatic Web Audio API.
- * Features:
- * 1. Title & Character Select Soundtrack (24-second mystical Academy theme).
- * 2. Quiz Library Soundtrack (30-second rich retro exploration theme).
- * 3. Global mute/unmute toggle.
- * 4. Interactive chiptune SFX.
+ * Web Audio API 8-Bit Retro RPG Synthesizer.
+ * Architecture:
+ * - Dedicated Gain Nodes for Title BGM (titleBgmGain) and Quiz BGM (quizBgmGain).
+ * - Instant hardware-level audio cutoff upon track switching (cancels future audio nodes).
+ * - Zero overlap between BGM 1 (Main/Char select) and BGM 2 (Quiz session).
  */
 
 let ctx: AudioContext | null = null;
 let muted = false;
 let currentBgmType: 'none' | 'title' | 'quiz' = 'none';
+
 let titleTimer: NodeJS.Timeout | null = null;
 let quizTimer: NodeJS.Timeout | null = null;
+
+let titleBgmGain: GainNode | null = null;
+let quizBgmGain: GainNode | null = null;
 
 function getCtx(): AudioContext | null {
   if (typeof window === 'undefined') return null;
@@ -56,9 +58,9 @@ export function toggleAudioMute(): boolean {
   return muted;
 }
 
-// ─── Tone Synthesizer ───────────────────────────────────────────────────────
+// ─── Tone Synthesizer for SFX ───────────────────────────────────────────────
 
-function playTone(
+function playSfxTone(
   frequency: number,
   duration: number,
   startTime: number,
@@ -96,7 +98,7 @@ function playTone(
   } catch {}
 }
 
-function playNoise(duration: number, startTime: number, volume: number = 0.04): void {
+function playSfxNoise(duration: number, startTime: number, volume: number = 0.04): void {
   if (muted) return;
   const c = getCtx();
   if (!c) return;
@@ -118,6 +120,47 @@ function playNoise(duration: number, startTime: number, volume: number = 0.04): 
     source.connect(gainNode);
     gainNode.connect(c.destination);
     source.start(startTime);
+  } catch {}
+}
+
+// ─── Tone Synthesizer for BGM (Routed through Master Track Gain) ────────────
+
+function playBgmTone(
+  targetGain: GainNode,
+  frequency: number,
+  duration: number,
+  startTime: number,
+  type: OscillatorType = 'triangle',
+  volume: number = 0.04,
+  gainEnvelope?: { attack?: number; decay?: number; sustain?: number; release?: number }
+): void {
+  if (muted) return;
+  const c = getCtx();
+  if (!c) return;
+
+  try {
+    const osc = c.createOscillator();
+    const noteGain = c.createGain();
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(frequency, startTime);
+
+    const env = gainEnvelope ?? {};
+    const attack = env.attack ?? 0.04;
+    const decay = env.decay ?? 0.1;
+    const sustain = env.sustain ?? volume * 0.7;
+    const release = env.release ?? 0.08;
+
+    noteGain.gain.setValueAtTime(0, startTime);
+    noteGain.gain.linearRampToValueAtTime(volume, startTime + attack);
+    noteGain.gain.linearRampToValueAtTime(sustain, startTime + attack + decay);
+    noteGain.gain.setValueAtTime(sustain, Math.max(startTime + attack + decay, startTime + duration - release));
+    noteGain.gain.linearRampToValueAtTime(0, startTime + duration);
+
+    osc.connect(noteGain);
+    noteGain.connect(targetGain); // Connected to track master gain, NOT c.destination
+    osc.start(startTime);
+    osc.stop(startTime + duration);
   } catch {}
 }
 
@@ -194,11 +237,11 @@ const TITLE_BASS: NoteEvent[] = [
 
 const TITLE_LOOP_DURATION = 24.0; // 24 seconds
 
-function scheduleTitleTrack(startT: number) {
-  if (muted || currentBgmType !== 'title') return;
+function scheduleTitleTrack(targetGain: GainNode, startT: number) {
+  if (muted) return;
 
   TITLE_LEAD_MELODY.forEach((n) => {
-    playTone(n.freq, n.dur, startT + n.t, 'triangle', 0.045, {
+    playBgmTone(targetGain, n.freq, n.dur, startT + n.t, 'triangle', 0.045, {
       attack: 0.06,
       decay: 0.12,
       sustain: 0.035,
@@ -207,7 +250,7 @@ function scheduleTitleTrack(startT: number) {
   });
 
   TITLE_ARPEGGIOS.forEach((n) => {
-    playTone(n.freq, n.dur, startT + n.t, 'sine', n.vol ?? 0.02, {
+    playBgmTone(targetGain, n.freq, n.dur, startT + n.t, 'sine', n.vol ?? 0.02, {
       attack: 0.03,
       decay: 0.08,
       sustain: 0.015,
@@ -216,7 +259,7 @@ function scheduleTitleTrack(startT: number) {
   });
 
   TITLE_BASS.forEach((n) => {
-    playTone(n.freq, n.dur, startT + n.t, 'sine', 0.045, {
+    playBgmTone(targetGain, n.freq, n.dur, startT + n.t, 'sine', 0.045, {
       attack: 0.08,
       decay: 0.2,
       sustain: 0.03,
@@ -227,21 +270,27 @@ function scheduleTitleTrack(startT: number) {
 
 export function startTitleBGM(): void {
   if (currentBgmType === 'title') return;
-  stopAllBGM();
+  stopAllBGM(); // Instantly kill quiz BGM hardware nodes
   currentBgmType = 'title';
   if (muted) return;
 
   const c = getCtx();
   if (!c) return;
 
+  // Create brand new isolated Title Track Gain Node
+  titleBgmGain = c.createGain();
+  titleBgmGain.gain.setValueAtTime(1, c.currentTime);
+  titleBgmGain.connect(c.destination);
+
+  const targetGain = titleBgmGain;
   const now = c.currentTime;
-  scheduleTitleTrack(now);
+  scheduleTitleTrack(targetGain, now);
 
   function loop() {
-    if (muted || currentBgmType !== 'title') return;
+    if (muted || currentBgmType !== 'title' || !titleBgmGain) return;
     const ctxNow = getCtx();
     if (!ctxNow) return;
-    scheduleTitleTrack(ctxNow.currentTime);
+    scheduleTitleTrack(titleBgmGain, ctxNow.currentTime);
   }
 
   if (titleTimer) clearInterval(titleTimer);
@@ -252,6 +301,15 @@ export function stopTitleBGM(): void {
   if (titleTimer) {
     clearInterval(titleTimer);
     titleTimer = null;
+  }
+  // Hard disconnect from audio graph to immediately kill all scheduled future notes
+  if (titleBgmGain && ctx) {
+    try {
+      titleBgmGain.gain.cancelScheduledValues(ctx.currentTime);
+      titleBgmGain.gain.setValueAtTime(0, ctx.currentTime);
+      titleBgmGain.disconnect();
+    } catch {}
+    titleBgmGain = null;
   }
   if (currentBgmType === 'title') currentBgmType = 'none';
 }
@@ -335,11 +393,11 @@ const QUIZ_BASS_LINE: NoteEvent[] = [
 
 const QUIZ_LOOP_DURATION = 30.0; // 30 seconds
 
-function scheduleQuizTrack(startT: number) {
-  if (muted || currentBgmType !== 'quiz') return;
+function scheduleQuizTrack(targetGain: GainNode, startT: number) {
+  if (muted) return;
 
   QUIZ_LEAD_MELODY.forEach((n) => {
-    playTone(n.freq, n.dur, startT + n.t, 'triangle', 0.045, {
+    playBgmTone(targetGain, n.freq, n.dur, startT + n.t, 'triangle', 0.045, {
       attack: 0.04,
       decay: 0.1,
       sustain: 0.035,
@@ -348,7 +406,7 @@ function scheduleQuizTrack(startT: number) {
   });
 
   QUIZ_HARMONY_CHORDS.forEach((n) => {
-    playTone(n.freq, n.dur, startT + n.t, 'sine', n.vol ?? 0.02, {
+    playBgmTone(targetGain, n.freq, n.dur, startT + n.t, 'sine', n.vol ?? 0.02, {
       attack: 0.02,
       decay: 0.06,
       sustain: 0.015,
@@ -357,7 +415,7 @@ function scheduleQuizTrack(startT: number) {
   });
 
   QUIZ_BASS_LINE.forEach((n) => {
-    playTone(n.freq, n.dur, startT + n.t, 'triangle', 0.035, {
+    playBgmTone(targetGain, n.freq, n.dur, startT + n.t, 'triangle', 0.035, {
       attack: 0.03,
       decay: 0.12,
       sustain: 0.025,
@@ -368,21 +426,27 @@ function scheduleQuizTrack(startT: number) {
 
 export function startQuizBGM(): void {
   if (currentBgmType === 'quiz') return;
-  stopAllBGM();
+  stopAllBGM(); // Instantly kill title BGM hardware nodes
   currentBgmType = 'quiz';
   if (muted) return;
 
   const c = getCtx();
   if (!c) return;
 
+  // Create brand new isolated Quiz Track Gain Node
+  quizBgmGain = c.createGain();
+  quizBgmGain.gain.setValueAtTime(1, c.currentTime);
+  quizBgmGain.connect(c.destination);
+
+  const targetGain = quizBgmGain;
   const now = c.currentTime;
-  scheduleQuizTrack(now);
+  scheduleQuizTrack(targetGain, now);
 
   function loop() {
-    if (muted || currentBgmType !== 'quiz') return;
+    if (muted || currentBgmType !== 'quiz' || !quizBgmGain) return;
     const ctxNow = getCtx();
     if (!ctxNow) return;
-    scheduleQuizTrack(ctxNow.currentTime);
+    scheduleQuizTrack(quizBgmGain, ctxNow.currentTime);
   }
 
   if (quizTimer) clearInterval(quizTimer);
@@ -394,18 +458,21 @@ export function stopQuizBGM(): void {
     clearInterval(quizTimer);
     quizTimer = null;
   }
+  // Hard disconnect from audio graph to immediately kill all scheduled future notes
+  if (quizBgmGain && ctx) {
+    try {
+      quizBgmGain.gain.cancelScheduledValues(ctx.currentTime);
+      quizBgmGain.gain.setValueAtTime(0, ctx.currentTime);
+      quizBgmGain.disconnect();
+    } catch {}
+    quizBgmGain = null;
+  }
   if (currentBgmType === 'quiz') currentBgmType = 'none';
 }
 
 export function stopAllBGM(): void {
-  if (titleTimer) {
-    clearInterval(titleTimer);
-    titleTimer = null;
-  }
-  if (quizTimer) {
-    clearInterval(quizTimer);
-    quizTimer = null;
-  }
+  stopTitleBGM();
+  stopQuizBGM();
   currentBgmType = 'none';
 }
 
@@ -415,8 +482,8 @@ export function sfxGearEquip(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  playTone(523, 0.06, t, 'square', 0.08);
-  playTone(659, 0.06, t + 0.06, 'square', 0.08);
+  playSfxTone(523, 0.06, t, 'square', 0.08);
+  playSfxTone(659, 0.06, t + 0.06, 'square', 0.08);
 }
 
 export function sfxCorrect(): void {
@@ -425,18 +492,18 @@ export function sfxCorrect(): void {
   const t = c.currentTime;
   const notes = [261.63, 329.63, 392.0, 523.25];
   notes.forEach((freq, i) => {
-    playTone(freq, 0.12, t + i * 0.1, 'square', 0.12);
+    playSfxTone(freq, 0.12, t + i * 0.1, 'square', 0.12);
   });
-  playTone(1046.5, 0.2, t + 0.4, 'sine', 0.08);
+  playSfxTone(1046.5, 0.2, t + 0.4, 'sine', 0.08);
 }
 
 export function sfxWrong(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  playTone(220, 0.08, t, 'sawtooth', 0.1);
-  playTone(180, 0.08, t + 0.1, 'sawtooth', 0.1);
-  playTone(150, 0.12, t + 0.2, 'sawtooth', 0.08);
+  playSfxTone(220, 0.08, t, 'sawtooth', 0.1);
+  playSfxTone(180, 0.08, t + 0.1, 'sawtooth', 0.1);
+  playSfxTone(150, 0.12, t + 0.2, 'sawtooth', 0.08);
 }
 
 export function sfxArchiveUnlock(): void {
@@ -445,9 +512,9 @@ export function sfxArchiveUnlock(): void {
   const t = c.currentTime;
   for (let i = 0; i < 8; i++) {
     const freq = 400 + i * 120;
-    playTone(freq, 0.08, t + i * 0.06, 'sine', 0.06 + i * 0.005);
+    playSfxTone(freq, 0.08, t + i * 0.06, 'sine', 0.06 + i * 0.005);
   }
-  playTone(1568, 0.25, t + 0.48, 'sine', 0.1);
+  playSfxTone(1568, 0.25, t + 0.48, 'sine', 0.1);
 }
 
 export function sfxBridgeExtend(): void {
@@ -456,7 +523,7 @@ export function sfxBridgeExtend(): void {
   const t = c.currentTime;
   const chimes = [880, 1108.73, 1318.51, 1760];
   chimes.forEach((freq, i) => {
-    playTone(freq, 0.15, t + i * 0.08, 'sine', 0.08);
+    playSfxTone(freq, 0.15, t + i * 0.08, 'sine', 0.08);
   });
 }
 
@@ -470,7 +537,7 @@ export function sfxVictory(): void {
   ] as [number, number][];
   let cursor = 0;
   melody.forEach(([freq, dur]) => {
-    playTone(freq, dur * 0.9, t + cursor, 'square', 0.12);
+    playSfxTone(freq, dur * 0.9, t + cursor, 'square', 0.12);
     cursor += dur;
   });
 }
@@ -479,32 +546,32 @@ export function sfxCertificateStamp(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  playNoise(0.05, t, 0.25);
-  playTone(80, 0.15, t, 'sine', 0.2);
-  playTone(110, 0.1, t + 0.05, 'sine', 0.12);
+  playSfxNoise(0.05, t, 0.25);
+  playSfxTone(80, 0.15, t, 'sine', 0.2);
+  playSfxTone(110, 0.1, t + 0.05, 'sine', 0.12);
 }
 
 export function sfxFileLoaded(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  playTone(392, 0.08, t, 'square', 0.1);
-  playTone(523.25, 0.08, t + 0.09, 'square', 0.1);
-  playTone(659.25, 0.15, t + 0.18, 'square', 0.12);
+  playSfxTone(392, 0.08, t, 'square', 0.1);
+  playSfxTone(523.25, 0.08, t + 0.09, 'square', 0.1);
+  playSfxTone(659.25, 0.15, t + 0.18, 'square', 0.12);
 }
 
 export function sfxOwlHoot(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  playTone(330, 0.15, t, 'sine', 0.1, { attack: 0.05, decay: 0.1, sustain: 0.08, release: 0.08 });
-  playTone(294, 0.2,  t + 0.2, 'sine', 0.08, { attack: 0.03, decay: 0.1, sustain: 0.06, release: 0.1 });
+  playSfxTone(330, 0.15, t, 'sine', 0.1, { attack: 0.05, decay: 0.1, sustain: 0.08, release: 0.08 });
+  playSfxTone(294, 0.2,  t + 0.2, 'sine', 0.08, { attack: 0.03, decay: 0.1, sustain: 0.06, release: 0.1 });
 }
 
 export function sfxPageTurn(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  playNoise(0.12, t, 0.06);
-  playTone(220, 0.06, t + 0.05, 'triangle', 0.05);
+  playSfxNoise(0.12, t, 0.06);
+  playSfxTone(220, 0.06, t + 0.05, 'triangle', 0.05);
 }
