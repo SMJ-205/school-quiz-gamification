@@ -40,11 +40,19 @@ export function parseQuizMarkdown(fileContent: string): ParsedQuizData {
   };
 
   // ─── Question blocks ───────────────────────────────────────────────────────
-  // Support ### Q1, ### Q 1, ## Q1, ### Soal 1, ## Soal 1, ### 1, ## 1., etc.
-  const questionBlocks = content
-    .split(/(?:^|\n)#{1,4}\s*(?:Q|Soal|Pertanyaan)?\s*\d+[:.]?/gi)
+  // Support ### Q1, ### Q 1, ## Q1, ### Soal 1, ## Soal 1, ### 1., ## 1:, etc.
+  let questionBlocks = content
+    .split(/(?:^|\n)#{1,4}\s*(?:(?:Q|Soal|Pertanyaan|No\.?|Nomor)\s*\d+|\d+\s*[.:\)])/gi)
     .map((b) => b.trim())
     .filter((b) => b.length > 0);
+
+  // Fallback split if standard pattern wasn't matched
+  if (questionBlocks.length === 0) {
+    questionBlocks = content
+      .split(/(?:^|\n)#{1,4}\s+Q\d+/gi)
+      .map((b) => b.trim())
+      .filter((b) => b.length > 0);
+  }
 
   if (questionBlocks.length === 0) {
     throw new Error(
@@ -62,7 +70,7 @@ export function parseQuizMarkdown(fileContent: string): ParsedQuizData {
     let isParsingOptions = false;
 
     for (let i = 0; i < rawLines.length; i++) {
-      const line = rawLines[i].trim();
+      let line = rawLines[i].trim();
       if (!line) {
         if (!isParsingOptions && questionLines.length > 0) {
           questionLines.push('');
@@ -103,6 +111,13 @@ export function parseQuizMarkdown(fileContent: string): ParsedQuizData {
           .trim();
       } else if (!isParsingOptions) {
         // Multi-line question content (e.g. math number series, equations, problem context)
+        // Clean markdown blockquote prefix '>' or backtick fence '```'
+        if (line.startsWith('>')) {
+          line = line.replace(/^>\s*/, '');
+        }
+        if (line.startsWith('```')) {
+          continue; // skip code fence markers
+        }
         questionLines.push(line);
       } else {
         // Option continuation or extra notes
