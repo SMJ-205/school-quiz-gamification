@@ -35,7 +35,7 @@ async function exportPDF(el: HTMLElement, studentName: string) {
 }
 
 export default function CertificateCanvas() {
-  const { studentName, score, correctAnswersCount, questions, resetGame } = useGameStore();
+  const { studentName, score, correctAnswersCount, questions, metadata, resetGame } = useGameStore();
   const certRef = useRef<HTMLDivElement>(null);
   const [exporting, setExporting] = useState(false);
 
@@ -71,7 +71,9 @@ export default function CertificateCanvas() {
     1: 'ONE GOLD STAR',
   };
 
-  const formattedScore = (score > 0 ? score * 100 : 50000).toLocaleString('en-US');
+  const displayScore = score > 0 ? score : correctAnswersCount * 100;
+  const formattedScore = displayScore.toLocaleString('id-ID');
+  const levelTitle = metadata?.title || metadata?.subject || 'THE ENCHANTED LIBRARY & CRYSTAL BRIDGE';
 
   return (
     <div className="min-h-screen bg-[#07050E] flex flex-col items-center justify-center p-2 sm:p-4 md:p-6 select-none">
@@ -145,33 +147,33 @@ export default function CertificateCanvas() {
                   </span>
                 </div>
 
-                {/* Row 2: LEVEL COMPLETED */}
+                {/* Row 2: LEVEL COMPLETED (Refers to MD Material Title) */}
                 <div className="leading-tight">
                   <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#784B20] block mb-0.5">
-                    LEVEL COMPLETED:
+                    LEVEL / TOPIK MATERI:
                   </span>
-                  <span className="text-base sm:text-lg font-extrabold tracking-wide text-[#231509] block">
-                    THE ENCHANTED LIBRARY &amp; CRYSTAL BRIDGE
+                  <span className="text-base sm:text-lg font-extrabold tracking-wide text-[#231509] block uppercase">
+                    {levelTitle}
                   </span>
                 </div>
 
-                {/* Row 3: FINAL SCORE */}
+                {/* Row 3: FINAL SCORE (Thousands scale) */}
                 <div className="leading-tight">
                   <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#784B20] block mb-0.5">
-                    FINAL SCORE:
+                    TOTAL POIN:
                   </span>
                   <span className="text-lg sm:text-xl font-extrabold tracking-wide text-[#8A4500]">
-                    {formattedScore} POINTS
+                    {formattedScore} POIN
                   </span>
                 </div>
 
                 {/* Row 4: GOLD STARS EARNED */}
                 <div className="leading-tight">
                   <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#784B20] block mb-0.5">
-                    GOLD STARS EARNED:
+                    BINTANG PENCAPAIAN:
                   </span>
                   <span className="text-base sm:text-lg font-extrabold tracking-wide text-[#231509]">
-                    [{starTextMap[starsCount] || 'FIVE GOLD STARS'}]
+                    [{starTextMap[starsCount] || 'ONE GOLD STAR'}]
                   </span>
                 </div>
 
@@ -192,7 +194,7 @@ export default function CertificateCanvas() {
             {/* 3. BOTTOM FOOTER */}
             <div className="flex items-end justify-between mt-6 pt-3 border-t border-[#5A3110]/25">
 
-              {/* Bottom-Left: Medal + 3/4/5 Gold Pixel Stars */}
+              {/* Bottom-Left: Medal + Exact Star Count (1 star = 1 star, 3 = 3, 5 = 5) */}
               <div className="flex items-center gap-3 pl-1">
                 <div className="w-10 sm:w-12 h-auto drop-shadow-sm">
                   <img
@@ -203,9 +205,9 @@ export default function CertificateCanvas() {
                   />
                 </div>
 
-                {/* Pixel Gold Stars */}
+                {/* Pixel Gold Stars: Render exact count matching starsCount */}
                 <div className="flex items-center gap-1 text-2xl sm:text-3xl drop-shadow-md">
-                  {Array.from({ length: Math.max(3, starsCount) }).map((_, i) => (
+                  {Array.from({ length: Math.max(1, Math.min(5, starsCount)) }).map((_, i) => (
                     <span
                       key={i}
                       className="text-[#E5A100] font-bold inline-block transform hover:scale-110 transition-transform"
@@ -218,6 +220,7 @@ export default function CertificateCanvas() {
                   ))}
                 </div>
               </div>
+
 
               {/* Bottom-Right: Cursive Signed + Underline + ACADEMY PRINCIPAL */}
               <div className="flex flex-col items-center text-center pr-4">

@@ -1,29 +1,32 @@
-/**
- * audioEngine.ts
- * Audio engine with:
- * - BGM: Real MP3 soundtrack "Piki - Momo Island (freetouse.com).mp3" with smooth looping & independent volume/mute.
- * - SFX: 8-Bit Web Audio API chiptune sound effects with independent SFX mute.
- */
+// ─── Global Audio Singleton (Survives Fast Refresh & Prevents Duplicate Audio) ───
+
+declare global {
+  interface Window {
+    __QUIZ_BGM_AUDIO__?: HTMLAudioElement | null;
+    __QUIZ_BGM_MUTED__?: boolean;
+    __QUIZ_SFX_MUTED__?: boolean;
+    __QUIZ_BGM_RUNNING__?: boolean;
+  }
+}
 
 let ctx: AudioContext | null = null;
-let bgmMuted = false;
-let sfxMuted = false;
-let isQuizBgmRunning = false;
-let bgmAudio: HTMLAudioElement | null = null;
+export const BGM_VOLUME = 0.08; // Gentle, soft ambient background music volume (8%)
 
 function getBgmAudio(): HTMLAudioElement | null {
   if (typeof window === 'undefined') return null;
-  if (!bgmAudio) {
-    // Try clean path first, fallback to original filename
-    try {
-      bgmAudio = new Audio('/audio/bgm_momo_island.mp3');
-    } catch {
-      bgmAudio = new Audio('/Piki - Momo Island (freetouse.com).mp3');
-    }
-    bgmAudio.loop = true;
-    bgmAudio.volume = 0.35; // Comfortable, rich background music volume
+
+  if (!window.__QUIZ_BGM_AUDIO__) {
+    // If an orphan audio element exists in DOM or previous session, stop it first
+    const audio = new Audio('/audio/bgm_momo_island.mp3');
+    audio.loop = true;
+    audio.volume = BGM_VOLUME;
+    audio.preload = 'auto';
+    window.__QUIZ_BGM_AUDIO__ = audio;
+  } else {
+    window.__QUIZ_BGM_AUDIO__.volume = BGM_VOLUME;
   }
-  return bgmAudio;
+
+  return window.__QUIZ_BGM_AUDIO__;
 }
 
 function getCtx(): AudioContext | null {
@@ -45,43 +48,69 @@ function getCtx(): AudioContext | null {
 // ─── Separate BGM and SFX Mute Controls ─────────────────────────────────────
 
 export function isBgmMuted(): boolean {
-  return bgmMuted;
+  if (typeof window !== 'undefined' && window.__QUIZ_BGM_MUTED__ !== undefined) {
+    return window.__QUIZ_BGM_MUTED__;
+  }
+  return false;
 }
 
 export function setBgmMuted(val: boolean): boolean {
-  bgmMuted = val;
+  if (typeof window !== 'undefined') {
+    window.__QUIZ_BGM_MUTED__ = val;
+  }
+
   const audio = getBgmAudio();
-  if (bgmMuted) {
-    if (audio) audio.pause();
-  } else {
-    if (isQuizBgmRunning && audio) {
-      audio.play().catch(() => {});
+  if (audio) {
+    if (val) {
+      audio.pause();
+      audio.muted = true;
+      audio.volume = 0;
+    } else {
+      audio.muted = false;
+      audio.volume = BGM_VOLUME;
+      if (typeof window !== 'undefined' && window.__QUIZ_BGM_RUNNING__) {
+        audio.play().catch(() => {});
+      }
     }
   }
-  return bgmMuted;
+
+  // Also safeguard any possible orphan audio elements
+  if (val && typeof document !== 'undefined') {
+    const allAudios = document.querySelectorAll('audio');
+    allAudios.forEach((a) => {
+      a.pause();
+      a.muted = true;
+    });
+  }
+
+  return val;
 }
 
 export function toggleBgmMute(): boolean {
-  return setBgmMuted(!bgmMuted);
+  return setBgmMuted(!isBgmMuted());
 }
 
 export function isSfxMuted(): boolean {
-  return sfxMuted;
+  if (typeof window !== 'undefined' && window.__QUIZ_SFX_MUTED__ !== undefined) {
+    return window.__QUIZ_SFX_MUTED__;
+  }
+  return false;
 }
 
 export function setSfxMuted(val: boolean): boolean {
-  sfxMuted = val;
-  return sfxMuted;
+  if (typeof window !== 'undefined') {
+    window.__QUIZ_SFX_MUTED__ = val;
+  }
+  return val;
 }
 
 export function toggleSfxMute(): boolean {
-  sfxMuted = !sfxMuted;
-  return sfxMuted;
+  return setSfxMuted(!isSfxMuted());
 }
 
 // Backwards-compatible aliases
 export function isAudioMuted(): boolean {
-  return bgmMuted;
+  return isBgmMuted();
 }
 
 export function toggleAudioMute(): boolean {
@@ -90,16 +119,42 @@ export function toggleAudioMute(): boolean {
 
 // ─── BGM Playback Control (Piki - Momo Island) ──────────────────────────────
 
+let isStartingBgm = false;
+
 export function startQuizBGM(): void {
-  isQuizBgmRunning = true;
-  if (bgmMuted) return;
+  if (typeof window === 'undefined') return;
+  window.__QUIZ_BGM_RUNNING__ = true;
+
+  if (isBgmMuted()) {
+    const audio = getBgmAudio();
+    if (audio) {
+      audio.pause();
+      audio.muted = true;
+    }
+    return;
+  }
 
   const audio = getBgmAudio();
-  if (audio) {
-    audio.play().catch(() => {
-      // Auto-play policy might require user gesture
+  if (!audio) return;
+
+  audio.muted = false;
+  audio.volume = BGM_VOLUME;
+
+  if (!audio.paused) return; // Already playing cleanly, do not double-play
+  if (isStartingBgm) return;
+
+  isStartingBgm = true;
+  audio.play()
+    .then(() => {
+      isStartingBgm = false;
+    })
+    .catch(() => {
+      isStartingBgm = false;
+      // Auto-play policy requires user interaction
       const resumeOnGesture = () => {
-        if (isQuizBgmRunning && !bgmMuted) {
+        if (window.__QUIZ_BGM_RUNNING__ && !isBgmMuted() && audio.paused) {
+          audio.muted = false;
+          audio.volume = BGM_VOLUME;
           audio.play().catch(() => {});
         }
         window.removeEventListener('click', resumeOnGesture);
@@ -110,20 +165,30 @@ export function startQuizBGM(): void {
       window.addEventListener('keydown', resumeOnGesture, { once: true });
       window.addEventListener('touchstart', resumeOnGesture, { once: true });
     });
-  }
 }
 
 export function stopQuizBGM(): void {
-  isQuizBgmRunning = false;
+  if (typeof window === 'undefined') return;
+  window.__QUIZ_BGM_RUNNING__ = false;
+
   const audio = getBgmAudio();
   if (audio) {
     audio.pause();
+    audio.currentTime = 0;
+  }
+
+  if (typeof document !== 'undefined') {
+    const allAudios = document.querySelectorAll('audio');
+    allAudios.forEach((a) => {
+      a.pause();
+    });
   }
 }
 
 export function stopAllBGM(): void {
   stopQuizBGM();
 }
+
 
 // ─── SFX Tone Synthesizer (Respects sfxMuted) ───────────────────────────────
 
@@ -135,7 +200,7 @@ function playSfxTone(
   volume: number = 0.1,
   gainEnvelope?: { attack?: number; decay?: number; sustain?: number; release?: number }
 ): void {
-  if (sfxMuted) return;
+  if (isSfxMuted()) return;
   const c = getCtx();
   if (!c) return;
 
@@ -166,7 +231,7 @@ function playSfxTone(
 }
 
 function playSfxNoise(duration: number, startTime: number, volume: number = 0.04): void {
-  if (sfxMuted) return;
+  if (isSfxMuted()) return;
   const c = getCtx();
   if (!c) return;
 
@@ -289,3 +354,24 @@ export function sfxPageTurn(): void {
   playSfxNoise(0.12, t, 0.06);
   playSfxTone(220, 0.06, t + 0.05, 'triangle', 0.05);
 }
+
+let lastBlipTime = 0;
+export function sfxTextBlip(): void {
+  if (isSfxMuted()) return;
+  const now = Date.now();
+  if (now - lastBlipTime < 55) return;
+  lastBlipTime = now;
+  const c = getCtx();
+  if (!c) return;
+  if (c.state === 'suspended') {
+    c.resume().catch(() => {});
+  }
+  const t = c.currentTime;
+  // Crisp, audible retro RPG dialogue chirp (triangle wave, warm punchy envelope)
+  const pitch = 440 + (Math.random() * 60);
+  playSfxTone(pitch, 0.045, t, 'triangle', 0.12, { attack: 0.003, decay: 0.025, sustain: 0.06, release: 0.015 });
+}
+
+
+
+

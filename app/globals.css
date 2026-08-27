@@ -322,3 +322,112 @@ body {
 .anim-sparkle { animation: sparkleGlow 1.5s ease-in-out infinite; }
 .anim-lantern { animation: lanternFlicker 3s ease-in-out infinite; }
 .anim-jump { animation: celebrateJump 1.2s ease-in-out infinite; }
+
+/* ─── Comic Speech Bubble & Teacher Dialogue ──────────────────────────────── */
+@keyframes teacherBob {
+  0%, 100% { transform: translateY(0) scale(1); }
+  35%      { transform: translateY(-3px) scale(1.02); }
+  70%      { transform: translateY(1px) scale(0.99); }
+}
+
+@keyframes teacherSpeak {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25%      { transform: translateY(-4px) rotate(-1deg); }
+  50%      { transform: translateY(-1px) rotate(1deg); }
+  75%      { transform: translateY(-3px) rotate(0deg); }
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+@keyframes comicShoutPulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.04); }
+}
+
+.anim-teacher-idle {
+  animation: teacherBob 3s ease-in-out infinite;
+}
+
+.anim-teacher-talking {
+  animation: teacherSpeak 0.4s ease-in-out infinite;
+}
+
+.anim-shout-pulse {
+  animation: comicShoutPulse 1.8s ease-in-out infinite;
+}
+
+.typewriter-cursor {
+  display: inline-block;
+  color: #FFB300;
+  font-weight: bold;
+  animation: cursorBlink 0.5s infinite;
+  margin-left: 2px;
+}
+
+.comic-shout-banner {
+  background: linear-gradient(135deg, #FFD700 0%, #FF9100 100%);
+  color: #120A00;
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0 #000;
+  font-family: var(--font-pixel);
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.comic-bubble-wrapper {
+  position: relative;
+  background: #0D0C15;
+  border: 3.5px solid #FFC107;
+  border-radius: 8px;
+  padding: 20px 28px;
+  box-shadow:
+    -3px 0 0 #000, 3px 0 0 #000,
+    0 -3px 0 #000, 0 3px 0 #000,
+    0 6px 0 rgba(0, 0, 0, 0.8),
+    inset 0 0 16px rgba(255, 193, 7, 0.08);
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+@media (min-width: 640px) {
+  .comic-bubble-wrapper {
+    padding: 24px 36px;
+  }
+}
+
+
+/* Seamless Comic Speech Beak (pentulan) pointing right to Pak Guru */
+.comic-bubble-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 36%;
+  right: -19px;
+  width: 0;
+  height: 0;
+  border-top: 13px solid transparent;
+  border-bottom: 13px solid transparent;
+  border-left: 19px solid #FFC107;
+  filter: drop-shadow(2px 2px 0 #000);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.comic-bubble-wrapper::after {
+  content: '';
+  position: absolute;
+  top: calc(36% + 3.5px);
+  right: -14px;
+  width: 0;
+  height: 0;
+  border-top: 9.5px solid transparent;
+  border-bottom: 9.5px solid transparent;
+  border-left: 15px solid #0D0C15;
+  z-index: 11;
+  pointer-events: none;
+}
+
+
