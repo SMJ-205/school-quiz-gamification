@@ -43,6 +43,7 @@ export interface GameState {
   studentName: string;
   score: number;
   correctAnswersCount: number;
+  userAnswers: Record<number, number>; // question index -> chosen option index
   isFinished: boolean;
 
   // Character
@@ -50,6 +51,7 @@ export interface GameState {
 
   // UI overlays
   showNotebookLMModal: boolean;
+  showParentReport: boolean;
 
   // Actions
   setScreen: (screen: GameScreen) => void;
@@ -61,6 +63,7 @@ export interface GameState {
   nextQuestion: () => void;
   resetGame: () => void;
   setShowNotebookLMModal: (show: boolean) => void;
+  setShowParentReport: (show: boolean) => void;
 }
 
 // ─── Store ────────────────────────────────────────────────────────────────────
@@ -76,6 +79,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   studentName: '',
   score: 0,
   correctAnswersCount: 0,
+  userAnswers: {},
   isFinished: false,
 
   // Default character (Boy)
@@ -85,6 +89,7 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   // UI
   showNotebookLMModal: false,
+  showParentReport: false,
 
   // ─── Actions ──────────────────────────────────────────────────────────────
 
@@ -97,6 +102,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       currentQuestionIndex: 0,
       score: 0,
       correctAnswersCount: 0,
+      userAnswers: {},
       isFinished: false,
       currentScreen: 'character',
     }),
@@ -114,15 +120,25 @@ export const useGameStore = create<GameState>((set, get) => ({
     }),
 
   submitAnswer: (optionIndex) => {
-    const { questions, currentQuestionIndex, score, correctAnswersCount } = get();
+    const { questions, currentQuestionIndex, score, correctAnswersCount, userAnswers } = get();
     const currentQ = questions[currentQuestionIndex];
     const isCorrect = optionIndex === currentQ.correctIndex;
-    if (isCorrect) {
-      set({
-        score: score + 100,
-        correctAnswersCount: correctAnswersCount + 1,
-      });
-    }
+    
+    const updatedAnswers = {
+      ...userAnswers,
+      [currentQuestionIndex]: optionIndex,
+    };
+
+    set({
+      userAnswers: updatedAnswers,
+      ...(isCorrect
+        ? {
+            score: score + 100,
+            correctAnswersCount: correctAnswersCount + 1,
+          }
+        : {}),
+    });
+
     return { isCorrect, hint: currentQ.hint };
   },
 
@@ -144,10 +160,13 @@ export const useGameStore = create<GameState>((set, get) => ({
       currentQuestionIndex: 0,
       score: 0,
       correctAnswersCount: 0,
+      userAnswers: {},
       isFinished: false,
       studentName: '',
+      showParentReport: false,
       currentScreen: 'ingestion',
     }),
 
   setShowNotebookLMModal: (show) => set({ showNotebookLMModal: show }),
+  setShowParentReport: (show) => set({ showParentReport: show }),
 }));

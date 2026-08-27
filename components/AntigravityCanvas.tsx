@@ -3,13 +3,14 @@
 import React, { useEffect, useRef } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import { sfxVictory, stopQuizBGM } from '@/lib/audioEngine';
+import ParentReportModal from './ParentReportModal';
 
 const BODIES_COUNT = 35;
 const BODY_EMOJIS = ['📖', '⭐', '🌟', '💎', '✨', '📜', '🏆', '📚', '🎖️', '🏮'];
 
 export default function AntigravityCanvas() {
+  const { studentName, score, correctAnswersCount, questions, setScreen, setShowParentReport } = useGameStore();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { setScreen, score, correctAnswersCount, questions, studentName } = useGameStore();
   const animFrameRef = useRef<number>(0);
   const bodiesRef = useRef<{ x: number; y: number; vx: number; vy: number; emoji: string; size: number; rot: number; rotV: number }[]>([]);
 
@@ -136,19 +137,29 @@ export default function AntigravityCanvas() {
           </div>
         </div>
 
-        <p className="font-dialogue text-xl text-amber-200/60 mb-5">
-          Sentuh / arahkan kursor ke layar untuk memainkan kitab melayang ✨
-        </p>
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <button
+            onClick={() => setShowParentReport(true)}
+            className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-amber-500/60 !text-amber-200 w-full sm:w-1/2 text-xs sm:text-sm py-3.5 flex items-center justify-center gap-2 shadow-lg"
+          >
+            <span>📋</span>
+            <span>LAPORAN ORANG TUA</span>
+          </button>
 
-        <button
-          onClick={() => setScreen('certificate')}
-          className="btn-pixel btn-pixel-gold w-full text-base py-4 flex items-center justify-center gap-2 shadow-xl"
-        >
-          <span>📜</span>
-          <span>BUKA SERTIFIKAT PENYELESAIAN</span>
-          <span>▶</span>
-        </button>
+          <button
+            onClick={() => setScreen('certificate')}
+            className="btn-pixel btn-pixel-gold w-full sm:w-1/2 text-xs sm:text-sm py-3.5 flex items-center justify-center gap-2 shadow-xl"
+          >
+            <span>📜</span>
+            <span>LIHAT SERTIFIKAT</span>
+            <span>▶</span>
+          </button>
+        </div>
       </div>
+
+      {/* Parent Learning Assessment Modal */}
+      <ParentReportModal />
     </div>
   );
 }

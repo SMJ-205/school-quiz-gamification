@@ -129,8 +129,7 @@ export default function CharacterCustomizer() {
                   </div>
 
                   {/* Card Title & Desc */}
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <span className="text-lg">{opt.emoji}</span>
+                  <div className="flex items-center justify-center mb-0.5">
                     <h3 className="text-sm sm:text-base font-bold text-amber-200 tracking-wide">
                       {opt.title}
                     </h3>

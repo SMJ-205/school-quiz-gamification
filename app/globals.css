@@ -323,19 +323,9 @@ body {
 .anim-lantern { animation: lanternFlicker 3s ease-in-out infinite; }
 .anim-jump { animation: celebrateJump 1.2s ease-in-out infinite; }
 
-/* ─── Comic Speech Bubble & Teacher Dialogue ──────────────────────────────── */
-@keyframes teacherBob {
-  0%, 100% { transform: translateY(0) scale(1); }
-  35%      { transform: translateY(-3px) scale(1.02); }
-  70%      { transform: translateY(1px) scale(0.99); }
-}
-
-@keyframes teacherSpeak {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  25%      { transform: translateY(-4px) rotate(-1deg); }
-  50%      { transform: translateY(-1px) rotate(1deg); }
-  75%      { transform: translateY(-3px) rotate(0deg); }
-}
+/* ─── Teacher body animations (not applied to body — mouth only via JS) ────── */
+/* teacherBob and teacherSpeak removed: body is now static, mouth animation     */
+/* is driven by React state swapping teacher_talking.png <-> teacher_idle.png   */
 
 @keyframes cursorBlink {
   0%, 100% { opacity: 1; }
@@ -347,13 +337,7 @@ body {
   50%      { transform: scale(1.04); }
 }
 
-.anim-teacher-idle {
-  animation: teacherBob 3s ease-in-out infinite;
-}
-
-.anim-teacher-talking {
-  animation: teacherSpeak 0.4s ease-in-out infinite;
-}
+/* .anim-teacher-idle and .anim-teacher-talking removed — no longer used */
 
 .anim-shout-pulse {
   animation: comicShoutPulse 1.8s ease-in-out infinite;

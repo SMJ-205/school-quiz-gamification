@@ -15,6 +15,7 @@ import React, { useRef, useState } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import { getStarRating } from '@/lib/constants';
 import { sfxCertificateStamp, sfxPageTurn } from '@/lib/audioEngine';
+import ParentReportModal from './ParentReportModal';
 
 async function exportPNG(el: HTMLElement) {
   const { toPng } = await import('html-to-image');
@@ -35,7 +36,7 @@ async function exportPDF(el: HTMLElement, studentName: string) {
 }
 
 export default function CertificateCanvas() {
-  const { studentName, score, correctAnswersCount, questions, metadata, resetGame } = useGameStore();
+  const { studentName, score, correctAnswersCount, questions, metadata, resetGame, setShowParentReport } = useGameStore();
   const certRef = useRef<HTMLDivElement>(null);
   const [exporting, setExporting] = useState(false);
 
@@ -246,7 +247,16 @@ export default function CertificateCanvas() {
         </div>
 
         {/* ─── ACTION BUTTONS (Fully Responsive Grid) ──────────────────────── */}
-        <div className="w-full max-w-[880px] grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 px-2">
+        <div className="w-full max-w-[880px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 mt-4 px-2">
+          <button
+            onClick={() => setShowParentReport(true)}
+            className="btn-pixel !bg-amber-950/90 hover:!bg-amber-900 !border-amber-400 text-amber-200 py-3 text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+            style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800 }}
+          >
+            <span>📋</span>
+            <span>LAPORAN ORANG TUA</span>
+          </button>
+
           <button
             onClick={handleExportPNG}
             disabled={exporting}
@@ -254,7 +264,7 @@ export default function CertificateCanvas() {
             style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800 }}
           >
             <span>🖼️</span>
-            <span>{exporting ? 'MEMPROSES...' : 'UNDUH SERTIFIKAT (PNG)'}</span>
+            <span>{exporting ? 'MEMPROSES...' : 'UNDUH (PNG)'}</span>
           </button>
 
           <button
@@ -264,12 +274,12 @@ export default function CertificateCanvas() {
             style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800 }}
           >
             <span>📄</span>
-            <span>{exporting ? 'MEMPROSES...' : 'CETAK / UNDUH (PDF)'}</span>
+            <span>{exporting ? 'MEMPROSES...' : 'CETAK (PDF)'}</span>
           </button>
 
           <button
             onClick={handleReset}
-            className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 text-stone-200 py-3 px-6 text-xs sm:text-sm cursor-pointer shadow-lg flex items-center justify-center gap-1"
+            className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 text-stone-200 py-3 px-4 text-xs sm:text-sm cursor-pointer shadow-lg flex items-center justify-center gap-1"
             style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800 }}
           >
             <span>🔄</span>
@@ -278,6 +288,9 @@ export default function CertificateCanvas() {
         </div>
 
       </div>
+
+      {/* Parent Learning Assessment Modal */}
+      <ParentReportModal />
     </div>
   );
 }

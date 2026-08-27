@@ -77,7 +77,7 @@ export default function CrystalBridge() {
             </div>
 
             {/* Question & Options */}
-            <div className="relative z-20 w-full max-w-3xl mx-auto mb-4">
+            <div className="relative z-20 w-full max-w-3xl mx-auto pt-6 sm:pt-8 mb-4">
               <QuestionPanel />
             </div>
 

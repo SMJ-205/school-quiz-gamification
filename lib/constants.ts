@@ -13,14 +13,14 @@ export const GENDER_OPTIONS: CharacterOption[] = [
     value: 'boy',
     title: 'Murid Laki-laki',
     label: 'Seragam Merah Putih & Topi',
-    emoji: '👦',
+    emoji: '',
     desc: 'Pelajar pemberani siap berpetualang membuka arsip ilmu pengetahuan',
   },
   {
     value: 'girl',
     title: 'Murid Perempuan',
     label: 'Seragam Merah Putih & Hijab',
-    emoji: '👧',
+    emoji: '',
     desc: 'Pelajar cerdas berhijab putih siap menempuh jembatan kristal ilmu',
   },
 ];

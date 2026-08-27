@@ -11,16 +11,18 @@
 | Fitur | Deskripsi |
 |---|---|
 | 📜 **Upload Materi Markdown** | Unggah file `.md` berisi materi pelajaran — kuis akan dibuat otomatis |
-| 🎓 **Karakter Pelajar** | Pilih avatar petualang & masukkan nama sebelum memulai |
-| 🧑‍🏫 **Dialog Pak Guru** | Pertanyaan ditampilkan via animasi typewriting dalam balon komik |
+| 🎓 **Karakter Pelajar** | Pilih petualang (Murid Laki-laki / Murid Perempuan) & masukkan nama sebelum memulai |
+| 🧑‍🏫 **Dialog & Animasi Pak Guru** | Pertanyaan interaktif typewriting dengan animasi bicara natural & outer cell shading putih |
 | ⭐ **Sistem Poin & Bintang** | Jawaban benar memberikan poin; hasil akhir ditampilkan dengan rating bintang |
-| 🏆 **Sertifikat Digital** | Sertifikat penyelesaian bergambar bintang yang dapat diunduh |
+| 👨‍👩‍👧 **Laporan & Analisis Orang Tua** | Rangkuman evaluasi belajar & analisis kesalahan jawab untuk bimbingan orang tua/guru di rumah |
+| 📸 **Capture & Export Ringkasan** | Unduh laporan evaluasi dalam bentuk gambar PNG atau salin format teks rapi ke WhatsApp |
+| 🏆 **Sertifikat Digital** | Sertifikat kelulusan bertema *Ancient Academy* berformat PNG & PDF berkualitas tinggi |
 | 🎵 **Audio BGM & SFX** | Musik latar 8-bit retro + efek suara typewriting; dapat dimatikan kapan saja |
 | 📒 **Integrasi NotebookLM** | Buat soal kuis otomatis dari materi melalui Google NotebookLM |
 
 ---
 
-## 🖼️ Tampilan Aplikasi
+## 🖼️ Tampilan & Alur Aplikasi
 
 ### 1. Halaman Utama — Masukkan Nama & Unggah Materi
 
@@ -36,9 +38,11 @@ Saat pertama membuka aplikasi, pelajar akan:
 ### 2. Sesi Kuis — Dialog Pak Guru & Pilihan Jawaban
 
 Saat kuis berlangsung:
-- Pertanyaan muncul dengan animasi **typewriting** dalam **balon komik** bergaya RPG dari Pak Guru
-- Sprite **karakter pelajar** berjalan di bawah layar
-- **Progress bar** di atas menampilkan soal ke-berapa dan poin terkumpul
+- Pertanyaan muncul dengan animasi **typewriting** dalam **balon komik 2 baris yang stabil** dari Pak Guru
+- Karakter Pak Guru memiliki animasi **gerakan mulut natural (*talking cadence*)** saat teks berjalan dan diam saat jeda/selesai
+- Outline karakter dilapisi **white cell shading** tipis untuk kontras visual optimal
+- Sprite **karakter pelajar** berjalan di bawah panggung perpustakaan ajaib
+- **Progress bar** di atas menampilkan lantai soal dan poin terkumpul
 - Pilih jawaban A / B / C / D, lalu lanjut ke soal berikutnya
 - **BGM** dan **SFX** dapat dimatikan/dihidupkan sewaktu-waktu dari pojok kanan atas
 
@@ -46,14 +50,33 @@ Saat kuis berlangsung:
 
 ---
 
-### 3. Layar Hasil — Skor Akhir & Sertifikat
+### 3. Layar Hasil & Sertifikat Kelulusan
 
 Setelah semua soal terjawab:
 - Layar menampilkan **Skor Akhir** (dalam poin) dan **Akurasi** (persentase jawaban benar)
-- Animasi bintang & konfeti merayakan penyelesaian misi
-- Tekan **"Buka Sertifikat Penyelesaian"** untuk melihat dan mengunduh sertifikat bergambar bintang
+- Animasi perayaan menyelesaikan misi eksplorasi ilmu
+- Tekan **"Buka Sertifikat Penyelesaian"** untuk melihat diploma kelulusan bergaya gulungan kuno (dapat diunduh sebagai PNG atau PDF)
+- Tekan tombol **"Laporan Orang Tua 📋"** untuk membuka evaluasi belajar mendalam
 
 ![Result Screen](public/screenshots/screen_result.png)
+
+---
+
+### 4. 👨‍👩‍👧 Laporan & Analisis Evaluasi Belajar (Fitur Orang Tua & Guru)
+
+Fitur khusus yang dirancang untuk membantu orang tua dan guru memahami performa belajar anak secara menyeluruh setelah kuis selesai:
+
+#### 📊 Poin-poin yang Disajikan:
+1. **Rangkuman Capaian**: Skor total, persentase akurasi, rasio jawaban benar/salah, serta status level pemahaman (*Sangat Menguasai*, *Perlu Latihan*, atau *Perlu Bimbingan Khusus*).
+2. **Analisis Kesalahan Jawab (Poin yang Masih Kurang)**:
+   - Filter khusus untuk melihat hanya soal-soal yang salah dijawab oleh anak.
+   - Perbandingan jelas antara **❌ Jawaban Siswa (Keliru)** dan **✅ Kunci Jawaban Benar**.
+   - **💡 Konsep Kunci / Petunjuk Materi**: Penjelasan ringkas mengenai konsep yang perlu diulang bersama orang tua di rumah.
+3. **Rekomendasi Bimbingan**: Panduan praktis bagi orang tua mengenai topik spesifik yang perlu diperkuat.
+
+#### 📸 Fitur Ekspor & Berbagi Laporan:
+- **📸 Unduh Gambar (PNG)**: Meng-capture seluruh kartu laporan evaluasi menjadi gambar beresolusi tinggi dengan 1 klik.
+- **📋 Salin Ringkasan (WhatsApp Ready)**: Menyalin seluruh laporan performa dan rincian kesalahan jawab ke clipboard dalam format teks rapi, siap dikirimkan ke grup chat keluarga atau wali kelas.
 
 ---
 
@@ -94,24 +117,30 @@ npm start
 ```
 school-quiz-gamification/
 ├── app/
-│   ├── page.tsx              # Halaman utama
-│   ├── layout.tsx            # Root layout & font
-│   └── globals.css           # Global styles & animasi komik
+│   ├── page.tsx                 # Routing & screen switcher
+│   ├── layout.tsx               # Root layout & font
+│   └── globals.css              # Global styles, animasi komik & CRT
 ├── components/
-│   ├── quiz/
-│   │   └── QuestionPanel.tsx # Panel soal + dialog Pak Guru
-│   ├── CertificateCanvas.tsx # Render sertifikat digital
-│   └── PixelProgressBar.tsx  # Progress bar + tombol BGM/SFX
+│   ├── IngestionScreen.tsx      # Upload Markdown & input nama siswa
+│   ├── CharacterCustomizer.tsx  # Pemilihan avatar (Murid Laki-laki/Perempuan)
+│   ├── ParentReportModal.tsx    # Modal analisis kesalahan jawab & laporan orang tua
+│   ├── CertificateCanvas.tsx    # Render & ekspor sertifikat digital (PNG/PDF)
+│   ├── AntigravityCanvas.tsx    # Layar hasil perayaan kuis
+│   ├── PixelProgressBar.tsx     # Progress bar + tombol audio BGM/SFX
+│   └── quiz/
+│       ├── QuestionPanel.tsx    # Dialog komik 2 baris + animasi Pak Guru
+│       └── EnchantedLibrary.tsx # Arena kuis panggung perpustakaan
 ├── lib/
-│   ├── audioEngine.ts        # Singleton audio BGM & SFX
-│   ├── markdownParser.ts     # Parser file Markdown → soal
-│   └── constants.ts          # Konstanta: bintang, prompt NotebookLM
+│   ├── audioEngine.ts           # Singleton engine audio BGM & SFX
+│   ├── markdownParser.ts        # Parser materi Markdown → struktur soal kuis
+│   └── constants.ts             # Opsi karakter, rating bintang, prompt NotebookLM
 ├── public/
-│   ├── audio/                # File BGM .mp3
-│   ├── sprites/              # Sprite karakter (teacher.png, dll)
-│   └── screenshots/          # Screenshot untuk dokumentasi
+│   ├── audio/                   # File musik latar (.mp3)
+│   ├── sprites/                 # Sprite karakter (teacher_talking.png, teacher_idle.png)
+│   ├── backgrounds/             # Background perpustakaan retro
+│   └── screenshots/             # Dokumentasi screenshot
 └── store/
-    └── useGameStore.ts       # Zustand store: state global kuis
+    └── useGameStore.ts          # Zustand store: tracking jawaban & state kuis
 ```
 
 ---
@@ -124,16 +153,21 @@ File Markdown yang diunggah akan diparse secara otomatis. Gunakan format berikut
 ---
 title: Sejarah & Pengetahuan Umum
 subject: IPS
-difficulty: medium
+grade: 5
+author: The Growth of Knowledge
 ---
 
-# Materi: Proklamasi Kemerdekaan
+### Q1
+Siapakah tokoh yang membacakan naskah Proklamasi Kemerdekaan Indonesia?
+- [ ] Mohammad Hatta
+- [x] Ir. Soekarno
+- [ ] Sutan Sjahrir
+- [ ] Achmad Soebardjo
+*Hint: Beliau adalah Presiden pertama Republik Indonesia.*
 
-Pertanyaan dan jawaban dapat di-generate otomatis via NotebookLM
-menggunakan tombol "Buat Kuis via NotebookLM" di halaman utama.
+### Q2
+...
 ```
-
-Soal dalam format JSON juga dapat ditempelkan langsung.
 
 ---
 
@@ -141,8 +175,8 @@ Soal dalam format JSON juga dapat ditempelkan langsung.
 
 | Kontrol | Lokasi | Keterangan |
 |---|---|---|
-| **BGM** | Pojok kanan atas | Musik latar 8-bit retro (8% volume default) |
-| **SFX** | Pojok kanan atas | Efek suara klik & typewriting |
+| **BGM** | Pojok kanan atas | Musik latar 8-bit retro |
+| **SFX** | Pojok kanan atas / Otomatis | Efek suara klik, blip bicara, benar/salah |
 
 ---
 
@@ -151,7 +185,8 @@ Soal dalam format JSON juga dapat ditempelkan langsung.
 - **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
 - **Bahasa**: TypeScript
 - **State Management**: [Zustand](https://zustand-demo.pmnd.rs/)
-- **Styling**: Vanilla CSS + Google Fonts (Press Start 2P, VT323)
+- **Styling**: Vanilla CSS + Tailwind CSS + Google Fonts (Press Start 2P, Outfit, Cinzel, Silkscreen)
+- **Image/PDF Generation**: `html-to-image`, `jspdf`
 - **Audio**: Web Audio API + HTML5 Audio (singleton engine)
 - **Deployment**: [Vercel](https://vercel.com)
 
@@ -160,3 +195,4 @@ Soal dalam format JSON juga dapat ditempelkan langsung.
 ## 📄 Lisensi
 
 MIT License — Bebas digunakan untuk keperluan pendidikan dan penelitian.
+

@@ -71,7 +71,7 @@ export default function EnchantedLibrary() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/60 pointer-events-none z-0" />
 
             {/* Upper Arena Space: Question & Answers Panel */}
-            <div className="relative z-20 w-full max-w-3xl mx-auto mb-2">
+            <div className="relative z-20 w-full max-w-3xl mx-auto pt-6 sm:pt-8 mb-2">
               <QuestionPanel />
             </div>
 
