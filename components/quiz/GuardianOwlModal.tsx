@@ -50,7 +50,7 @@ export default function GuardianOwlModal({ hint, onClose }: GuardianOwlModalProp
           <span className="font-dialogue text-sm sm:text-base text-amber-400 font-bold block mb-1">
             💡 PETUNJUK PENGETAHUAN:
           </span>
-          <p className="font-dialogue text-xl sm:text-2xl text-amber-100 leading-snug">
+          <p className="font-dialogue text-xl sm:text-2xl text-amber-100 leading-snug whitespace-pre-line break-words">
             {hint || 'Perhatikan kembali kata kunci dan konsep dalam materi pembelajaran.'}
           </p>
         </div>

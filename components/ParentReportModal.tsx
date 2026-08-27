@@ -299,7 +299,7 @@ export default function ParentReportModal() {
                           }`}>
                             Soal #{index + 1}
                           </span>
-                          <p className="font-dialogue text-base sm:text-lg text-white font-medium leading-snug">
+                          <p className="font-dialogue text-base sm:text-lg text-white font-medium leading-snug whitespace-pre-line break-words">
                             {q.question}
                           </p>
                         </div>

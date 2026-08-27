@@ -3,27 +3,29 @@
 declare global {
   interface Window {
     __QUIZ_BGM_AUDIO__?: HTMLAudioElement | null;
+    __QUIZ_AUDIO_CTX__?: AudioContext | null;
     __QUIZ_BGM_MUTED__?: boolean;
     __QUIZ_SFX_MUTED__?: boolean;
     __QUIZ_BGM_RUNNING__?: boolean;
+    __QUIZ_UNLOCKED__?: boolean;
   }
 }
 
-let ctx: AudioContext | null = null;
-export const BGM_VOLUME = 0.08; // Gentle, soft ambient background music volume (8%)
+export const BGM_VOLUME = 0.22; // Comfortable, clearly audible background music on mobile & desktop (22%)
 
 function getBgmAudio(): HTMLAudioElement | null {
   if (typeof window === 'undefined') return null;
 
   if (!window.__QUIZ_BGM_AUDIO__) {
-    // If an orphan audio element exists in DOM or previous session, stop it first
     const audio = new Audio('/audio/bgm_momo_island.mp3');
     audio.loop = true;
     audio.volume = BGM_VOLUME;
     audio.preload = 'auto';
+    audio.setAttribute('playsinline', 'true');
+    (audio as unknown as { playsInline?: boolean }).playsInline = true;
     window.__QUIZ_BGM_AUDIO__ = audio;
   } else {
-    window.__QUIZ_BGM_AUDIO__.volume = BGM_VOLUME;
+    window.__QUIZ_BGM_AUDIO__.volume = isBgmMuted() ? 0 : BGM_VOLUME;
   }
 
   return window.__QUIZ_BGM_AUDIO__;
@@ -31,18 +33,67 @@ function getBgmAudio(): HTMLAudioElement | null {
 
 function getCtx(): AudioContext | null {
   if (typeof window === 'undefined') return null;
-  if (!ctx) {
+  if (!window.__QUIZ_AUDIO_CTX__) {
     const AudioContextClass =
       window.AudioContext ||
       (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     if (AudioContextClass) {
-      ctx = new AudioContextClass();
+      window.__QUIZ_AUDIO_CTX__ = new AudioContextClass();
     }
   }
-  if (ctx && ctx.state === 'suspended') {
-    ctx.resume().catch(() => {});
+  const c = window.__QUIZ_AUDIO_CTX__;
+  if (c && c.state === 'suspended') {
+    c.resume().catch(() => {});
   }
-  return ctx;
+  return c ?? null;
+}
+
+// ─── Mobile Audio Context & HTML5 Audio Unlocker ────────────────────────────
+
+export function unlockAudioEngine(): void {
+  if (typeof window === 'undefined') return;
+
+  // 1. Unlock & Resume Web Audio API context (iOS Safari & Android Web Audio requirement)
+  const c = getCtx();
+  if (c) {
+    if (c.state === 'suspended') {
+      c.resume().catch(() => {});
+    }
+    // Play 1 silent frame to prime the Web Audio pipeline on iOS
+    try {
+      const buffer = c.createBuffer(1, 1, 22050);
+      const source = c.createBufferSource();
+      source.buffer = buffer;
+      source.connect(c.destination);
+      source.start(0);
+    } catch {}
+  }
+
+  // 2. Unlock & Resume BGM HTML5 Audio if designated to run
+  const bgm = getBgmAudio();
+  if (bgm) {
+    if (window.__QUIZ_BGM_RUNNING__ && !isBgmMuted() && bgm.paused) {
+      bgm.muted = false;
+      bgm.volume = BGM_VOLUME;
+      bgm.play().catch(() => {});
+    }
+  }
+
+  window.__QUIZ_UNLOCKED__ = true;
+}
+
+// Attach automatic unlock listeners on user interactions
+if (typeof window !== 'undefined') {
+  const unlockEvents = ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'click', 'keydown'];
+  const onUserGesture = () => {
+    unlockAudioEngine();
+  };
+  unlockEvents.forEach((evt) => {
+    window.addEventListener(evt, onUserGesture, { passive: true });
+    if (typeof document !== 'undefined') {
+      document.addEventListener(evt, onUserGesture, { passive: true });
+    }
+  });
 }
 
 // ─── Separate BGM and SFX Mute Controls ─────────────────────────────────────
@@ -108,13 +159,16 @@ export function toggleSfxMute(): boolean {
   return setSfxMuted(!isSfxMuted());
 }
 
-// Backwards-compatible aliases
+// Backwards-compatible master mute aliases
 export function isAudioMuted(): boolean {
-  return isBgmMuted();
+  return isBgmMuted() && isSfxMuted();
 }
 
 export function toggleAudioMute(): boolean {
-  return toggleBgmMute();
+  const next = !isBgmMuted();
+  setBgmMuted(next);
+  setSfxMuted(next);
+  return next;
 }
 
 // ─── BGM Playback Control (Piki - Momo Island) ──────────────────────────────
@@ -140,7 +194,9 @@ export function startQuizBGM(): void {
   audio.muted = false;
   audio.volume = BGM_VOLUME;
 
-  if (!audio.paused) return; // Already playing cleanly, do not double-play
+  unlockAudioEngine();
+
+  if (!audio.paused) return; // Already playing cleanly
   if (isStartingBgm) return;
 
   isStartingBgm = true;
@@ -150,20 +206,7 @@ export function startQuizBGM(): void {
     })
     .catch(() => {
       isStartingBgm = false;
-      // Auto-play policy requires user interaction
-      const resumeOnGesture = () => {
-        if (window.__QUIZ_BGM_RUNNING__ && !isBgmMuted() && audio.paused) {
-          audio.muted = false;
-          audio.volume = BGM_VOLUME;
-          audio.play().catch(() => {});
-        }
-        window.removeEventListener('click', resumeOnGesture);
-        window.removeEventListener('keydown', resumeOnGesture);
-        window.removeEventListener('touchstart', resumeOnGesture);
-      };
-      window.addEventListener('click', resumeOnGesture, { once: true });
-      window.addEventListener('keydown', resumeOnGesture, { once: true });
-      window.addEventListener('touchstart', resumeOnGesture, { once: true });
+      // If blocked by browser autoplay policy, it will resume on next user tap via global listeners
     });
 }
 
@@ -189,7 +232,6 @@ export function stopAllBGM(): void {
   stopQuizBGM();
 }
 
-
 // ─── SFX Tone Synthesizer (Respects sfxMuted) ───────────────────────────────
 
 function playSfxTone(
@@ -197,7 +239,7 @@ function playSfxTone(
   duration: number,
   startTime: number,
   type: OscillatorType = 'square',
-  volume: number = 0.1,
+  volume: number = 0.2,
   gainEnvelope?: { attack?: number; decay?: number; sustain?: number; release?: number }
 ): void {
   if (isSfxMuted()) return;
@@ -205,6 +247,10 @@ function playSfxTone(
   if (!c) return;
 
   try {
+    if (c.state === 'suspended') {
+      c.resume().catch(() => {});
+    }
+
     const osc = c.createOscillator();
     const gainNode = c.createGain();
 
@@ -230,12 +276,16 @@ function playSfxTone(
   } catch {}
 }
 
-function playSfxNoise(duration: number, startTime: number, volume: number = 0.04): void {
+function playSfxNoise(duration: number, startTime: number, volume: number = 0.08): void {
   if (isSfxMuted()) return;
   const c = getCtx();
   if (!c) return;
 
   try {
+    if (c.state === 'suspended') {
+      c.resume().catch(() => {});
+    }
+
     const bufferSize = Math.floor(c.sampleRate * duration);
     const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
     const data = buffer.getChannelData(0);
@@ -261,8 +311,8 @@ export function sfxGearEquip(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  playSfxTone(523, 0.06, t, 'square', 0.08);
-  playSfxTone(659, 0.06, t + 0.06, 'square', 0.08);
+  playSfxTone(523, 0.06, t, 'square', 0.18);
+  playSfxTone(659, 0.06, t + 0.06, 'square', 0.18);
 }
 
 export function sfxCorrect(): void {
@@ -271,18 +321,18 @@ export function sfxCorrect(): void {
   const t = c.currentTime;
   const notes = [261.63, 329.63, 392.0, 523.25];
   notes.forEach((freq, i) => {
-    playSfxTone(freq, 0.12, t + i * 0.1, 'square', 0.12);
+    playSfxTone(freq, 0.12, t + i * 0.1, 'square', 0.22);
   });
-  playSfxTone(1046.5, 0.2, t + 0.4, 'sine', 0.08);
+  playSfxTone(1046.5, 0.2, t + 0.4, 'sine', 0.16);
 }
 
 export function sfxWrong(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  playSfxTone(220, 0.08, t, 'sawtooth', 0.1);
-  playSfxTone(180, 0.08, t + 0.1, 'sawtooth', 0.1);
-  playSfxTone(150, 0.12, t + 0.2, 'sawtooth', 0.08);
+  playSfxTone(220, 0.08, t, 'sawtooth', 0.2);
+  playSfxTone(180, 0.08, t + 0.1, 'sawtooth', 0.2);
+  playSfxTone(150, 0.12, t + 0.2, 'sawtooth', 0.16);
 }
 
 export function sfxArchiveUnlock(): void {
@@ -291,9 +341,9 @@ export function sfxArchiveUnlock(): void {
   const t = c.currentTime;
   for (let i = 0; i < 8; i++) {
     const freq = 400 + i * 120;
-    playSfxTone(freq, 0.08, t + i * 0.06, 'sine', 0.06 + i * 0.005);
+    playSfxTone(freq, 0.08, t + i * 0.06, 'sine', 0.12 + i * 0.01);
   }
-  playSfxTone(1568, 0.25, t + 0.48, 'sine', 0.1);
+  playSfxTone(1568, 0.25, t + 0.48, 'sine', 0.18);
 }
 
 export function sfxBridgeExtend(): void {
@@ -302,7 +352,7 @@ export function sfxBridgeExtend(): void {
   const t = c.currentTime;
   const chimes = [880, 1108.73, 1318.51, 1760];
   chimes.forEach((freq, i) => {
-    playSfxTone(freq, 0.15, t + i * 0.08, 'sine', 0.08);
+    playSfxTone(freq, 0.15, t + i * 0.08, 'sine', 0.16);
   });
 }
 
@@ -316,7 +366,7 @@ export function sfxVictory(): void {
   ] as [number, number][];
   let cursor = 0;
   melody.forEach(([freq, dur]) => {
-    playSfxTone(freq, dur * 0.9, t + cursor, 'square', 0.12);
+    playSfxTone(freq, dur * 0.9, t + cursor, 'square', 0.22);
     cursor += dur;
   });
 }
@@ -325,34 +375,34 @@ export function sfxCertificateStamp(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  playSfxNoise(0.05, t, 0.25);
-  playSfxTone(80, 0.15, t, 'sine', 0.2);
-  playSfxTone(110, 0.1, t + 0.05, 'sine', 0.12);
+  playSfxNoise(0.05, t, 0.3);
+  playSfxTone(80, 0.15, t, 'sine', 0.25);
+  playSfxTone(110, 0.1, t + 0.05, 'sine', 0.18);
 }
 
 export function sfxFileLoaded(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  playSfxTone(392, 0.08, t, 'square', 0.1);
-  playSfxTone(523.25, 0.08, t + 0.09, 'square', 0.1);
-  playSfxTone(659.25, 0.15, t + 0.18, 'square', 0.12);
+  playSfxTone(392, 0.08, t, 'square', 0.18);
+  playSfxTone(523.25, 0.08, t + 0.09, 'square', 0.18);
+  playSfxTone(659.25, 0.15, t + 0.18, 'square', 0.22);
 }
 
 export function sfxOwlHoot(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  playSfxTone(330, 0.15, t, 'sine', 0.1, { attack: 0.05, decay: 0.1, sustain: 0.08, release: 0.08 });
-  playSfxTone(294, 0.2,  t + 0.2, 'sine', 0.08, { attack: 0.03, decay: 0.1, sustain: 0.06, release: 0.1 });
+  playSfxTone(330, 0.15, t, 'sine', 0.18, { attack: 0.05, decay: 0.1, sustain: 0.12, release: 0.08 });
+  playSfxTone(294, 0.2,  t + 0.2, 'sine', 0.15, { attack: 0.03, decay: 0.1, sustain: 0.1, release: 0.1 });
 }
 
 export function sfxPageTurn(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  playSfxNoise(0.12, t, 0.06);
-  playSfxTone(220, 0.06, t + 0.05, 'triangle', 0.05);
+  playSfxNoise(0.12, t, 0.1);
+  playSfxTone(220, 0.06, t + 0.05, 'triangle', 0.1);
 }
 
 let lastBlipTime = 0;
@@ -369,7 +419,7 @@ export function sfxTextBlip(): void {
   const t = c.currentTime;
   // Crisp, audible retro RPG dialogue chirp (triangle wave, warm punchy envelope)
   const pitch = 440 + (Math.random() * 60);
-  playSfxTone(pitch, 0.045, t, 'triangle', 0.12, { attack: 0.003, decay: 0.025, sustain: 0.06, release: 0.015 });
+  playSfxTone(pitch, 0.045, t, 'triangle', 0.18, { attack: 0.003, decay: 0.025, sustain: 0.08, release: 0.015 });
 }
 
 

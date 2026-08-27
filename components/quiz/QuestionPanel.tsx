@@ -137,21 +137,22 @@ export default function QuestionPanel() {
         <div className="flex flex-row items-end gap-3 sm:gap-4">
 
           {/* Speech Bubble Container: Sized for 2 lines from the start (no height jump) */}
+          {/* Speech Bubble Container */}
           <div
             onClick={handleFastForward}
-            className="flex-1 comic-bubble-wrapper flex flex-col justify-center cursor-pointer select-none transition-all hover:border-amber-400 min-h-[106px] sm:min-h-[128px] md:min-h-[138px]"
+            className="flex-1 comic-bubble-wrapper flex flex-col justify-center cursor-pointer select-none transition-all hover:border-amber-400 min-h-[90px] sm:min-h-[128px] md:min-h-[138px]"
             title={isTyping ? 'Klik untuk mempercepat teks' : ''}
           >
-            {/* 2-line reserved text area: guarantees fixed height from character 0 */}
-            <div className="w-full flex items-start px-1 sm:px-2 min-h-[50px] sm:min-h-[64px] md:min-h-[72px]">
-              <p className="font-dialogue text-xl sm:text-2xl md:text-3xl text-white tracking-wide leading-snug sm:leading-relaxed pl-1 sm:pl-2">
+            {/* Reserved text area with multi-line support for number series */}
+            <div className="w-full flex items-start px-1 sm:px-2 min-h-[48px] sm:min-h-[64px] md:min-h-[72px]">
+              <p className="font-dialogue text-lg sm:text-2xl md:text-3xl text-white tracking-wide leading-snug sm:leading-relaxed pl-1 sm:pl-2 whitespace-pre-line break-words">
                 {displayedText}
                 {isTyping && <span className="typewriter-cursor">▋</span>}
               </p>
             </div>
           </div>
 
-          {/* Teacher Sprite — height matched to 2-line comic box so head never exceeds bubble top */}
+          {/* Teacher Sprite — height matched to comic box so head never exceeds bubble top */}
           <div className="shrink-0 flex items-end justify-center self-end mb-0.5">
             <div className="relative w-16 h-24 sm:w-19 sm:h-28 md:w-21 md:h-30 flex items-end justify-center">
               <Image
@@ -192,21 +193,21 @@ export default function QuestionPanel() {
             return (
               <button
                 key={i}
-                className={`answer-option !text-lg sm:!text-2xl !py-2.5 !px-3.5 sm:!py-3 sm:!px-4 ${stateClass}`}
+                className={`answer-option !text-base sm:!text-2xl !py-2.5 sm:!py-3 !px-3 sm:!px-4 ${stateClass}`}
                 onClick={() => handleSelect(i)}
                 disabled={revealed}
               >
-                <span className="opt-key font-bold font-dialogue text-xl sm:text-2xl">
+                <span className="opt-key font-bold font-dialogue text-lg sm:text-2xl shrink-0">
                   {OPTION_KEYS[i]})
                 </span>
-                <span className="flex-1 font-dialogue leading-tight text-left text-lg sm:text-2xl">
+                <span className="flex-1 font-dialogue leading-tight text-left text-base sm:text-2xl break-words">
                   {opt}
                 </span>
                 {revealed && i === question.correctIndex && (
-                  <span className="text-emerald-400 font-bold text-lg sm:text-xl ml-auto">✓</span>
+                  <span className="text-emerald-400 font-bold text-base sm:text-xl ml-auto shrink-0">✓</span>
                 )}
                 {revealed && i === selected && !isCorrect && (
-                  <span className="text-red-400 font-bold text-lg sm:text-xl ml-auto">✗</span>
+                  <span className="text-red-400 font-bold text-base sm:text-xl ml-auto shrink-0">✗</span>
                 )}
               </button>
             );

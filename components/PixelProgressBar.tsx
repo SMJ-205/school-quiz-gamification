@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useGameStore } from '@/store/useGameStore';
-import { isBgmMuted, toggleBgmMute, isSfxMuted, toggleSfxMute } from '@/lib/audioEngine';
+import { isBgmMuted, toggleBgmMute, isSfxMuted, toggleSfxMute, unlockAudioEngine } from '@/lib/audioEngine';
 
 export default function PixelProgressBar() {
   const { questions, currentQuestionIndex, score, metadata, correctAnswersCount } = useGameStore();
@@ -15,11 +15,13 @@ export default function PixelProgressBar() {
   }, []);
 
   function handleToggleBgm() {
+    unlockAudioEngine();
     const isNowMuted = toggleBgmMute();
     setBgmMutedState(isNowMuted);
   }
 
   function handleToggleSfx() {
+    unlockAudioEngine();
     const isNowMuted = toggleSfxMute();
     setSfxMutedState(isNowMuted);
   }

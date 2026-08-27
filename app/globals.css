@@ -367,7 +367,7 @@ body {
   background: #0D0C15;
   border: 3.5px solid #FFC107;
   border-radius: 8px;
-  padding: 20px 28px;
+  padding: 12px 16px;
   box-shadow:
     -3px 0 0 #000, 3px 0 0 #000,
     0 -3px 0 #000, 0 3px 0 #000,
@@ -378,6 +378,12 @@ body {
 }
 
 @media (min-width: 640px) {
+  .comic-bubble-wrapper {
+    padding: 20px 28px;
+  }
+}
+
+@media (min-width: 768px) {
   .comic-bubble-wrapper {
     padding: 24px 36px;
   }

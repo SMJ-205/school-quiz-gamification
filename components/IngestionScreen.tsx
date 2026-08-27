@@ -5,7 +5,7 @@ import { useDropzone } from 'react-dropzone';
 import { useGameStore } from '@/store/useGameStore';
 import { parseQuizMarkdown, readMarkdownFile } from '@/lib/markdownParser';
 import { NOTEBOOKLM_PROMPT } from '@/lib/constants';
-import { sfxFileLoaded, sfxWrong, isAudioMuted, toggleAudioMute } from '@/lib/audioEngine';
+import { sfxFileLoaded, sfxWrong, isAudioMuted, toggleAudioMute, unlockAudioEngine } from '@/lib/audioEngine';
 
 export default function IngestionScreen() {
   const { setStudentName, loadQuizSession, studentName, showNotebookLMModal, setShowNotebookLMModal } = useGameStore();
@@ -20,11 +20,13 @@ export default function IngestionScreen() {
   }, []);
 
   function handleToggleSound() {
+    unlockAudioEngine();
     const isNowMuted = toggleAudioMute();
     setMuted(isNowMuted);
   }
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    unlockAudioEngine();
     const file = acceptedFiles[0];
     if (!file) return;
     if (!file.name.endsWith('.md')) {
@@ -67,6 +69,7 @@ export default function IngestionScreen() {
   }
 
   function handleLoadSample() {
+    unlockAudioEngine();
     const sampleMd = `---
 title: "Sejarah & Pengetahuan Umum"
 grade: 5

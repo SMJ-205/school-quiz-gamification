@@ -10,7 +10,7 @@ import React, { useState, useEffect } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import { GENDER_OPTIONS } from '@/lib/constants';
 import PixelSprite from './PixelSprite';
-import { sfxGearEquip, sfxPageTurn, isAudioMuted, toggleAudioMute } from '@/lib/audioEngine';
+import { sfxGearEquip, sfxPageTurn, isAudioMuted, toggleAudioMute, startQuizBGM, unlockAudioEngine } from '@/lib/audioEngine';
 
 export default function CharacterCustomizer() {
   const { character, setCharacterGender, setScreen, metadata, studentName, setStudentName } = useGameStore();
@@ -22,18 +22,22 @@ export default function CharacterCustomizer() {
   }, []);
 
   function handleToggleSound() {
+    unlockAudioEngine();
     const isNowMuted = toggleAudioMute();
     setMuted(isNowMuted);
   }
 
   function handleSelectGender(gender: 'boy' | 'girl') {
+    unlockAudioEngine();
     setCharacterGender(gender);
     sfxGearEquip();
     setAnimTrigger((prev) => prev + 1);
   }
 
   function handleStart() {
+    unlockAudioEngine();
     sfxPageTurn();
+    startQuizBGM();
     setScreen('quiz_library');
   }
 

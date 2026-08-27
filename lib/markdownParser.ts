@@ -40,46 +40,88 @@ export function parseQuizMarkdown(fileContent: string): ParsedQuizData {
   };
 
   // ─── Question blocks ───────────────────────────────────────────────────────
+  // Support ### Q1, ### Q 1, ## Q1, ### Soal 1, ## Soal 1, ### 1, ## 1., etc.
   const questionBlocks = content
-    .split(/###\s+Q\d+/g)
-    .filter((block) => block.trim().length > 0);
+    .split(/(?:^|\n)#{1,4}\s*(?:Q|Soal|Pertanyaan)?\s*\d+[:.]?/gi)
+    .map((b) => b.trim())
+    .filter((b) => b.length > 0);
 
   if (questionBlocks.length === 0) {
     throw new Error(
       'Format file Markdown tidak valid atau tidak memiliki soal. ' +
-      'Pastikan menggunakan template NotebookLM yang benar.'
+      'Pastikan menggunakan format ### Q1, ### Q2, dst.'
     );
   }
 
   const questions: QuizItem[] = questionBlocks.map((block, index) => {
-    const lines = block
-      .split('\n')
-      .map((l) => l.trim())
-      .filter(Boolean);
-
-    const questionText = lines[0] || `Pertanyaan ${index + 1}`;
+    const rawLines = block.split('\n');
+    const questionLines: string[] = [];
     const options: string[] = [];
     let correctIndex = 0;
     let hint = 'Baca kembali materi dengan seksama!';
+    let isParsingOptions = false;
 
-    lines.slice(1).forEach((line) => {
-      if (line.startsWith('- [x]') || line.startsWith('- [X]')) {
-        correctIndex = options.length;
-        options.push(line.replace(/- \[[xX]\]\s*/, '').trim());
-      } else if (line.startsWith('- [ ]')) {
-        options.push(line.replace(/- \[\s*\]\s*/, '').trim());
-      } else if (line.startsWith('*Hint:') || line.startsWith('_Hint:')) {
-        hint = line
-          .replace(/[*_]Hint:\s*[*_]?/, '')
-          .replace(/[*_]$/, '')
-          .trim();
+    for (let i = 0; i < rawLines.length; i++) {
+      const line = rawLines[i].trim();
+      if (!line) {
+        if (!isParsingOptions && questionLines.length > 0) {
+          questionLines.push('');
+        }
+        continue;
       }
-    });
 
-    // Validate we got at least 2 options
+      // Check for Checkbox Options:
+      // Supports: - [x], - [X], * [x], * [X], + [x], 1. [x], a. [x]
+      // Supports: - [ ], * [ ], + [ ], 1. [ ], a. [ ]
+      const isCorrectOption = /^(?:[-*+]|\d+\.|\w\.)\s*\[[xX]\]/i.test(line);
+      const isIncorrectOption = /^(?:[-*+]|\d+\.|\w\.)\s*\[\s*\]/i.test(line);
+
+      // Check for Hint:
+      // Supports: *Hint: ...*, _Hint: ..._, Hint: ..., *Petunjuk: ...*, Petunjuk: ...
+      const isHint = /^[*_]?(?:Hint|Petunjuk|Clue)\s*:\s*[*_]?/i.test(line);
+
+      if (isCorrectOption) {
+        isParsingOptions = true;
+        correctIndex = options.length;
+        const optText = line
+          .replace(/^(?:[-*+]|\d+\.|\w\.)\s*\[[xX]\]\s*/i, '')
+          .replace(/^[*_`]+|[*_`]+$/g, '')
+          .trim();
+        options.push(optText);
+      } else if (isIncorrectOption) {
+        isParsingOptions = true;
+        const optText = line
+          .replace(/^(?:[-*+]|\d+\.|\w\.)\s*\[\s*\]\s*/i, '')
+          .replace(/^[*_`]+|[*_`]+$/g, '')
+          .trim();
+        options.push(optText);
+      } else if (isHint) {
+        isParsingOptions = true;
+        hint = line
+          .replace(/^[*_]?(?:Hint|Petunjuk|Clue)\s*:\s*[*_]?/i, '')
+          .replace(/[*_]+$/, '')
+          .trim();
+      } else if (!isParsingOptions) {
+        // Multi-line question content (e.g. math number series, equations, problem context)
+        questionLines.push(line);
+      } else {
+        // Option continuation or extra notes
+        if (options.length > 0) {
+          options[options.length - 1] += ' ' + line;
+        }
+      }
+    }
+
+    // Clean question text
+    let questionText = questionLines.join('\n').trim();
+    if (!questionText) {
+      questionText = `Pertanyaan #${index + 1}`;
+    }
+
+    // Validate options count
     if (options.length < 2) {
       throw new Error(
-        `Soal #${index + 1} tidak memiliki cukup pilihan jawaban (minimal 2 diperlukan).`
+        `Soal #${index + 1} ("${questionText.slice(0, 35)}...") tidak memiliki cukup pilihan jawaban (minimal 2 diperlukan).`
       );
     }
 
