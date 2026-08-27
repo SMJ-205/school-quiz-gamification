@@ -1,18 +1,30 @@
 /**
  * audioEngine.ts
- * Web Audio API 8-Bit Retro RPG Synthesizer.
- * Features:
- * - Independent BGM Mute (bgmMuted) and SFX Mute (sfxMuted) controls.
- * - 32-Second Tranquil & Serene Magical Library Soundtrack ("Lagu Perpustakaan Syahdu").
- * - Interactive chiptune SFX for answers, stamps, and page turns.
+ * Audio engine with:
+ * - BGM: Real MP3 soundtrack "Piki - Momo Island (freetouse.com).mp3" with smooth looping & independent volume/mute.
+ * - SFX: 8-Bit Web Audio API chiptune sound effects with independent SFX mute.
  */
 
 let ctx: AudioContext | null = null;
 let bgmMuted = false;
 let sfxMuted = false;
 let isQuizBgmRunning = false;
-let quizTimer: NodeJS.Timeout | null = null;
-let quizBgmGain: GainNode | null = null;
+let bgmAudio: HTMLAudioElement | null = null;
+
+function getBgmAudio(): HTMLAudioElement | null {
+  if (typeof window === 'undefined') return null;
+  if (!bgmAudio) {
+    // Try clean path first, fallback to original filename
+    try {
+      bgmAudio = new Audio('/audio/bgm_momo_island.mp3');
+    } catch {
+      bgmAudio = new Audio('/Piki - Momo Island (freetouse.com).mp3');
+    }
+    bgmAudio.loop = true;
+    bgmAudio.volume = 0.35; // Comfortable, rich background music volume
+  }
+  return bgmAudio;
+}
 
 function getCtx(): AudioContext | null {
   if (typeof window === 'undefined') return null;
@@ -38,22 +50,19 @@ export function isBgmMuted(): boolean {
 
 export function setBgmMuted(val: boolean): boolean {
   bgmMuted = val;
+  const audio = getBgmAudio();
   if (bgmMuted) {
-    stopQuizBGM();
+    if (audio) audio.pause();
   } else {
-    startQuizBGM();
+    if (isQuizBgmRunning && audio) {
+      audio.play().catch(() => {});
+    }
   }
   return bgmMuted;
 }
 
 export function toggleBgmMute(): boolean {
-  bgmMuted = !bgmMuted;
-  if (bgmMuted) {
-    stopQuizBGM();
-  } else {
-    startQuizBGM();
-  }
-  return bgmMuted;
+  return setBgmMuted(!bgmMuted);
 }
 
 export function isSfxMuted(): boolean {
@@ -77,6 +86,43 @@ export function isAudioMuted(): boolean {
 
 export function toggleAudioMute(): boolean {
   return toggleBgmMute();
+}
+
+// ─── BGM Playback Control (Piki - Momo Island) ──────────────────────────────
+
+export function startQuizBGM(): void {
+  isQuizBgmRunning = true;
+  if (bgmMuted) return;
+
+  const audio = getBgmAudio();
+  if (audio) {
+    audio.play().catch(() => {
+      // Auto-play policy might require user gesture
+      const resumeOnGesture = () => {
+        if (isQuizBgmRunning && !bgmMuted) {
+          audio.play().catch(() => {});
+        }
+        window.removeEventListener('click', resumeOnGesture);
+        window.removeEventListener('keydown', resumeOnGesture);
+        window.removeEventListener('touchstart', resumeOnGesture);
+      };
+      window.addEventListener('click', resumeOnGesture, { once: true });
+      window.addEventListener('keydown', resumeOnGesture, { once: true });
+      window.addEventListener('touchstart', resumeOnGesture, { once: true });
+    });
+  }
+}
+
+export function stopQuizBGM(): void {
+  isQuizBgmRunning = false;
+  const audio = getBgmAudio();
+  if (audio) {
+    audio.pause();
+  }
+}
+
+export function stopAllBGM(): void {
+  stopQuizBGM();
 }
 
 // ─── SFX Tone Synthesizer (Respects sfxMuted) ───────────────────────────────
@@ -142,215 +188,6 @@ function playSfxNoise(duration: number, startTime: number, volume: number = 0.04
     gainNode.connect(c.destination);
     source.start(startTime);
   } catch {}
-}
-
-// ─── BGM Tone Synthesizer (Respects bgmMuted) ───────────────────────────────
-
-function playSereneTone(
-  targetGain: GainNode,
-  frequency: number,
-  duration: number,
-  startTime: number,
-  type: OscillatorType = 'sine',
-  volume: number = 0.035,
-  attack: number = 0.06,
-  decay: number = 0.15,
-  release: number = 0.12
-): void {
-  if (bgmMuted || !isQuizBgmRunning) return;
-  const c = getCtx();
-  if (!c) return;
-
-  try {
-    const osc = c.createOscillator();
-    const noteGain = c.createGain();
-
-    osc.type = type;
-    osc.frequency.setValueAtTime(frequency, startTime);
-
-    const sustain = volume * 0.75;
-    noteGain.gain.setValueAtTime(0, startTime);
-    noteGain.gain.linearRampToValueAtTime(volume, startTime + attack);
-    noteGain.gain.linearRampToValueAtTime(sustain, startTime + attack + decay);
-    noteGain.gain.setValueAtTime(sustain, Math.max(startTime + attack + decay, startTime + duration - release));
-    noteGain.gain.linearRampToValueAtTime(0, startTime + duration);
-
-    osc.connect(noteGain);
-    noteGain.connect(targetGain);
-    osc.start(startTime);
-    osc.stop(startTime + duration);
-  } catch {}
-}
-
-// ─── Note Frequencies (Hz) ──────────────────────────────────────────────────
-
-const N = {
-  C2: 65.41, D2: 73.42, E2: 82.41, F2: 87.31, G2: 98.00, A2: 110.00, B2: 123.47,
-  C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
-  C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
-  C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, B5: 987.77,
-  C6: 1046.50, D6: 1174.66, E6: 1318.51,
-};
-
-interface NoteEvent {
-  t: number;
-  freq: number;
-  dur: number;
-  type?: OscillatorType;
-  vol?: number;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// 32-SECOND SERENE MAGICAL LIBRARY SOUNDTRACK ("Lagu Perpustakaan Syahdu")
-// ═══════════════════════════════════════════════════════════════════════════════
-
-const SERENE_LEAD_MELODY: NoteEvent[] = [
-  // Phrase 1: Candlelight & Ancient Books (Cmaj7 -> Em7) [0.0s - 8.0s]
-  { t: 0.0, freq: N.E4, dur: 1.4, vol: 0.04, type: 'sine' },
-  { t: 1.6, freq: N.G4, dur: 1.2, vol: 0.04, type: 'sine' },
-  { t: 3.0, freq: N.B4, dur: 1.8, vol: 0.045, type: 'triangle' },
-  { t: 5.0, freq: N.C5, dur: 2.2, vol: 0.045, type: 'sine' },
-
-  // Phrase 2: The Whispering Shelves (Fmaj7 -> G6) [8.0s - 16.0s]
-  { t: 8.0, freq: N.A4, dur: 1.4, vol: 0.04, type: 'sine' },
-  { t: 9.6, freq: N.C5, dur: 1.2, vol: 0.04, type: 'sine' },
-  { t: 11.0, freq: N.E5, dur: 2.0, vol: 0.045, type: 'triangle' },
-  { t: 13.2, freq: N.D5, dur: 1.4, vol: 0.04, type: 'sine' },
-  { t: 14.8, freq: N.B4, dur: 1.0, vol: 0.035, type: 'sine' },
-
-  // Phrase 3: Peaceful Study & Starlight (Am7 -> Dm7) [16.0s - 24.0s]
-  { t: 16.0, freq: N.C5, dur: 1.6, vol: 0.04, type: 'sine' },
-  { t: 17.8, freq: N.E5, dur: 1.4, vol: 0.045, type: 'sine' },
-  { t: 19.4, freq: N.D5, dur: 1.8, vol: 0.045, type: 'triangle' },
-  { t: 21.4, freq: N.A4, dur: 1.2, vol: 0.04, type: 'sine' },
-  { t: 22.8, freq: N.F4, dur: 1.0, vol: 0.035, type: 'sine' },
-
-  // Phrase 4: The Serene Sanctuary (Fmaj7 -> Gsus4 -> C) [24.0s - 32.0s]
-  { t: 24.0, freq: N.G4, dur: 1.4, vol: 0.04, type: 'sine' },
-  { t: 25.6, freq: N.A4, dur: 1.2, vol: 0.04, type: 'sine' },
-  { t: 27.0, freq: N.B4, dur: 1.6, vol: 0.045, type: 'triangle' },
-  { t: 28.8, freq: N.C5, dur: 2.8, vol: 0.05, type: 'sine' },
-];
-
-const SERENE_ARPEGGIOS: NoteEvent[] = [
-  // 0s - 8s: Cmaj7 (0-4s) & Em7 (4-8s)
-  { t: 0.0, freq: N.C4, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 0.8, freq: N.E4, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 1.6, freq: N.G4, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 2.4, freq: N.B4, dur: 1.2, vol: 0.02, type: 'sine' },
-  { t: 4.0, freq: N.E4, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 4.8, freq: N.G4, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 5.6, freq: N.B4, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 6.4, freq: N.E5, dur: 1.2, vol: 0.02, type: 'sine' },
-
-  // 8s - 16s: Fmaj7 (8-12s) & G6 (12-16s)
-  { t: 8.0, freq: N.F3, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 8.8, freq: N.A3, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 9.6, freq: N.C4, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 10.4, freq: N.E4, dur: 1.2, vol: 0.02, type: 'sine' },
-  { t: 12.0, freq: N.G3, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 12.8, freq: N.B3, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 13.6, freq: N.D4, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 14.4, freq: N.G4, dur: 1.2, vol: 0.02, type: 'sine' },
-
-  // 16s - 24s: Am7 (16-20s) & Dm7 (20-24s)
-  { t: 16.0, freq: N.A3, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 16.8, freq: N.C4, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 17.6, freq: N.E4, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 18.4, freq: N.G4, dur: 1.2, vol: 0.02, type: 'sine' },
-  { t: 20.0, freq: N.D3, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 20.8, freq: N.F3, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 21.6, freq: N.A3, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 22.4, freq: N.C4, dur: 1.2, vol: 0.02, type: 'sine' },
-
-  // 24s - 32s: Fmaj7 (24-28s) & Cmaj7 (28-32s)
-  { t: 24.0, freq: N.F3, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 24.8, freq: N.A3, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 25.6, freq: N.C4, dur: 0.8, vol: 0.018, type: 'sine' },
-  { t: 26.4, freq: N.E4, dur: 1.2, vol: 0.02, type: 'sine' },
-  { t: 28.0, freq: N.C3, dur: 1.0, vol: 0.022, type: 'sine' },
-  { t: 29.2, freq: N.G3, dur: 1.0, vol: 0.022, type: 'sine' },
-  { t: 30.4, freq: N.C4, dur: 1.4, vol: 0.025, type: 'sine' },
-];
-
-const SERENE_BASS: NoteEvent[] = [
-  { t: 0.0, freq: N.C3, dur: 3.5, vol: 0.035, type: 'sine' },
-  { t: 4.0, freq: N.E3, dur: 3.5, vol: 0.035, type: 'sine' },
-  { t: 8.0, freq: N.F2, dur: 3.5, vol: 0.035, type: 'sine' },
-  { t: 12.0, freq: N.G2, dur: 3.5, vol: 0.035, type: 'sine' },
-  { t: 16.0, freq: N.A2, dur: 3.5, vol: 0.035, type: 'sine' },
-  { t: 20.0, freq: N.D3, dur: 3.5, vol: 0.035, type: 'sine' },
-  { t: 24.0, freq: N.F2, dur: 3.5, vol: 0.035, type: 'sine' },
-  { t: 28.0, freq: N.C3, dur: 3.8, vol: 0.04, type: 'sine' },
-];
-
-const SERENE_LOOP_DURATION = 32.0; // 32.0 seconds
-
-function scheduleSereneTrack(targetGain: GainNode, startT: number) {
-  if (bgmMuted || !isQuizBgmRunning) return;
-
-  SERENE_LEAD_MELODY.forEach((n) => {
-    playSereneTone(targetGain, n.freq, n.dur, startT + n.t, n.type || 'sine', n.vol || 0.04, 0.08, 0.2, 0.15);
-  });
-
-  SERENE_ARPEGGIOS.forEach((n) => {
-    playSereneTone(targetGain, n.freq, n.dur, startT + n.t, 'sine', n.vol || 0.02, 0.05, 0.15, 0.12);
-  });
-
-  SERENE_BASS.forEach((n) => {
-    playSereneTone(targetGain, n.freq, n.dur, startT + n.t, 'sine', n.vol || 0.035, 0.12, 0.3, 0.2);
-  });
-}
-
-export function startQuizBGM(): void {
-  if (bgmMuted || isQuizBgmRunning) return;
-  const c = getCtx();
-  if (!c) return;
-
-  isQuizBgmRunning = true;
-
-  if (quizBgmGain) {
-    try {
-      quizBgmGain.disconnect();
-    } catch {}
-  }
-  quizBgmGain = c.createGain();
-  quizBgmGain.gain.setValueAtTime(1, c.currentTime);
-  quizBgmGain.connect(c.destination);
-
-  const targetGain = quizBgmGain;
-  const now = c.currentTime;
-  scheduleSereneTrack(targetGain, now);
-
-  function loop() {
-    if (bgmMuted || !isQuizBgmRunning || !quizBgmGain) return;
-    const ctxNow = getCtx();
-    if (!ctxNow) return;
-    scheduleSereneTrack(quizBgmGain, ctxNow.currentTime);
-  }
-
-  if (quizTimer) clearInterval(quizTimer);
-  quizTimer = setInterval(loop, SERENE_LOOP_DURATION * 1000);
-}
-
-export function stopQuizBGM(): void {
-  isQuizBgmRunning = false;
-  if (quizTimer) {
-    clearInterval(quizTimer);
-    quizTimer = null;
-  }
-  if (quizBgmGain && ctx) {
-    try {
-      quizBgmGain.gain.cancelScheduledValues(ctx.currentTime);
-      quizBgmGain.gain.setValueAtTime(0, ctx.currentTime);
-      quizBgmGain.disconnect();
-    } catch {}
-    quizBgmGain = null;
-  }
-}
-
-export function stopAllBGM(): void {
-  stopQuizBGM();
 }
 
 // ─── Sound Events (SFX) ─────────────────────────────────────────────────────
