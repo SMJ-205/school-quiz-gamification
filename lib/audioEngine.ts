@@ -1,20 +1,13 @@
 /**
  * audioEngine.ts
  * Web Audio API 8-Bit Retro RPG Synthesizer.
- * Architecture:
- * - Dedicated Gain Nodes for Title BGM (titleBgmGain) and Quiz BGM (quizBgmGain).
- * - Instant hardware-level audio cutoff upon track switching (cancels future audio nodes).
- * - Zero overlap between BGM 1 (Main/Char select) and BGM 2 (Quiz session).
+ * BGM strictly dedicated to Quiz Session only (30-second rich retro RPG soundtrack).
  */
 
 let ctx: AudioContext | null = null;
 let muted = false;
-let currentBgmType: 'none' | 'title' | 'quiz' = 'none';
-
-let titleTimer: NodeJS.Timeout | null = null;
+let isQuizBgmRunning = false;
 let quizTimer: NodeJS.Timeout | null = null;
-
-let titleBgmGain: GainNode | null = null;
 let quizBgmGain: GainNode | null = null;
 
 function getCtx(): AudioContext | null {
@@ -42,7 +35,7 @@ export function isAudioMuted(): boolean {
 export function setAudioMuted(val: boolean): boolean {
   muted = val;
   if (muted) {
-    stopAllBGM();
+    stopQuizBGM();
   }
   return muted;
 }
@@ -50,15 +43,14 @@ export function setAudioMuted(val: boolean): boolean {
 export function toggleAudioMute(): boolean {
   muted = !muted;
   if (muted) {
-    stopAllBGM();
+    stopQuizBGM();
   } else {
-    if (currentBgmType === 'title') startTitleBGM();
-    else if (currentBgmType === 'quiz') startQuizBGM();
+    startQuizBGM();
   }
   return muted;
 }
 
-// ─── Tone Synthesizer for SFX ───────────────────────────────────────────────
+// ─── SFX Tone Synthesizer ───────────────────────────────────────────────────
 
 function playSfxTone(
   frequency: number,
@@ -123,7 +115,7 @@ function playSfxNoise(duration: number, startTime: number, volume: number = 0.04
   } catch {}
 }
 
-// ─── Tone Synthesizer for BGM (Routed through Master Track Gain) ────────────
+// ─── BGM Tone Synthesizer (Routed to Dedicated Master BGM Gain) ─────────────
 
 function playBgmTone(
   targetGain: GainNode,
@@ -134,7 +126,7 @@ function playBgmTone(
   volume: number = 0.04,
   gainEnvelope?: { attack?: number; decay?: number; sustain?: number; release?: number }
 ): void {
-  if (muted) return;
+  if (muted || !isQuizBgmRunning) return;
   const c = getCtx();
   if (!c) return;
 
@@ -158,7 +150,7 @@ function playBgmTone(
     noteGain.gain.linearRampToValueAtTime(0, startTime + duration);
 
     osc.connect(noteGain);
-    noteGain.connect(targetGain); // Connected to track master gain, NOT c.destination
+    noteGain.connect(targetGain);
     osc.start(startTime);
     osc.stop(startTime + duration);
   } catch {}
@@ -167,11 +159,10 @@ function playBgmTone(
 // ─── Note Frequencies (Hz) ──────────────────────────────────────────────────
 
 const N = {
-  E2: 82.41, F2: 87.31, G2: 98.00, A2: 110.00, B2: 123.47,
   C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
   C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
   C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, B5: 987.77,
-  C6: 1046.50, D6: 1174.66, E6: 1318.51,
+  C6: 1046.50,
 };
 
 interface NoteEvent {
@@ -182,141 +173,7 @@ interface NoteEvent {
   vol?: number;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// TRACK 1: TITLE & CHARACTER SELECT BGM (24.0s Looping Mystical Academy Overture)
-// ═══════════════════════════════════════════════════════════════════════════════
-
-const TITLE_LEAD_MELODY: NoteEvent[] = [
-  // Phrase 1: The Gates of Academy (Fmaj7 -> G) [0s - 6s]
-  { t: 0.0, freq: N.A4, dur: 1.1 },
-  { t: 1.2, freq: N.C5, dur: 1.1 },
-  { t: 2.4, freq: N.E5, dur: 1.8 },
-  { t: 4.4, freq: N.D5, dur: 1.2 },
-
-  // Phrase 2: The Hall of Scholars (Em -> Am) [6s - 12s]
-  { t: 6.0, freq: N.G4, dur: 1.0 },
-  { t: 7.1, freq: N.B4, dur: 1.0 },
-  { t: 8.2, freq: N.D5, dur: 1.6 },
-  { t: 10.0, freq: N.C5, dur: 1.4 },
-
-  // Phrase 3: The Awakening of Knowledge (Dm7 -> G7) [12s - 18s]
-  { t: 12.0, freq: N.F4, dur: 0.8 },
-  { t: 12.9, freq: N.A4, dur: 0.8 },
-  { t: 13.8, freq: N.D5, dur: 1.4 },
-  { t: 15.4, freq: N.C5, dur: 0.8 },
-  { t: 16.3, freq: N.B4, dur: 1.2 },
-
-  // Phrase 4: The Adventurer's Call (F -> G -> C) [18s - 24s]
-  { t: 18.0, freq: N.A4, dur: 0.9 },
-  { t: 19.0, freq: N.B4, dur: 0.9 },
-  { t: 20.0, freq: N.C5, dur: 1.5 },
-  { t: 21.8, freq: N.G4, dur: 1.8 },
-];
-
-const TITLE_ARPEGGIOS: NoteEvent[] = [
-  // Measure 1 (0-6s)
-  { t: 0.0, freq: N.F3, dur: 0.4, vol: 0.02 }, { t: 0.5, freq: N.A3, dur: 0.4, vol: 0.02 }, { t: 1.0, freq: N.C4, dur: 0.4, vol: 0.02 }, { t: 1.5, freq: N.E4, dur: 0.4, vol: 0.02 },
-  { t: 2.5, freq: N.G3, dur: 0.4, vol: 0.02 }, { t: 3.0, freq: N.B3, dur: 0.4, vol: 0.02 }, { t: 3.5, freq: N.D4, dur: 0.4, vol: 0.02 }, { t: 4.0, freq: N.G4, dur: 0.4, vol: 0.02 },
-  // Measure 2 (6-12s)
-  { t: 6.0, freq: N.E3, dur: 0.4, vol: 0.02 }, { t: 6.5, freq: N.G3, dur: 0.4, vol: 0.02 }, { t: 7.0, freq: N.B3, dur: 0.4, vol: 0.02 }, { t: 7.5, freq: N.E4, dur: 0.4, vol: 0.02 },
-  { t: 8.5, freq: N.A3, dur: 0.4, vol: 0.02 }, { t: 9.0, freq: N.C4, dur: 0.4, vol: 0.02 }, { t: 9.5, freq: N.E4, dur: 0.4, vol: 0.02 }, { t: 10.0, freq: N.A4, dur: 0.4, vol: 0.02 },
-  // Measure 3 (12-18s)
-  { t: 12.0, freq: N.D3, dur: 0.4, vol: 0.02 }, { t: 12.5, freq: N.F3, dur: 0.4, vol: 0.02 }, { t: 13.0, freq: N.A3, dur: 0.4, vol: 0.02 }, { t: 13.5, freq: N.C4, dur: 0.4, vol: 0.02 },
-  { t: 14.5, freq: N.G3, dur: 0.4, vol: 0.02 }, { t: 15.0, freq: N.B3, dur: 0.4, vol: 0.02 }, { t: 15.5, freq: N.D4, dur: 0.4, vol: 0.02 }, { t: 16.0, freq: N.F4, dur: 0.4, vol: 0.02 },
-  // Measure 4 (18-24s)
-  { t: 18.0, freq: N.F3, dur: 0.4, vol: 0.02 }, { t: 18.5, freq: N.A3, dur: 0.4, vol: 0.02 }, { t: 19.0, freq: N.C4, dur: 0.4, vol: 0.02 }, { t: 19.5, freq: N.E4, dur: 0.4, vol: 0.02 },
-  { t: 20.5, freq: N.G3, dur: 0.4, vol: 0.02 }, { t: 21.0, freq: N.B3, dur: 0.4, vol: 0.02 }, { t: 21.5, freq: N.D4, dur: 0.4, vol: 0.02 }, { t: 22.0, freq: N.C4, dur: 0.8, vol: 0.025 },
-];
-
-const TITLE_BASS: NoteEvent[] = [
-  { t: 0.0, freq: N.F2, dur: 2.2 }, { t: 2.5, freq: N.G2, dur: 2.2 },
-  { t: 6.0, freq: N.E2, dur: 2.2 }, { t: 8.5, freq: N.A2, dur: 2.2 },
-  { t: 12.0, freq: N.D3, dur: 2.2 }, { t: 14.5, freq: N.G2, dur: 2.2 },
-  { t: 18.0, freq: N.F2, dur: 1.8 }, { t: 20.0, freq: N.G2, dur: 1.8 }, { t: 22.0, freq: N.C3, dur: 1.8 },
-];
-
-const TITLE_LOOP_DURATION = 24.0; // 24 seconds
-
-function scheduleTitleTrack(targetGain: GainNode, startT: number) {
-  if (muted) return;
-
-  TITLE_LEAD_MELODY.forEach((n) => {
-    playBgmTone(targetGain, n.freq, n.dur, startT + n.t, 'triangle', 0.045, {
-      attack: 0.06,
-      decay: 0.12,
-      sustain: 0.035,
-      release: 0.1,
-    });
-  });
-
-  TITLE_ARPEGGIOS.forEach((n) => {
-    playBgmTone(targetGain, n.freq, n.dur, startT + n.t, 'sine', n.vol ?? 0.02, {
-      attack: 0.03,
-      decay: 0.08,
-      sustain: 0.015,
-      release: 0.06,
-    });
-  });
-
-  TITLE_BASS.forEach((n) => {
-    playBgmTone(targetGain, n.freq, n.dur, startT + n.t, 'sine', 0.045, {
-      attack: 0.08,
-      decay: 0.2,
-      sustain: 0.03,
-      release: 0.15,
-    });
-  });
-}
-
-export function startTitleBGM(): void {
-  if (currentBgmType === 'title') return;
-  stopAllBGM(); // Instantly kill quiz BGM hardware nodes
-  currentBgmType = 'title';
-  if (muted) return;
-
-  const c = getCtx();
-  if (!c) return;
-
-  // Create brand new isolated Title Track Gain Node
-  titleBgmGain = c.createGain();
-  titleBgmGain.gain.setValueAtTime(1, c.currentTime);
-  titleBgmGain.connect(c.destination);
-
-  const targetGain = titleBgmGain;
-  const now = c.currentTime;
-  scheduleTitleTrack(targetGain, now);
-
-  function loop() {
-    if (muted || currentBgmType !== 'title' || !titleBgmGain) return;
-    const ctxNow = getCtx();
-    if (!ctxNow) return;
-    scheduleTitleTrack(titleBgmGain, ctxNow.currentTime);
-  }
-
-  if (titleTimer) clearInterval(titleTimer);
-  titleTimer = setInterval(loop, TITLE_LOOP_DURATION * 1000);
-}
-
-export function stopTitleBGM(): void {
-  if (titleTimer) {
-    clearInterval(titleTimer);
-    titleTimer = null;
-  }
-  // Hard disconnect from audio graph to immediately kill all scheduled future notes
-  if (titleBgmGain && ctx) {
-    try {
-      titleBgmGain.gain.cancelScheduledValues(ctx.currentTime);
-      titleBgmGain.gain.setValueAtTime(0, ctx.currentTime);
-      titleBgmGain.disconnect();
-    } catch {}
-    titleBgmGain = null;
-  }
-  if (currentBgmType === 'title') currentBgmType = 'none';
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// TRACK 2: QUIZ LIBRARY BGM (30.0s Looping Upbeat Scholastic Exploration)
-// ═══════════════════════════════════════════════════════════════════════════════
+// ─── 30-Second Rich Retro RPG Adventure Soundtrack ──────────────────────────
 
 const QUIZ_LEAD_MELODY: NoteEvent[] = [
   // Measure 1 & 2 (Cmaj7 -> Am7) [0s - 7.5s]
@@ -394,7 +251,7 @@ const QUIZ_BASS_LINE: NoteEvent[] = [
 const QUIZ_LOOP_DURATION = 30.0; // 30 seconds
 
 function scheduleQuizTrack(targetGain: GainNode, startT: number) {
-  if (muted) return;
+  if (muted || !isQuizBgmRunning) return;
 
   QUIZ_LEAD_MELODY.forEach((n) => {
     playBgmTone(targetGain, n.freq, n.dur, startT + n.t, 'triangle', 0.045, {
@@ -425,15 +282,18 @@ function scheduleQuizTrack(targetGain: GainNode, startT: number) {
 }
 
 export function startQuizBGM(): void {
-  if (currentBgmType === 'quiz') return;
-  stopAllBGM(); // Instantly kill title BGM hardware nodes
-  currentBgmType = 'quiz';
-  if (muted) return;
-
+  if (muted || isQuizBgmRunning) return;
   const c = getCtx();
   if (!c) return;
 
-  // Create brand new isolated Quiz Track Gain Node
+  isQuizBgmRunning = true;
+
+  // Create isolated Gain Node for Quiz BGM
+  if (quizBgmGain) {
+    try {
+      quizBgmGain.disconnect();
+    } catch {}
+  }
   quizBgmGain = c.createGain();
   quizBgmGain.gain.setValueAtTime(1, c.currentTime);
   quizBgmGain.connect(c.destination);
@@ -443,7 +303,7 @@ export function startQuizBGM(): void {
   scheduleQuizTrack(targetGain, now);
 
   function loop() {
-    if (muted || currentBgmType !== 'quiz' || !quizBgmGain) return;
+    if (muted || !isQuizBgmRunning || !quizBgmGain) return;
     const ctxNow = getCtx();
     if (!ctxNow) return;
     scheduleQuizTrack(quizBgmGain, ctxNow.currentTime);
@@ -454,11 +314,11 @@ export function startQuizBGM(): void {
 }
 
 export function stopQuizBGM(): void {
+  isQuizBgmRunning = false;
   if (quizTimer) {
     clearInterval(quizTimer);
     quizTimer = null;
   }
-  // Hard disconnect from audio graph to immediately kill all scheduled future notes
   if (quizBgmGain && ctx) {
     try {
       quizBgmGain.gain.cancelScheduledValues(ctx.currentTime);
@@ -467,13 +327,10 @@ export function stopQuizBGM(): void {
     } catch {}
     quizBgmGain = null;
   }
-  if (currentBgmType === 'quiz') currentBgmType = 'none';
 }
 
 export function stopAllBGM(): void {
-  stopTitleBGM();
   stopQuizBGM();
-  currentBgmType = 'none';
 }
 
 // ─── Sound Events (SFX) ─────────────────────────────────────────────────────

@@ -7,19 +7,17 @@ import CharacterCustomizer from '@/components/CharacterCustomizer';
 import EnchantedLibrary from '@/components/quiz/EnchantedLibrary';
 import AntigravityCanvas from '@/components/AntigravityCanvas';
 import CertificateCanvas from '@/components/CertificateCanvas';
-import { startTitleBGM, startQuizBGM, stopAllBGM } from '@/lib/audioEngine';
+import { startQuizBGM, stopQuizBGM } from '@/lib/audioEngine';
 
 export default function Home() {
   const currentScreen = useGameStore((s) => s.currentScreen);
 
-  // Centralized BGM manager with zero audio overlapping / crash
+  // BGM is strictly dedicated to Quiz Library session only
   useEffect(() => {
-    if (currentScreen === 'ingestion' || currentScreen === 'character') {
-      startTitleBGM();
-    } else if (currentScreen === 'quiz_library') {
+    if (currentScreen === 'quiz_library') {
       startQuizBGM();
-    } else if (currentScreen === 'antigravity' || currentScreen === 'certificate') {
-      stopAllBGM();
+    } else {
+      stopQuizBGM();
     }
   }, [currentScreen]);
 

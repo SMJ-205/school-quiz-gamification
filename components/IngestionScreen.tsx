@@ -5,7 +5,7 @@ import { useDropzone } from 'react-dropzone';
 import { useGameStore } from '@/store/useGameStore';
 import { parseQuizMarkdown, readMarkdownFile } from '@/lib/markdownParser';
 import { NOTEBOOKLM_PROMPT } from '@/lib/constants';
-import { sfxFileLoaded, sfxWrong, startTitleBGM, isAudioMuted, toggleAudioMute } from '@/lib/audioEngine';
+import { sfxFileLoaded, sfxWrong, isAudioMuted, toggleAudioMute } from '@/lib/audioEngine';
 
 export default function IngestionScreen() {
   const { setStudentName, loadQuizSession, studentName, showNotebookLMModal, setShowNotebookLMModal } = useGameStore();
@@ -17,7 +17,6 @@ export default function IngestionScreen() {
 
   useEffect(() => {
     setMuted(isAudioMuted());
-    startTitleBGM();
   }, []);
 
   function handleToggleSound() {

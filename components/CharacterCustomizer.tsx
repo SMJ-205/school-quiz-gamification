@@ -3,14 +3,14 @@
 /**
  * CharacterCustomizer.tsx
  * Clean character selection screen (Murid Laki-laki / Murid Perempuan)
- * Plays the mystical Title/Character Select BGM. Fully mobile responsive.
+ * Focused adventurer selection.
  */
 
 import React, { useState, useEffect } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import { GENDER_OPTIONS } from '@/lib/constants';
 import PixelSprite from './PixelSprite';
-import { sfxGearEquip, sfxPageTurn, startTitleBGM, isAudioMuted, toggleAudioMute } from '@/lib/audioEngine';
+import { sfxGearEquip, sfxPageTurn, isAudioMuted, toggleAudioMute } from '@/lib/audioEngine';
 
 export default function CharacterCustomizer() {
   const { character, setCharacterGender, setScreen, metadata, studentName, setStudentName } = useGameStore();
@@ -19,7 +19,6 @@ export default function CharacterCustomizer() {
 
   useEffect(() => {
     setMuted(isAudioMuted());
-    startTitleBGM();
   }, []);
 
   function handleToggleSound() {
