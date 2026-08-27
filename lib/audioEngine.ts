@@ -1,7 +1,14 @@
 /**
  * audioEngine.ts
  * Web Audio API 8-Bit Retro RPG Synthesizer.
- * BGM strictly dedicated to Quiz Session only (30-second rich retro RPG soundtrack).
+ * Features:
+ * - 32-Second Tranquil & Serene Magical Library Soundtrack ("Lagu Perpustakaan Syahdu").
+ *   - Soft celesta/music box lead melody (pure sine & warm triangle).
+ *   - Dreamy candlelight arpeggios (Cmaj7 -> Em7 -> Fmaj7 -> G6 -> Am7 -> Dm7 -> Fmaj7 -> Cmaj7).
+ *   - Warm, deep, soothing bassline.
+ *   - 32-second loop duration.
+ * - Global mute/unmute toggle.
+ * - Interactive chiptune SFX for answers, stamps, and page turns.
  */
 
 let ctx: AudioContext | null = null;
@@ -115,16 +122,18 @@ function playSfxNoise(duration: number, startTime: number, volume: number = 0.04
   } catch {}
 }
 
-// ─── BGM Tone Synthesizer (Routed to Dedicated Master BGM Gain) ─────────────
+// ─── BGM Tone Synthesizer (Serene Sine / Triangle Envelopes) ────────────────
 
-function playBgmTone(
+function playSereneTone(
   targetGain: GainNode,
   frequency: number,
   duration: number,
   startTime: number,
-  type: OscillatorType = 'triangle',
-  volume: number = 0.04,
-  gainEnvelope?: { attack?: number; decay?: number; sustain?: number; release?: number }
+  type: OscillatorType = 'sine',
+  volume: number = 0.035,
+  attack: number = 0.06,
+  decay: number = 0.15,
+  release: number = 0.12
 ): void {
   if (muted || !isQuizBgmRunning) return;
   const c = getCtx();
@@ -137,12 +146,7 @@ function playBgmTone(
     osc.type = type;
     osc.frequency.setValueAtTime(frequency, startTime);
 
-    const env = gainEnvelope ?? {};
-    const attack = env.attack ?? 0.04;
-    const decay = env.decay ?? 0.1;
-    const sustain = env.sustain ?? volume * 0.7;
-    const release = env.release ?? 0.08;
-
+    const sustain = volume * 0.75;
     noteGain.gain.setValueAtTime(0, startTime);
     noteGain.gain.linearRampToValueAtTime(volume, startTime + attack);
     noteGain.gain.linearRampToValueAtTime(sustain, startTime + attack + decay);
@@ -159,10 +163,11 @@ function playBgmTone(
 // ─── Note Frequencies (Hz) ──────────────────────────────────────────────────
 
 const N = {
+  C2: 65.41, D2: 73.42, E2: 82.41, F2: 87.31, G2: 98.00, A2: 110.00, B2: 123.47,
   C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
   C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
   C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, B5: 987.77,
-  C6: 1046.50,
+  C6: 1046.50, D6: 1174.66, E6: 1318.51,
 };
 
 interface NoteEvent {
@@ -171,113 +176,114 @@ interface NoteEvent {
   dur: number;
   type?: OscillatorType;
   vol?: number;
+  att?: number;
 }
 
-// ─── 30-Second Rich Retro RPG Adventure Soundtrack ──────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// 32-SECOND SERENE MAGICAL LIBRARY SOUNDTRACK ("Lagu Perpustakaan Syahdu")
+// ═══════════════════════════════════════════════════════════════════════════════
 
-const QUIZ_LEAD_MELODY: NoteEvent[] = [
-  // Measure 1 & 2 (Cmaj7 -> Am7) [0s - 7.5s]
-  { t: 0.0, freq: N.E4, dur: 0.7 },
-  { t: 0.8, freq: N.G4, dur: 0.7 },
-  { t: 1.6, freq: N.C5, dur: 1.4 },
-  { t: 3.2, freq: N.B4, dur: 0.6 },
-  { t: 3.8, freq: N.A4, dur: 0.8 },
-  { t: 4.8, freq: N.G4, dur: 1.2 },
-  { t: 6.2, freq: N.E4, dur: 1.0 },
+// 1. Soothing Celesta & Flute Lead Melody (Warm Sine / Triangle)
+const SERENE_LEAD_MELODY: NoteEvent[] = [
+  // Phrase 1: Candlelight & Ancient Books (Cmaj7 -> Em7) [0.0s - 8.0s]
+  { t: 0.0, freq: N.E4, dur: 1.4, vol: 0.04, type: 'sine' },
+  { t: 1.6, freq: N.G4, dur: 1.2, vol: 0.04, type: 'sine' },
+  { t: 3.0, freq: N.B4, dur: 1.8, vol: 0.045, type: 'triangle' },
+  { t: 5.0, freq: N.C5, dur: 2.2, vol: 0.045, type: 'sine' },
 
-  // Measure 3 & 4 (Dm7 -> G7) [7.5s - 15.0s]
-  { t: 7.5, freq: N.F4, dur: 0.6 },
-  { t: 8.2, freq: N.A4, dur: 0.6 },
-  { t: 9.0, freq: N.D5, dur: 1.3 },
-  { t: 10.5, freq: N.C5, dur: 0.6 },
-  { t: 11.2, freq: N.B4, dur: 0.8 },
-  { t: 12.2, freq: N.G4, dur: 1.4 },
-  { t: 13.8, freq: N.A4, dur: 0.9 },
+  // Phrase 2: The Whispering Shelves (Fmaj7 -> G6) [8.0s - 16.0s]
+  { t: 8.0, freq: N.A4, dur: 1.4, vol: 0.04, type: 'sine' },
+  { t: 9.6, freq: N.C5, dur: 1.2, vol: 0.04, type: 'sine' },
+  { t: 11.0, freq: N.E5, dur: 2.0, vol: 0.045, type: 'triangle' },
+  { t: 13.2, freq: N.D5, dur: 1.4, vol: 0.04, type: 'sine' },
+  { t: 14.8, freq: N.B4, dur: 1.0, vol: 0.035, type: 'sine' },
 
-  // Measure 5 & 6 (Em7 -> Am7) [15.0s - 22.5s]
-  { t: 15.0, freq: N.G4, dur: 0.7 },
-  { t: 15.8, freq: N.B4, dur: 0.7 },
-  { t: 16.6, freq: N.E5, dur: 1.4 },
-  { t: 18.2, freq: N.D5, dur: 0.6 },
-  { t: 18.9, freq: N.C5, dur: 0.8 },
-  { t: 19.8, freq: N.A4, dur: 1.3 },
-  { t: 21.3, freq: N.C5, dur: 0.9 },
+  // Phrase 3: Peaceful Study & Starlight (Am7 -> Dm7) [16.0s - 24.0s]
+  { t: 16.0, freq: N.C5, dur: 1.6, vol: 0.04, type: 'sine' },
+  { t: 17.8, freq: N.E5, dur: 1.4, vol: 0.045, type: 'sine' },
+  { t: 19.4, freq: N.D5, dur: 1.8, vol: 0.045, type: 'triangle' },
+  { t: 21.4, freq: N.A4, dur: 1.2, vol: 0.04, type: 'sine' },
+  { t: 22.8, freq: N.F4, dur: 1.0, vol: 0.035, type: 'sine' },
 
-  // Measure 7 & 8 (Fmaj7 -> Gsus4 -> C) [22.5s - 30.0s]
-  { t: 22.5, freq: N.D5, dur: 0.7 },
-  { t: 23.3, freq: N.C5, dur: 0.7 },
-  { t: 24.1, freq: N.B4, dur: 0.9 },
-  { t: 25.2, freq: N.G4, dur: 0.8 },
-  { t: 26.2, freq: N.C5, dur: 2.2 },
-  { t: 28.6, freq: N.E5, dur: 0.8 },
+  // Phrase 4: The Serene Sanctuary (Fmaj7 -> Gsus4 -> C) [24.0s - 32.0s]
+  { t: 24.0, freq: N.G4, dur: 1.4, vol: 0.04, type: 'sine' },
+  { t: 25.6, freq: N.A4, dur: 1.2, vol: 0.04, type: 'sine' },
+  { t: 27.0, freq: N.B4, dur: 1.6, vol: 0.045, type: 'triangle' },
+  { t: 28.8, freq: N.C5, dur: 2.8, vol: 0.05, type: 'sine' },
 ];
 
-const QUIZ_HARMONY_CHORDS: NoteEvent[] = [
-  // 0s - 7.5s: Cmaj7 & Am7
-  { t: 0.0, freq: N.C4, dur: 0.35, vol: 0.02 }, { t: 0.4, freq: N.E4, dur: 0.35, vol: 0.02 }, { t: 0.8, freq: N.G4, dur: 0.35, vol: 0.02 }, { t: 1.2, freq: N.B4, dur: 0.35, vol: 0.02 },
-  { t: 1.8, freq: N.C4, dur: 0.35, vol: 0.02 }, { t: 2.2, freq: N.E4, dur: 0.35, vol: 0.02 }, { t: 2.6, freq: N.G4, dur: 0.35, vol: 0.02 }, { t: 3.0, freq: N.C5, dur: 0.35, vol: 0.02 },
-  { t: 3.8, freq: N.A3, dur: 0.35, vol: 0.02 }, { t: 4.2, freq: N.C4, dur: 0.35, vol: 0.02 }, { t: 4.6, freq: N.E4, dur: 0.35, vol: 0.02 }, { t: 5.0, freq: N.G4, dur: 0.35, vol: 0.02 },
-  { t: 5.6, freq: N.A3, dur: 0.35, vol: 0.02 }, { t: 6.0, freq: N.C4, dur: 0.35, vol: 0.02 }, { t: 6.4, freq: N.E4, dur: 0.35, vol: 0.02 }, { t: 6.8, freq: N.A4, dur: 0.35, vol: 0.02 },
+// 2. Soft Music Box & Dreamy Arpeggio Chords
+const SERENE_ARPEGGIOS: NoteEvent[] = [
+  // 0s - 8s: Cmaj7 (0-4s) & Em7 (4-8s)
+  { t: 0.0, freq: N.C4, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 0.8, freq: N.E4, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 1.6, freq: N.G4, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 2.4, freq: N.B4, dur: 1.2, vol: 0.02, type: 'sine' },
+  { t: 4.0, freq: N.E4, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 4.8, freq: N.G4, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 5.6, freq: N.B4, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 6.4, freq: N.E5, dur: 1.2, vol: 0.02, type: 'sine' },
 
-  // 7.5s - 15.0s: Dm7 & G7
-  { t: 7.5, freq: N.D4, dur: 0.35, vol: 0.02 }, { t: 7.9, freq: N.F4, dur: 0.35, vol: 0.02 }, { t: 8.3, freq: N.A4, dur: 0.35, vol: 0.02 }, { t: 8.7, freq: N.C5, dur: 0.35, vol: 0.02 },
-  { t: 9.3, freq: N.D4, dur: 0.35, vol: 0.02 }, { t: 9.7, freq: N.F4, dur: 0.35, vol: 0.02 }, { t: 10.1, freq: N.A4, dur: 0.35, vol: 0.02 }, { t: 10.5, freq: N.D5, dur: 0.35, vol: 0.02 },
-  { t: 11.3, freq: N.G3, dur: 0.35, vol: 0.02 }, { t: 11.7, freq: N.B3, dur: 0.35, vol: 0.02 }, { t: 12.1, freq: N.D4, dur: 0.35, vol: 0.02 }, { t: 12.5, freq: N.F4, dur: 0.35, vol: 0.02 },
-  { t: 13.1, freq: N.G3, dur: 0.35, vol: 0.02 }, { t: 13.5, freq: N.B3, dur: 0.35, vol: 0.02 }, { t: 13.9, freq: N.D4, dur: 0.35, vol: 0.02 }, { t: 14.3, freq: N.G4, dur: 0.35, vol: 0.02 },
+  // 8s - 16s: Fmaj7 (8-12s) & G6 (12-16s)
+  { t: 8.0, freq: N.F3, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 8.8, freq: N.A3, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 9.6, freq: N.C4, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 10.4, freq: N.E4, dur: 1.2, vol: 0.02, type: 'sine' },
+  { t: 12.0, freq: N.G3, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 12.8, freq: N.B3, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 13.6, freq: N.D4, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 14.4, freq: N.G4, dur: 1.2, vol: 0.02, type: 'sine' },
 
-  // 15.0s - 22.5s: Em7 & Am7
-  { t: 15.0, freq: N.E4, dur: 0.35, vol: 0.02 }, { t: 15.4, freq: N.G4, dur: 0.35, vol: 0.02 }, { t: 15.8, freq: N.B4, dur: 0.35, vol: 0.02 }, { t: 16.2, freq: N.D5, dur: 0.35, vol: 0.02 },
-  { t: 16.8, freq: N.E4, dur: 0.35, vol: 0.02 }, { t: 17.2, freq: N.G4, dur: 0.35, vol: 0.02 }, { t: 17.6, freq: N.B4, dur: 0.35, vol: 0.02 }, { t: 18.0, freq: N.E5, dur: 0.35, vol: 0.02 },
-  { t: 18.8, freq: N.A3, dur: 0.35, vol: 0.02 }, { t: 19.2, freq: N.C4, dur: 0.35, vol: 0.02 }, { t: 19.6, freq: N.E4, dur: 0.35, vol: 0.02 }, { t: 20.0, freq: N.G4, dur: 0.35, vol: 0.02 },
-  { t: 20.6, freq: N.A3, dur: 0.35, vol: 0.02 }, { t: 21.0, freq: N.C4, dur: 0.35, vol: 0.02 }, { t: 21.4, freq: N.E4, dur: 0.35, vol: 0.02 }, { t: 21.8, freq: N.A4, dur: 0.35, vol: 0.02 },
+  // 16s - 24s: Am7 (16-20s) & Dm7 (20-24s)
+  { t: 16.0, freq: N.A3, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 16.8, freq: N.C4, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 17.6, freq: N.E4, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 18.4, freq: N.G4, dur: 1.2, vol: 0.02, type: 'sine' },
+  { t: 20.0, freq: N.D3, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 20.8, freq: N.F3, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 21.6, freq: N.A3, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 22.4, freq: N.C4, dur: 1.2, vol: 0.02, type: 'sine' },
 
-  // 22.5s - 30.0s: Fmaj7 & Gsus4 -> C
-  { t: 22.5, freq: N.F3, dur: 0.35, vol: 0.02 }, { t: 22.9, freq: N.A3, dur: 0.35, vol: 0.02 }, { t: 23.3, freq: N.C4, dur: 0.35, vol: 0.02 }, { t: 23.7, freq: N.E4, dur: 0.35, vol: 0.02 },
-  { t: 24.5, freq: N.G3, dur: 0.35, vol: 0.02 }, { t: 24.9, freq: N.C4, dur: 0.35, vol: 0.02 }, { t: 25.3, freq: N.D4, dur: 0.35, vol: 0.02 }, { t: 25.7, freq: N.G4, dur: 0.35, vol: 0.02 },
-  { t: 26.5, freq: N.C4, dur: 0.6, vol: 0.025 }, { t: 27.5, freq: N.E4, dur: 0.6, vol: 0.025 }, { t: 28.5, freq: N.G4, dur: 0.8, vol: 0.025 },
+  // 24s - 32s: Fmaj7 (24-28s) & Cmaj7 (28-32s)
+  { t: 24.0, freq: N.F3, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 24.8, freq: N.A3, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 25.6, freq: N.C4, dur: 0.8, vol: 0.018, type: 'sine' },
+  { t: 26.4, freq: N.E4, dur: 1.2, vol: 0.02, type: 'sine' },
+  { t: 28.0, freq: N.C3, dur: 1.0, vol: 0.022, type: 'sine' },
+  { t: 29.2, freq: N.G3, dur: 1.0, vol: 0.022, type: 'sine' },
+  { t: 30.4, freq: N.C4, dur: 1.4, vol: 0.025, type: 'sine' },
 ];
 
-const QUIZ_BASS_LINE: NoteEvent[] = [
-  { t: 0.0, freq: N.C3, dur: 0.7 }, { t: 0.9, freq: N.E3, dur: 0.7 }, { t: 1.8, freq: N.G3, dur: 0.7 }, { t: 2.7, freq: N.E3, dur: 0.7 },
-  { t: 3.8, freq: N.A3, dur: 0.7 }, { t: 4.7, freq: N.C3, dur: 0.7 }, { t: 5.6, freq: N.E3, dur: 0.7 }, { t: 6.5, freq: N.A3, dur: 0.7 },
-  { t: 7.5, freq: N.D3, dur: 0.7 }, { t: 8.4, freq: N.F3, dur: 0.7 }, { t: 9.3, freq: N.A3, dur: 0.7 }, { t: 10.2, freq: N.F3, dur: 0.7 },
-  { t: 11.3, freq: N.G3, dur: 0.7 }, { t: 12.2, freq: N.B3, dur: 0.7 }, { t: 13.1, freq: N.D3, dur: 0.7 }, { t: 14.0, freq: N.G3, dur: 0.7 },
-  { t: 15.0, freq: N.E3, dur: 0.7 }, { t: 15.9, freq: N.G3, dur: 0.7 }, { t: 16.8, freq: N.B3, dur: 0.7 }, { t: 17.7, freq: N.E3, dur: 0.7 },
-  { t: 18.8, freq: N.A3, dur: 0.7 }, { t: 19.7, freq: N.C3, dur: 0.7 }, { t: 20.6, freq: N.E3, dur: 0.7 }, { t: 21.5, freq: N.A3, dur: 0.7 },
-  { t: 22.5, freq: N.F3, dur: 0.7 }, { t: 23.4, freq: N.A3, dur: 0.7 }, { t: 24.4, freq: N.G3, dur: 0.7 }, { t: 25.3, freq: N.B3, dur: 0.7 },
-  { t: 26.3, freq: N.C3, dur: 1.4 }, { t: 28.0, freq: N.G3, dur: 1.4 },
+// 3. Warm, Gentle, Subdued Bassline (Deep Sine)
+const SERENE_BASS: NoteEvent[] = [
+  { t: 0.0, freq: N.C3, dur: 3.5, vol: 0.035, type: 'sine' },
+  { t: 4.0, freq: N.E3, dur: 3.5, vol: 0.035, type: 'sine' },
+  { t: 8.0, freq: N.F2, dur: 3.5, vol: 0.035, type: 'sine' },
+  { t: 12.0, freq: N.G2, dur: 3.5, vol: 0.035, type: 'sine' },
+  { t: 16.0, freq: N.A2, dur: 3.5, vol: 0.035, type: 'sine' },
+  { t: 20.0, freq: N.D3, dur: 3.5, vol: 0.035, type: 'sine' },
+  { t: 24.0, freq: N.F2, dur: 3.5, vol: 0.035, type: 'sine' },
+  { t: 28.0, freq: N.C3, dur: 3.8, vol: 0.04, type: 'sine' },
 ];
 
-const QUIZ_LOOP_DURATION = 30.0; // 30 seconds
+const SERENE_LOOP_DURATION = 32.0; // 32.0 seconds
 
-function scheduleQuizTrack(targetGain: GainNode, startT: number) {
+function scheduleSereneTrack(targetGain: GainNode, startT: number) {
   if (muted || !isQuizBgmRunning) return;
 
-  QUIZ_LEAD_MELODY.forEach((n) => {
-    playBgmTone(targetGain, n.freq, n.dur, startT + n.t, 'triangle', 0.045, {
-      attack: 0.04,
-      decay: 0.1,
-      sustain: 0.035,
-      release: 0.08,
-    });
+  // 1. Lead Melody
+  SERENE_LEAD_MELODY.forEach((n) => {
+    playSereneTone(targetGain, n.freq, n.dur, startT + n.t, n.type || 'sine', n.vol || 0.04, 0.08, 0.2, 0.15);
   });
 
-  QUIZ_HARMONY_CHORDS.forEach((n) => {
-    playBgmTone(targetGain, n.freq, n.dur, startT + n.t, 'sine', n.vol ?? 0.02, {
-      attack: 0.02,
-      decay: 0.06,
-      sustain: 0.015,
-      release: 0.05,
-    });
+  // 2. Arpeggio Atmosphere
+  SERENE_ARPEGGIOS.forEach((n) => {
+    playSereneTone(targetGain, n.freq, n.dur, startT + n.t, 'sine', n.vol || 0.02, 0.05, 0.15, 0.12);
   });
 
-  QUIZ_BASS_LINE.forEach((n) => {
-    playBgmTone(targetGain, n.freq, n.dur, startT + n.t, 'triangle', 0.035, {
-      attack: 0.03,
-      decay: 0.12,
-      sustain: 0.025,
-      release: 0.1,
-    });
+  // 3. Gentle Bass
+  SERENE_BASS.forEach((n) => {
+    playSereneTone(targetGain, n.freq, n.dur, startT + n.t, 'sine', n.vol || 0.035, 0.12, 0.3, 0.2);
   });
 }
 
@@ -300,17 +306,17 @@ export function startQuizBGM(): void {
 
   const targetGain = quizBgmGain;
   const now = c.currentTime;
-  scheduleQuizTrack(targetGain, now);
+  scheduleSereneTrack(targetGain, now);
 
   function loop() {
     if (muted || !isQuizBgmRunning || !quizBgmGain) return;
     const ctxNow = getCtx();
     if (!ctxNow) return;
-    scheduleQuizTrack(quizBgmGain, ctxNow.currentTime);
+    scheduleSereneTrack(quizBgmGain, ctxNow.currentTime);
   }
 
   if (quizTimer) clearInterval(quizTimer);
-  quizTimer = setInterval(loop, QUIZ_LOOP_DURATION * 1000);
+  quizTimer = setInterval(loop, SERENE_LOOP_DURATION * 1000);
 }
 
 export function stopQuizBGM(): void {
