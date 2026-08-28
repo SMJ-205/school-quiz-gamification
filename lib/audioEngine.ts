@@ -317,7 +317,7 @@ export function stopAllBGM(): void {
 
 // ─── SFX Tone Synthesizer (Respects sfxMuted & Scaled Volume) ───────────────
 
-export const SFX_VOLUME_SCALE = 0.85; // Master SFX volume reduced by 15%
+export const SFX_VOLUME_SCALE = 0.65; 
 
 function playSfxTone(
   frequency: number,
