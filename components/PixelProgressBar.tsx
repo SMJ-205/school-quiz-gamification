@@ -60,40 +60,45 @@ export default function PixelProgressBar() {
         </div>
 
         {/* Right: Score, Correct count, and Separate BGM & SFX Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <span className="font-dialogue text-sm sm:text-xl text-amber-400 font-bold">
-            ⭐ {score}
-          </span>
-          <span className="text-xs bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 px-1.5 sm:px-2 py-0.5 rounded font-dialogue text-xs sm:text-base">
-            ✓ {correctAnswersCount}
-          </span>
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Score Badge */}
+          <div className="flex items-center gap-1.5 h-7 sm:h-8 px-2 sm:px-2.5 bg-black/60 border border-amber-500/50 rounded-lg text-amber-300 font-dialogue text-base sm:text-lg font-bold shadow-sm">
+            <span>⭐</span>
+            <span>{score}</span>
+          </div>
+
+          {/* Correct Answer Counter Badge */}
+          <div className="flex items-center gap-1.5 h-7 sm:h-8 px-2 sm:px-2.5 bg-emerald-950/80 border border-emerald-500/60 rounded-lg text-emerald-300 font-dialogue text-base sm:text-lg font-bold shadow-sm">
+            <span className="text-emerald-400 font-bold">✓</span>
+            <span>{correctAnswersCount}</span>
+          </div>
 
           {/* 1. BGM Music Toggle (🎵 / 🔇) */}
           <button
             onClick={handleToggleBgm}
             title={bgmMuted ? 'Nyalakan Musik Latar (BGM ON)' : 'Matikan Musik Latar (BGM MUTE)'}
-            className={`p-1 sm:p-1.5 px-2 sm:px-2.5 rounded border text-xs font-bold transition-all cursor-pointer flex items-center gap-1 shadow ${
+            className={`h-7 sm:h-8 px-2.5 sm:px-3 rounded-lg border text-xs font-bold tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm active:scale-95 ${
               bgmMuted
-                ? 'bg-stone-900 border-stone-600 text-stone-400 hover:bg-stone-800'
-                : 'bg-amber-950/80 border-amber-500/60 text-amber-300 hover:bg-amber-900/80'
+                ? 'bg-stone-900/90 border-stone-600 text-stone-400 hover:bg-stone-800'
+                : 'bg-amber-950/90 border-amber-500/80 text-amber-300 hover:bg-amber-900/90 shadow-[0_0_8px_rgba(245,158,11,0.2)]'
             }`}
           >
-            <span>{bgmMuted ? '🔇' : '🎵'}</span>
-            <span className="text-[10px] sm:text-xs">BGM</span>
+            <span className="text-xs sm:text-sm">{bgmMuted ? '🔇' : '🎵'}</span>
+            <span className="leading-none pt-0.5">BGM</span>
           </button>
 
           {/* 2. SFX Sound Effects Toggle (🔊 / 🔇) */}
           <button
             onClick={handleToggleSfx}
             title={sfxMuted ? 'Nyalakan Efek Suara (SFX ON)' : 'Matikan Efek Suara (SFX MUTE)'}
-            className={`p-1 sm:p-1.5 px-2 sm:px-2.5 rounded border text-xs font-bold transition-all cursor-pointer flex items-center gap-1 shadow ${
+            className={`h-7 sm:h-8 px-2.5 sm:px-3 rounded-lg border text-xs font-bold tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm active:scale-95 ${
               sfxMuted
-                ? 'bg-stone-900 border-stone-600 text-stone-400 hover:bg-stone-800'
-                : 'bg-teal-950/80 border-teal-500/60 text-teal-300 hover:bg-teal-900/80'
+                ? 'bg-stone-900/90 border-stone-600 text-stone-400 hover:bg-stone-800'
+                : 'bg-teal-950/90 border-teal-500/80 text-teal-300 hover:bg-teal-900/90 shadow-[0_0_8px_rgba(20,184,166,0.2)]'
             }`}
           >
-            <span>{sfxMuted ? '🔇' : '🔊'}</span>
-            <span className="text-[10px] sm:text-xs">SFX</span>
+            <span className="text-xs sm:text-sm">{sfxMuted ? '🔇' : '🔊'}</span>
+            <span className="leading-none pt-0.5">SFX</span>
           </button>
         </div>
 

@@ -83,7 +83,7 @@ export default function CharacterCustomizer() {
         <div className="pixel-dialogue-box p-4 sm:p-6 flex flex-col items-center gap-4 sm:gap-6">
           
           <div className="text-center">
-            <h2 className="text-lg sm:text-2xl font-bold text-amber-300 tracking-wider mb-1" style={{ fontFamily: "'Silkscreen', monospace" }}>
+            <h2 className="text-xl sm:text-2xl font-bold text-amber-300 tracking-wider mb-1">
               SIAPKAN PETUALANGMU
             </h2>
             <p className="font-dialogue text-lg sm:text-xl text-stone-300">
@@ -168,7 +168,6 @@ export default function CharacterCustomizer() {
           <button
             onClick={handleStart}
             className="btn-pixel btn-pixel-gold text-sm sm:text-base py-3.5 px-6 sm:px-8 w-full max-w-md flex items-center justify-center gap-2 sm:gap-3 tracking-wider shadow-xl cursor-pointer"
-            style={{ fontFamily: "'Silkscreen', monospace" }}
           >
             <span>🏛️</span>
             <span>LANJUT: PILIH SUASANA PERPUSTAKAAN</span>

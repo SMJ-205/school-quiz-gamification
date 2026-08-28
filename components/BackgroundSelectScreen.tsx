@@ -93,7 +93,7 @@ export default function BackgroundSelectScreen() {
             PILIH RUANG PERPUSTAKAAN
           </h1>
           <p className="font-dialogue text-base sm:text-xl text-stone-300 max-w-lg mx-auto mt-1">
-            Tentukan latar tempat petualangan kuis ilmumu akan berlangsung
+            Tentukan latar tempat petualangan kuis ilmu akan berlangsung
           </p>
         </div>
 
