@@ -128,26 +128,31 @@ export default function ParentReportModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto animate-fade-in">
-      <div className="w-full max-w-3xl my-auto bg-[#140E0A] border-4 border-[#7D4E2D] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+    <div
+      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) setShowParentReport(false);
+      }}
+    >
+      <div className="w-full max-w-2xl my-auto bg-[#140E0A] border-4 border-[#7D4E2D] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[86vh] transition-all">
         
         {/* Top Control Header */}
         <div className="bg-[#24150D] border-b-2 border-amber-900/60 p-3 sm:p-4 flex items-center justify-between gap-3 shrink-0">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">📋</span>
+          <div className="flex items-center gap-2.5">
+            <span className="text-xl sm:text-2xl">📋</span>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-amber-300 leading-tight">
+              <h2 className="text-sm sm:text-base font-bold text-amber-300 leading-tight" style={{ fontFamily: "'Pixelify Sans', sans-serif" }}>
                 Laporan Evaluasi untuk Orang Tua & Guru
               </h2>
-              <p className="text-xs text-stone-400">
-                Analisis poin capaian & daftar kesalahan jawab untuk pendampingan belajar
+              <p className="text-[11px] sm:text-xs text-stone-400">
+                Analisis poin capaian & daftar bimbingan belajar anak
               </p>
             </div>
           </div>
 
           <button
             onClick={() => setShowParentReport(false)}
-            className="w-8 h-8 rounded-full bg-stone-900 border border-stone-600 text-stone-300 hover:text-white hover:bg-stone-800 flex items-center justify-center text-sm font-bold transition-all shrink-0 cursor-pointer"
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-stone-900 border border-stone-600 text-stone-300 hover:text-white hover:bg-stone-800 flex items-center justify-center text-xs sm:text-sm font-bold transition-all shrink-0 cursor-pointer"
             title="Tutup"
           >
             ✕
@@ -155,56 +160,56 @@ export default function ParentReportModal() {
         </div>
 
         {/* Action Toolbar */}
-        <div className="bg-black/60 border-b border-stone-800 p-2.5 sm:px-4 flex flex-wrap items-center justify-between gap-2 shrink-0">
+        <div className="bg-black/60 border-b border-stone-800 p-2 sm:px-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 shrink-0">
           {/* Filter Tabs */}
-          <div className="flex items-center gap-1.5 bg-stone-900/90 p-1 rounded-lg border border-stone-700">
+          <div className="flex items-center gap-1 bg-stone-900/90 p-1 rounded-lg border border-stone-700">
             <button
               onClick={() => setActiveFilter('mistakes')}
-              className={`px-3 py-1 text-xs font-bold rounded transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`flex-1 sm:flex-none px-2.5 py-1 text-[11px] sm:text-xs font-bold rounded transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                 activeFilter === 'mistakes'
                   ? 'bg-rose-700 text-white shadow'
                   : 'text-stone-400 hover:text-stone-200'
               }`}
             >
               <span>❌</span>
-              <span>Poin Kurang / Salah ({wrongQuestions.length})</span>
+              <span>Salah ({wrongQuestions.length})</span>
             </button>
             <button
               onClick={() => setActiveFilter('all')}
-              className={`px-3 py-1 text-xs font-bold rounded transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`flex-1 sm:flex-none px-2.5 py-1 text-[11px] sm:text-xs font-bold rounded transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                 activeFilter === 'all'
                   ? 'bg-amber-600 text-white shadow'
                   : 'text-stone-400 hover:text-stone-200'
               }`}
             >
               <span>📑</span>
-              <span>Semua Soal ({totalQuestions})</span>
+              <span>Semua ({totalQuestions})</span>
             </button>
           </div>
 
           {/* Export Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               onClick={handleCopyText}
-              className="px-3 py-1.5 rounded bg-emerald-950 border border-emerald-500 text-emerald-300 hover:bg-emerald-900 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+              className="flex-1 sm:flex-none px-2.5 py-1.5 rounded bg-emerald-950 border border-emerald-500 text-emerald-300 hover:bg-emerald-900 text-[11px] sm:text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1"
             >
               <span>{copied ? '✅' : '📋'}</span>
-              <span>{copied ? 'Tersalin ke Clipboard!' : 'Salin Ringkasan (WA)'}</span>
+              <span>{copied ? 'Tersalin!' : 'Salin WA'}</span>
             </button>
 
             <button
               onClick={handleCaptureImage}
               disabled={capturing}
-              className="px-3 py-1.5 rounded bg-amber-950 border border-amber-400 text-amber-300 hover:bg-amber-900 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+              className="flex-1 sm:flex-none px-2.5 py-1.5 rounded bg-amber-950 border border-amber-400 text-amber-300 hover:bg-amber-900 text-[11px] sm:text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1 disabled:opacity-50"
             >
               <span>📸</span>
-              <span>{capturing ? 'Menyimpan...' : 'Unduh Gambar (PNG)'}</span>
+              <span>{capturing ? 'Menyimpan...' : 'Unduh PNG'}</span>
             </button>
           </div>
         </div>
 
         {/* Scrollable Report Content Container */}
-        <div className="p-4 sm:p-6 overflow-y-auto space-y-5" ref={reportRef}>
+        <div className="p-3 sm:p-5 overflow-y-auto space-y-4" ref={reportRef}>
 
           {/* Student & Quiz Profile Header Card */}
           <div className="bg-[#1D140E] border-2 border-[#5A3110] rounded-xl p-4 sm:p-5 shadow-lg">
