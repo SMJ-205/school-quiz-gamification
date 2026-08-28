@@ -165,8 +165,9 @@ export default function QuestionPanel() {
           {/* Teacher Sprite — height matched to comic box so head never exceeds bubble top */}
           <div className="shrink-0 flex items-end justify-center self-end mb-0.5">
             <div className="relative w-16 h-24 sm:w-19 sm:h-28 md:w-21 md:h-30 flex items-end justify-center">
+              {/* Always show idle PNG — mouth animation is handled by CSS overlay */}
               <img
-                src={mouthOpen ? '/sprites/teacher_talking.png' : '/sprites/teacher_idle.png'}
+                src="/sprites/teacher_idle.png"
                 alt="Pak Guru"
                 className="w-full h-full object-contain object-bottom select-none pointer-events-none"
                 style={{
@@ -178,6 +179,32 @@ export default function QuestionPanel() {
                     'drop-shadow(0px -1px 0px rgba(255,255,255,0.75))',
                     'drop-shadow(0px 8px 16px rgba(0,0,0,0.8))',
                   ].join(' '),
+                }}
+              />
+              {/*
+                CSS Mouth Overlay — confirmed via pixel analysis of teacher_idle.png.
+                White teeth pixels at sprite X=85..128 (center X=106), Y=252..257.
+                Sprite 320×699, displayed object-contain object-bottom.
+                Image height fills container → scale = display_h / 699.
+                Horizontal: image_left = (container_w - display_w) / 2  (centered)
+                Mouth center in container:
+                  left  ≈ 38.5%  (X=106/320=33.1% of sprite → ~38.5% of container)
+                  bottom ≈ 63.5% (Y=255 from top, = 444px from bottom, 63.5% of 699h)
+              */}
+              <div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  left: '38.5%',
+                  bottom: '63.5%',
+                  transform: 'translate(-50%, 50%)',
+                  width: mouthOpen ? '15%' : '13%',
+                  height: mouthOpen ? '5%' : '2%',
+                  borderRadius: '50%',
+                  backgroundColor: mouthOpen ? 'rgba(25,6,6,0.95)' : 'rgba(50,20,12,0.82)',
+                  boxShadow: mouthOpen ? 'inset 0 1px 2px rgba(255,220,210,0.3)' : 'none',
+                  transition: 'height 55ms ease, width 55ms ease',
+                  pointerEvents: 'none',
                 }}
               />
             </div>
