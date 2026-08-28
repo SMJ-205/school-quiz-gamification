@@ -129,12 +129,12 @@ export default function ParentReportModal() {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in"
+      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2.5 sm:p-4 overflow-hidden animate-fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) setShowParentReport(false);
       }}
     >
-      <div className="w-full max-w-2xl my-auto bg-[#140E0A] border-4 border-[#7D4E2D] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[86vh] transition-all">
+      <div className="w-full max-w-xl sm:max-w-2xl max-h-[88vh] bg-[#140E0A] border-3 sm:border-4 border-[#7D4E2D] rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto transition-all">
         
         {/* Top Control Header */}
         <div className="bg-[#24150D] border-b-2 border-amber-900/60 p-3 sm:p-4 flex items-center justify-between gap-3 shrink-0">
@@ -209,7 +209,7 @@ export default function ParentReportModal() {
         </div>
 
         {/* Scrollable Report Content Container */}
-        <div className="p-3 sm:p-5 overflow-y-auto space-y-4" ref={reportRef}>
+        <div className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-5 space-y-3.5 overscroll-contain" ref={reportRef}>
 
           {/* Student & Quiz Profile Header Card */}
           <div className="bg-[#1D140E] border-2 border-[#5A3110] rounded-xl p-4 sm:p-5 shadow-lg">

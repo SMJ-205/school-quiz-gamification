@@ -37,8 +37,7 @@ export default function CharacterCustomizer() {
   function handleStart() {
     unlockAudioEngine();
     sfxPageTurn();
-    startQuizBGM();
-    setScreen('quiz_library');
+    setScreen('background_select');
   }
 
   return (
@@ -165,14 +164,14 @@ export default function CharacterCustomizer() {
             />
           </div>
 
-          {/* Big Start Button */}
+          {/* Big Next Button */}
           <button
             onClick={handleStart}
-            className="btn-pixel btn-pixel-gold text-sm sm:text-lg py-3.5 px-6 sm:px-8 w-full max-w-md flex items-center justify-center gap-2 sm:gap-3 tracking-wider shadow-xl"
+            className="btn-pixel btn-pixel-gold text-sm sm:text-base py-3.5 px-6 sm:px-8 w-full max-w-md flex items-center justify-center gap-2 sm:gap-3 tracking-wider shadow-xl cursor-pointer"
             style={{ fontFamily: "'Silkscreen', monospace" }}
           >
-            <span>⚔️</span>
-            <span>MASUKI PERPUSTAKAAN AJAIB</span>
+            <span>🏛️</span>
+            <span>LANJUT: PILIH SUASANA PERPUSTAKAAN</span>
             <span>▶</span>
           </button>
 

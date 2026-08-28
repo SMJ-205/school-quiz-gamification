@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import IngestionScreen from '@/components/IngestionScreen';
 import CharacterCustomizer from '@/components/CharacterCustomizer';
+import BackgroundSelectScreen from '@/components/BackgroundSelectScreen';
 import EnchantedLibrary from '@/components/quiz/EnchantedLibrary';
 import AntigravityCanvas from '@/components/AntigravityCanvas';
 import CertificateCanvas from '@/components/CertificateCanvas';
@@ -22,11 +23,12 @@ export default function Home() {
   }, [currentScreen]);
 
   switch (currentScreen) {
-    case 'ingestion':    return <IngestionScreen />;
-    case 'character':    return <CharacterCustomizer />;
-    case 'quiz_library': return <EnchantedLibrary />;
-    case 'antigravity':  return <AntigravityCanvas />;
-    case 'certificate':  return <CertificateCanvas />;
-    default:             return <IngestionScreen />;
+    case 'ingestion':          return <IngestionScreen />;
+    case 'character':          return <CharacterCustomizer />;
+    case 'background_select':  return <BackgroundSelectScreen />;
+    case 'quiz_library':       return <EnchantedLibrary />;
+    case 'antigravity':        return <AntigravityCanvas />;
+    case 'certificate':        return <CertificateCanvas />;
+    default:                   return <IngestionScreen />;
   }
 }

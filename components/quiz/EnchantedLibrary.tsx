@@ -15,7 +15,7 @@ import PixelSprite from '../PixelSprite';
 import { sfxArchiveUnlock } from '@/lib/audioEngine';
 
 export default function EnchantedLibrary() {
-  const { currentQuestionIndex, correctAnswersCount, questions, character, studentName } = useGameStore();
+  const { currentQuestionIndex, correctAnswersCount, questions, character, studentName, selectedBackground } = useGameStore();
   const [archiveOpened, setArchiveOpened] = useState(false);
   const [prevCorrect, setPrevCorrect] = useState(correctAnswersCount);
 
@@ -46,7 +46,7 @@ export default function EnchantedLibrary() {
           <div className="p-2 sm:p-4 flex items-center justify-between border-b-2 border-amber-950/80 bg-black/75 backdrop-blur-sm z-20 gap-2">
             <div className="flex items-center gap-2">
               <div className="retro-pill-badge !bg-amber-950 !border-amber-400 text-amber-300 !text-[10px] sm:!text-xs !py-1 !px-2.5">
-                📖 LANTAI {floorNumber}
+                📖 RAK ARSIP {floorNumber}
               </div>
             </div>
 
@@ -57,11 +57,11 @@ export default function EnchantedLibrary() {
             </div>
           </div>
 
-          {/* Library Arena Stage with Warm Cozy Library Backdrop */}
+          {/* Library Arena Stage with Dynamic Background */}
           <div
             className="relative w-full min-h-[460px] md:min-h-[520px] flex flex-col justify-between p-3 sm:p-6 overflow-hidden"
             style={{
-              backgroundImage: 'url(/backgrounds/library_bg.jpg)',
+              backgroundImage: `url(${selectedBackground || '/backgrounds/library_sunlit.jpg'})`,
               backgroundPosition: 'center 40%',
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',

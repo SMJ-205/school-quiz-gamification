@@ -26,6 +26,7 @@ export interface CharacterGear {
 export type GameScreen =
   | 'ingestion'
   | 'character'
+  | 'background_select'
   | 'quiz_library'
   | 'antigravity'
   | 'certificate';
@@ -49,6 +50,10 @@ export interface GameState {
   // Character
   character: CharacterGear;
 
+  // Atmosphere & Audio Customization
+  selectedBgmTrack: string;
+  selectedBackground: string;
+
   // UI overlays
   showNotebookLMModal: boolean;
   showParentReport: boolean;
@@ -59,6 +64,8 @@ export interface GameState {
   setStudentName: (name: string) => void;
   setCharacterGender: (gender: 'boy' | 'girl') => void;
   updateCharacterGear: (slot: keyof CharacterGear, itemValue: string) => void;
+  setSelectedBgmTrack: (track: string) => void;
+  setSelectedBackground: (bgUrl: string) => void;
   submitAnswer: (optionIndex: number) => { isCorrect: boolean; hint: string };
   nextQuestion: () => void;
   resetGame: () => void;
@@ -86,6 +93,10 @@ export const useGameStore = create<GameState>((set, get) => ({
   character: {
     gender: 'boy',
   },
+
+  // Atmosphere defaults
+  selectedBgmTrack: 'momo_island',
+  selectedBackground: '/backgrounds/library_sunlit.jpg',
 
   // UI
   showNotebookLMModal: false,
@@ -118,6 +129,9 @@ export const useGameStore = create<GameState>((set, get) => ({
     set({
       character: { gender: itemValue === 'girl' ? 'girl' : 'boy' },
     }),
+
+  setSelectedBgmTrack: (track) => set({ selectedBgmTrack: track }),
+  setSelectedBackground: (bgUrl) => set({ selectedBackground: bgUrl }),
 
   submitAnswer: (optionIndex) => {
     const { questions, currentQuestionIndex, score, correctAnswersCount, userAnswers } = get();

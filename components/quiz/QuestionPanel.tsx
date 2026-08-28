@@ -36,6 +36,16 @@ export default function QuestionPanel() {
 
   const fullQuestionText = question?.question || '';
 
+  // Preload both teacher sprites once on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const img1 = new window.Image();
+      img1.src = '/sprites/teacher_idle.png';
+      const img2 = new window.Image();
+      img2.src = '/sprites/teacher_talking.png';
+    }
+  }, []);
+
   // Typewriter effect synced with natural mouth flapping
   useEffect(() => {
     if (!fullQuestionText) return;
@@ -155,25 +165,20 @@ export default function QuestionPanel() {
           {/* Teacher Sprite — height matched to comic box so head never exceeds bubble top */}
           <div className="shrink-0 flex items-end justify-center self-end mb-0.5">
             <div className="relative w-16 h-24 sm:w-19 sm:h-28 md:w-21 md:h-30 flex items-end justify-center">
-              <Image
+              <img
                 src={mouthOpen ? '/sprites/teacher_talking.png' : '/sprites/teacher_idle.png'}
                 alt="Pak Guru"
-                fill
-                sizes="(max-width: 640px) 64px, 84px"
-                className="object-contain object-bottom select-none"
+                className="w-full h-full object-contain object-bottom select-none pointer-events-none"
                 style={{
                   imageRendering: 'pixelated',
                   filter: [
-                    /* white cell outline — tipis di 4 sisi */
                     'drop-shadow(1px 0px 0px rgba(255,255,255,0.75))',
                     'drop-shadow(-1px 0px 0px rgba(255,255,255,0.75))',
                     'drop-shadow(0px 1px 0px rgba(255,255,255,0.75))',
                     'drop-shadow(0px -1px 0px rgba(255,255,255,0.75))',
-                    /* dark drop shadow tetap ada */
                     'drop-shadow(0px 8px 16px rgba(0,0,0,0.8))',
                   ].join(' '),
                 }}
-                priority
               />
             </div>
           </div>

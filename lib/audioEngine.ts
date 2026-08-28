@@ -171,43 +171,125 @@ export function toggleAudioMute(): boolean {
   return next;
 }
 
-// ─── BGM Playback Control (Piki - Momo Island) ──────────────────────────────
+// ─── BGM Multi-Track Playback Control ───────────────────────────────────────
 
 let isStartingBgm = false;
+let activeTrackId = 'momo_island';
+let synthLoopTimer: NodeJS.Timeout | null = null;
+let synthGainNode: GainNode | null = null;
 
-export function startQuizBGM(): void {
+// Track 2: 8-Bit Retro Quest Melody Sequence
+const CHIPTUNE_NOTES = [
+  { freq: 261.63, dur: 0.2 }, { freq: 329.63, dur: 0.2 }, { freq: 392.00, dur: 0.2 }, { freq: 523.25, dur: 0.3 },
+  { freq: 440.00, dur: 0.2 }, { freq: 392.00, dur: 0.2 }, { freq: 329.63, dur: 0.4 },
+  { freq: 293.66, dur: 0.2 }, { freq: 349.23, dur: 0.2 }, { freq: 440.00, dur: 0.2 }, { freq: 587.33, dur: 0.3 },
+  { freq: 523.25, dur: 0.2 }, { freq: 440.00, dur: 0.2 }, { freq: 392.00, dur: 0.4 },
+];
+
+// Track 3: Cozy Lo-Fi Botanical Calm Chords Sequence
+const LOFI_NOTES = [
+  { freq: 174.61, dur: 0.6 }, { freq: 261.63, dur: 0.6 }, { freq: 329.63, dur: 0.6 }, { freq: 392.00, dur: 0.8 },
+  { freq: 196.00, dur: 0.6 }, { freq: 293.66, dur: 0.6 }, { freq: 349.23, dur: 0.6 }, { freq: 440.00, dur: 0.8 },
+  { freq: 164.81, dur: 0.6 }, { freq: 246.94, dur: 0.6 }, { freq: 329.63, dur: 0.6 }, { freq: 392.00, dur: 0.8 },
+  { freq: 220.00, dur: 0.6 }, { freq: 261.63, dur: 0.6 }, { freq: 329.63, dur: 0.6 }, { freq: 523.25, dur: 0.8 },
+];
+
+function stopSynthBgm(): void {
+  if (synthLoopTimer) {
+    clearInterval(synthLoopTimer);
+    synthLoopTimer = null;
+  }
+  if (synthGainNode) {
+    try {
+      synthGainNode.gain.setValueAtTime(0, 0);
+      synthGainNode.disconnect();
+    } catch {}
+    synthGainNode = null;
+  }
+}
+
+function startSynthLoop(notes: { freq: number; dur: number }[], oscType: OscillatorType, speedMs: number, vol: number) {
+  stopSynthBgm();
+  const c = getCtx();
+  if (!c) return;
+
+  synthGainNode = c.createGain();
+  synthGainNode.gain.setValueAtTime(isBgmMuted() ? 0 : vol, c.currentTime);
+  synthGainNode.connect(c.destination);
+
+  let noteIdx = 0;
+
+  function playNextNote() {
+    if (!window.__QUIZ_BGM_RUNNING__ || isBgmMuted() || !synthGainNode || !c) return;
+    const item = notes[noteIdx % notes.length];
+    noteIdx++;
+
+    try {
+      const osc = c.createOscillator();
+      const noteGain = c.createGain();
+      osc.type = oscType;
+      osc.frequency.setValueAtTime(item.freq, c.currentTime);
+
+      noteGain.gain.setValueAtTime(0.01, c.currentTime);
+      noteGain.gain.linearRampToValueAtTime(1.0, c.currentTime + 0.04);
+      noteGain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + item.dur);
+
+      osc.connect(noteGain);
+      noteGain.connect(synthGainNode);
+
+      osc.start(c.currentTime);
+      osc.stop(c.currentTime + item.dur + 0.05);
+    } catch {}
+  }
+
+  playNextNote();
+  synthLoopTimer = setInterval(playNextNote, speedMs);
+}
+
+export function setBgmTrack(trackId: string): void {
+  activeTrackId = trackId;
+  if (window.__QUIZ_BGM_RUNNING__) {
+    startQuizBGM(trackId);
+  }
+}
+
+export function getActiveBgmTrack(): string {
+  return activeTrackId;
+}
+
+export function startQuizBGM(trackId?: string): void {
   if (typeof window === 'undefined') return;
   window.__QUIZ_BGM_RUNNING__ = true;
+  if (trackId) activeTrackId = trackId;
 
-  if (isBgmMuted()) {
-    const audio = getBgmAudio();
-    if (audio) {
-      audio.pause();
-      audio.muted = true;
-    }
+  // Stop any running tracks first
+  const audio = getBgmAudio();
+  if (audio) {
+    audio.pause();
+  }
+  stopSynthBgm();
+
+  if (isBgmMuted() || activeTrackId === 'muted') {
     return;
   }
 
-  const audio = getBgmAudio();
-  if (!audio) return;
-
-  audio.muted = false;
-  audio.volume = BGM_VOLUME;
-
   unlockAudioEngine();
 
-  if (!audio.paused) return; // Already playing cleanly
-  if (isStartingBgm) return;
-
-  isStartingBgm = true;
-  audio.play()
-    .then(() => {
-      isStartingBgm = false;
-    })
-    .catch(() => {
-      isStartingBgm = false;
-      // If blocked by browser autoplay policy, it will resume on next user tap via global listeners
-    });
+  if (activeTrackId === 'momo_island') {
+    if (!audio) return;
+    audio.muted = false;
+    audio.volume = BGM_VOLUME;
+    if (audio.paused && !isStartingBgm) {
+      isStartingBgm = true;
+      audio.play()
+        .then(() => { isStartingBgm = false; })
+        .catch(() => { isStartingBgm = false; });
+    }
+  } else if (activeTrackId === '8bit_quest') {
+    startSynthLoop(CHIPTUNE_NOTES, 'square', 240, 0.12);
+  } else if (activeTrackId === 'cozy_lofi') {
+    startSynthLoop(LOFI_NOTES, 'triangle', 480, 0.15);
+  }
 }
 
 export function stopQuizBGM(): void {
@@ -219,6 +301,7 @@ export function stopQuizBGM(): void {
     audio.pause();
     audio.currentTime = 0;
   }
+  stopSynthBgm();
 
   if (typeof document !== 'undefined') {
     const allAudios = document.querySelectorAll('audio');
@@ -232,7 +315,9 @@ export function stopAllBGM(): void {
   stopQuizBGM();
 }
 
-// ─── SFX Tone Synthesizer (Respects sfxMuted) ───────────────────────────────
+// ─── SFX Tone Synthesizer (Respects sfxMuted & Scaled Volume) ───────────────
+
+export const SFX_VOLUME_SCALE = 0.85; // Master SFX volume reduced by 15%
 
 function playSfxTone(
   frequency: number,
@@ -260,11 +345,12 @@ function playSfxTone(
     const env = gainEnvelope ?? {};
     const attack = env.attack ?? 0.02;
     const decay = env.decay ?? 0.08;
-    const sustain = env.sustain ?? volume * 0.7;
+    const effectiveVol = volume * SFX_VOLUME_SCALE;
+    const sustain = (env.sustain ?? volume * 0.7) * SFX_VOLUME_SCALE;
     const release = env.release ?? 0.05;
 
     gainNode.gain.setValueAtTime(0, startTime);
-    gainNode.gain.linearRampToValueAtTime(volume, startTime + attack);
+    gainNode.gain.linearRampToValueAtTime(effectiveVol, startTime + attack);
     gainNode.gain.linearRampToValueAtTime(sustain, startTime + attack + decay);
     gainNode.gain.setValueAtTime(sustain, Math.max(startTime + attack + decay, startTime + duration - release));
     gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
@@ -296,7 +382,8 @@ function playSfxNoise(duration: number, startTime: number, volume: number = 0.08
     source.buffer = buffer;
 
     const gainNode = c.createGain();
-    gainNode.gain.setValueAtTime(volume, startTime);
+    const effectiveVol = volume * SFX_VOLUME_SCALE;
+    gainNode.gain.setValueAtTime(effectiveVol, startTime);
     gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
 
     source.connect(gainNode);
