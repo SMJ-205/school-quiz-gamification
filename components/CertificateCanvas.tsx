@@ -116,15 +116,21 @@ export default function CertificateCanvas() {
 
               {/* Top-Center Title: CERTIFICATE OF COMPLETION */}
               <div className="flex-1 text-center pr-12">
+                <div
+                  className="text-xs sm:text-sm font-bold tracking-widest text-[#784B20] uppercase mb-0.5"
+                  style={{ fontFamily: "'Pixelify Sans', sans-serif" }}
+                >
+                  AKADEMI PETUALANG ILMU
+                </div>
                 <h1
                   className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#22150A] tracking-wider uppercase leading-tight"
                   style={{
-                    fontFamily: "'Cinzel', serif",
-                    letterSpacing: '2.5px',
+                    fontFamily: "'Pixelify Sans', sans-serif",
+                    letterSpacing: '1.5px',
                     textShadow: '0 1px 1px rgba(255,255,255,0.7)',
                   }}
                 >
-                  CERTIFICATE OF COMPLETION
+                  SERTIFIKAT KELULUSAN KUIS
                 </h1>
               </div>
             </div>
@@ -132,48 +138,53 @@ export default function CertificateCanvas() {
             {/* 2. MAIN 2-COLUMN BODY (Positioned completely below the top medal ribbon) */}
             <div className="grid grid-cols-12 gap-4 items-center mt-2 pt-1">
 
-              {/* LEFT COLUMN: Adventurer Details (7 cols) - Clean, Large, Crisp Outfit Font */}
+              {/* LEFT COLUMN: Adventurer Details (7 cols) - Styled with Pixelify Sans & VT323 matching Parent Report */}
               <div
-                className="col-span-7 flex flex-col gap-3.5 pl-2 sm:pl-4 text-[#1E130A]"
-                style={{ fontFamily: "'Outfit', sans-serif" }}
+                className="col-span-7 flex flex-col gap-3 pl-2 sm:pl-4 text-[#1E130A]"
+                style={{ fontFamily: "'Pixelify Sans', sans-serif" }}
               >
 
                 {/* Row 1: ADVENTURER */}
                 <div className="leading-tight">
-                  <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#784B20] block mb-0.5">
-                    ADVENTURER:
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#784B20] block mb-0.5">
+                    NAMA SISWA / PETUALANG:
                   </span>
-                  <span className="text-xl sm:text-2xl font-black tracking-wide text-[#1A0E05] uppercase">
-                    {studentName ? studentName : 'PLAYER NAME'}
+                  <span className="text-2xl sm:text-3xl font-bold tracking-wide text-[#1A0E05]">
+                    {studentName ? studentName : 'Petualang Ilmu'}
                   </span>
                 </div>
 
                 {/* Row 2: LEVEL COMPLETED (Refers to MD Material Title) */}
                 <div className="leading-tight">
-                  <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#784B20] block mb-0.5">
-                    LEVEL / TOPIK MATERI:
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#784B20] block mb-0.5">
+                    TOPIK / MATERI KUIS:
                   </span>
-                  <span className="text-base sm:text-lg font-extrabold tracking-wide text-[#231509] block uppercase">
+                  <span className="text-base sm:text-xl font-bold tracking-wide text-[#231509] block">
                     {levelTitle}
                   </span>
                 </div>
 
                 {/* Row 3: FINAL SCORE (Thousands scale) */}
                 <div className="leading-tight">
-                  <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#784B20] block mb-0.5">
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#784B20] block mb-0.5">
                     TOTAL POIN:
                   </span>
-                  <span className="text-lg sm:text-xl font-extrabold tracking-wide text-[#8A4500]">
-                    {formattedScore} POIN
-                  </span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl sm:text-3xl font-bold text-[#8A4500]" style={{ fontFamily: "'VT323', monospace" }}>
+                      {formattedScore} POIN
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-[#1E5D2A] bg-emerald-950/10 border border-emerald-800/30 px-1.5 py-0.5 rounded">
+                      ✓ {correctAnswersCount}/{total} BENAR
+                    </span>
+                  </div>
                 </div>
 
                 {/* Row 4: GOLD STARS EARNED */}
                 <div className="leading-tight">
-                  <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#784B20] block mb-0.5">
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#784B20] block mb-0.5">
                     BINTANG PENCAPAIAN:
                   </span>
-                  <span className="text-base sm:text-lg font-extrabold tracking-wide text-[#231509]">
+                  <span className="text-xl sm:text-2xl font-bold text-[#231509]" style={{ fontFamily: "'VT323', monospace" }}>
                     [{starTextMap[starsCount] || 'ONE GOLD STAR'}]
                   </span>
                 </div>
@@ -223,7 +234,7 @@ export default function CertificateCanvas() {
               </div>
 
 
-              {/* Bottom-Right: Cursive Signed + Underline + ACADEMY PRINCIPAL */}
+              {/* Bottom-Right: Cursive Signed + Underline + KEPALA AKADEMI ILMU */}
               <div className="flex flex-col items-center text-center pr-4">
                 <span
                   className="text-3xl sm:text-4xl text-stone-900 font-normal -mb-1"
@@ -233,10 +244,10 @@ export default function CertificateCanvas() {
                 </span>
                 <div className="w-48 sm:w-56 h-[2.5px] bg-stone-900 mb-1.5" />
                 <span
-                  className="text-xs sm:text-sm font-black text-stone-900 uppercase tracking-widest"
-                  style={{ fontFamily: "'Cinzel', serif" }}
+                  className="text-xs sm:text-sm font-bold text-stone-900 uppercase tracking-widest"
+                  style={{ fontFamily: "'Pixelify Sans', sans-serif" }}
                 >
-                  ACADEMY PRINCIPAL
+                  KEPALA AKADEMI ILMU
                 </span>
               </div>
 
@@ -251,7 +262,6 @@ export default function CertificateCanvas() {
           <button
             onClick={() => setShowParentReport(true)}
             className="btn-pixel !bg-amber-950/90 hover:!bg-amber-900 !border-amber-400 text-amber-200 py-3 text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg"
-            style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800 }}
           >
             <span>📋</span>
             <span>LAPORAN ORANG TUA</span>
@@ -261,7 +271,6 @@ export default function CertificateCanvas() {
             onClick={handleExportPNG}
             disabled={exporting}
             className="btn-pixel btn-pixel-gold py-3 text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg"
-            style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800 }}
           >
             <span>🖼️</span>
             <span>{exporting ? 'MEMPROSES...' : 'UNDUH (PNG)'}</span>
@@ -271,7 +280,6 @@ export default function CertificateCanvas() {
             onClick={handleExportPDF}
             disabled={exporting}
             className="btn-pixel btn-pixel-wood py-3 text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg"
-            style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800 }}
           >
             <span>📄</span>
             <span>{exporting ? 'MEMPROSES...' : 'CETAK (PDF)'}</span>
@@ -280,7 +288,6 @@ export default function CertificateCanvas() {
           <button
             onClick={handleReset}
             className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 text-stone-200 py-3 px-4 text-xs sm:text-sm cursor-pointer shadow-lg flex items-center justify-center gap-1"
-            style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 800 }}
           >
             <span>🔄</span>
             <span>KUIS BARU</span>
