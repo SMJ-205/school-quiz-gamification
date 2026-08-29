@@ -684,9 +684,9 @@ export default function BossBattleArena() {
 
             {/* Chat Bubble (center, beak points RIGHT to Sombo, fit for 2 lines from start) */}
             <div className="flex-1 flex flex-col items-center justify-center">
-              <div className="boss-bubble boss-bubble-right px-4 sm:px-6 py-4 sm:py-5 shadow-xl w-full min-h-[100px] sm:min-h-[125px] flex flex-col justify-center">
-                <div className="w-full min-h-[56px] sm:min-h-[72px] flex items-center">
-                  <p className="font-pixel text-base sm:text-xl md:text-2xl text-stone-900 leading-snug sm:leading-relaxed font-bold tracking-wide">
+              <div className="boss-bubble boss-bubble-right px-6 sm:px-8 py-4 sm:py-5 shadow-xl w-full min-h-[100px] sm:min-h-[125px] flex flex-col justify-center">
+                <div className="w-full min-h-[56px] sm:min-h-[72px] flex items-center px-3 sm:px-5">
+                  <p className="font-pixel text-base sm:text-xl md:text-2xl text-stone-900 leading-snug sm:leading-relaxed font-bold tracking-wide px-2 sm:px-4">
                     {introText}
                     {introTyping && <span className="animate-pulse">▋</span>}
                   </p>
@@ -892,8 +892,8 @@ export default function BossBattleArena() {
 
             {/* Defeated speech bubble */}
             <div className="flex-1 flex flex-col items-start gap-2">
-              <div className="boss-bubble px-4 sm:px-6 py-4 sm:py-5 shadow-xl mr-2 w-full border-red-400/60">
-                <p className="font-pixel text-lg sm:text-2xl md:text-3xl text-stone-900 leading-snug sm:leading-relaxed font-bold tracking-wide">
+              <div className="boss-bubble px-6 sm:px-8 py-4 sm:py-5 shadow-xl mr-2 w-full border-red-400/60">
+                <p className="font-pixel text-lg sm:text-2xl md:text-3xl text-stone-900 leading-snug sm:leading-relaxed font-bold tracking-wide px-3 sm:px-5">
                   {defeatText}
                   {defeatTyping && <span className="animate-pulse">▋</span>}
                 </p>
