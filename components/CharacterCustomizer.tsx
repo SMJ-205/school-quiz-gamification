@@ -87,7 +87,7 @@ export default function CharacterCustomizer() {
               SIAPKAN PETUALANGMU
             </h2>
             <p className="font-dialogue text-lg sm:text-xl text-stone-300">
-              Pilih karakter murid yang akan menempuh ujian ilmu di Perpustakaan Ajaib
+              Pilih karakter murid yang akan menempuh ujian ilmu di Tempat Belajar
             </p>
           </div>
 
@@ -169,8 +169,8 @@ export default function CharacterCustomizer() {
             onClick={handleStart}
             className="btn-pixel btn-pixel-gold text-sm sm:text-base py-3.5 px-6 sm:px-8 w-full max-w-md flex items-center justify-center gap-2 sm:gap-3 tracking-wider shadow-xl cursor-pointer"
           >
-            <span>🏛️</span>
-            <span>LANJUT: PILIH SUASANA PERPUSTAKAAN</span>
+            <span>🏫</span>
+            <span>LANJUT: PILIH TEMPAT BELAJAR</span>
             <span>▶</span>
           </button>
 

@@ -494,7 +494,7 @@ export default function BossBattleArena() {
             <div className="shrink-0 flex flex-col items-center gap-2 scale-x-[-1]">
               <div className="relative">
                 <img
-                  src="/sprites/boss_challenging.jpg"
+                  src="/sprites/boss_challenging.png"
                   alt="Boss"
                   className="w-24 sm:w-32 object-contain drop-shadow-2xl"
                   style={{ imageRendering: 'pixelated' }}
@@ -670,7 +670,7 @@ export default function BossBattleArena() {
             {/* Boss sprite — defeated, mirrored */}
             <div className="shrink-0 flex flex-col items-center gap-2">
               <img
-                src="/sprites/boss_defeated.jpg"
+                src="/sprites/boss_defeated.png"
                 alt="Boss Defeated"
                 className="w-20 sm:w-28 object-contain drop-shadow-2xl"
                 style={{ imageRendering: 'pixelated' }}
@@ -884,7 +884,7 @@ export default function BossBattleArena() {
           {/* Boss sprite */}
           <div className="flex flex-col items-center gap-1 scale-x-[-1]">
             <img
-              src="/sprites/boss_challenging.jpg"
+              src="/sprites/boss_challenging.png"
               alt="Boss"
               className="w-20 sm:w-28 object-contain"
               style={{ imageRendering: 'pixelated', filter: 'drop-shadow(0 4px 16px rgba(220,38,38,0.6))' }}
