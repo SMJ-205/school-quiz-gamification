@@ -372,7 +372,8 @@ export default function BossBattleArena() {
         addFloat('+15 HP ❤️', false);
       }
 
-      if (newBossHp <= 0) {
+      // Only trigger defeat transition if in Phase 1 ('battle')!
+      if (phase === 'battle' && newBossHp <= 0) {
         setTimeout(() => {
           setShowFlash(true);
           setTimeout(() => setShowFlash(false), 600);
@@ -563,33 +564,39 @@ export default function BossBattleArena() {
   // ── GAMEOVER ───────────────────────────────────────────────────────────────
 
   if (phase === 'gameover') {
+    const isUnlimited = endlessN > 1;
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#0a0005] relative overflow-hidden select-none">
         <div className="absolute inset-0 overdrive-bg opacity-60" />
         <div className="relative z-10 w-full max-w-md crt-arcade-frame bg-[#0d0010] border-4 border-purple-700 rounded-2xl p-6 text-center shadow-2xl">
-          <div className="text-5xl mb-3">💔</div>
-          <h2 className="font-pixel text-2xl sm:text-3xl text-red-400 mb-1">PERTARUNGAN SELESAI</h2>
-          <p className="font-pixel text-stone-400 text-base mb-5">Kamu kehabisan tenaga...</p>
+          <div className="text-5xl mb-3">{isUnlimited ? '🏆' : '💔'}</div>
+          <h2 className="font-pixel text-2xl sm:text-3xl text-purple-300 mb-1">
+            {isUnlimited ? 'HIGH SCORE UNLIMITED' : 'PERTARUNGAN SELESAI'}
+          </h2>
+          <p className="font-pixel text-stone-400 text-sm sm:text-base mb-5">
+            {isUnlimited ? `Kamu bertahan hingga Soal #${endlessN - 1}!` : 'Kamu kehabisan tenaga...'}
+          </p>
 
           <div className="bg-black/60 border border-purple-800 rounded-xl p-4 mb-5 space-y-2 font-pixel">
             <div className="flex justify-between text-base">
-              <span className="text-stone-400">Total Damage ke Sombo:</span>
+              <span className="text-stone-400">{isUnlimited ? 'High Score Score:' : 'Total Damage:'}</span>
               <span className="text-amber-300 font-bold">{totalScore.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between text-base">
-              <span className="text-stone-400">Sombo HP Sisa:</span>
-              <span className="text-red-400 font-bold">{bossHp.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between text-base">
-              <span className="text-stone-400">Wave Tertinggi:</span>
-              <span className="text-purple-300 font-bold">Wave {wave}</span>
-            </div>
-            {phase === 'gameover' && endlessN > 1 && (
+            {isUnlimited ? (
               <div className="flex justify-between text-base">
-                <span className="text-stone-400">Soal Endless:</span>
-                <span className="text-cyan-300 font-bold">{endlessN - 1}</span>
+                <span className="text-stone-400">Soal Dijawab:</span>
+                <span className="text-cyan-300 font-bold">{endlessN - 1} Soal</span>
+              </div>
+            ) : (
+              <div className="flex justify-between text-base">
+                <span className="text-stone-400">Sombo HP Sisa:</span>
+                <span className="text-red-400 font-bold">{bossHp.toLocaleString()}</span>
               </div>
             )}
+            <div className="flex justify-between text-base">
+              <span className="text-stone-400">Streak Tertinggi:</span>
+              <span className="text-amber-400 font-bold">{combo}x</span>
+            </div>
           </div>
 
           <div className="flex flex-col gap-3">
@@ -666,7 +673,7 @@ export default function BossBattleArena() {
               </div>
             </div>
 
-            {/* Sombo sprite — defeated */}
+            {/* Sombo sprite — defeated, scaleX(-1) faces left */}
             <div className="shrink-0 flex flex-col items-center gap-2">
               <div className="h-24 sm:h-32 flex items-end justify-center">
                 <img
@@ -676,6 +683,7 @@ export default function BossBattleArena() {
                   style={{
                     imageRendering: 'pixelated',
                     filter: WHITE_CELL_SHADING,
+                    transform: 'scaleX(-1)',
                   }}
                 />
               </div>
@@ -705,7 +713,7 @@ export default function BossBattleArena() {
                 className="btn-pixel !bg-purple-900 hover:!bg-purple-800 !border-purple-500 text-purple-200 px-8 py-3 text-base sm:text-xl font-bold shadow-xl flex items-center justify-center gap-2 mx-auto cursor-pointer"
               >
                 <span>⚡</span>
-                <span>OVERDRIVE MODE — LANJUTKAN!</span>
+                <span>UNLIMITED MATH BATTLE — LANJUTKAN!</span>
               </button>
             </div>
           )}
@@ -759,7 +767,7 @@ export default function BossBattleArena() {
               ? '!bg-purple-950 !border-purple-500 text-purple-300'
               : '!bg-red-950 !border-red-600 text-red-300'
           }`}>
-            {isEndless ? `⚡ OVERDRIVE MODE — SOAL #${endlessN}` : `⚔️ WAVE ${wave}/10`}
+            {isEndless ? `⚡ UNLIMITED MATH BATTLE — SOAL #${endlessN}` : `⚔️ WAVE ${wave}/10`}
           </div>
           <div className="flex items-center gap-1.5 font-pixel text-base sm:text-xl font-bold text-amber-300">
             <span>🏆</span>
