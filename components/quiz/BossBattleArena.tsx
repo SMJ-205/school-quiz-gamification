@@ -1045,26 +1045,7 @@ export default function BossBattleArena() {
           </div>
         </div>
 
-        {/* Sombo HP Bar */}
-        {!isEndless && (
-          <div>
-            <div className="flex justify-between mb-1 font-pixel text-xs sm:text-sm font-bold text-red-400">
-              <span>SOMBO — {bossHp.toLocaleString()} HP</span>
-              <span>{Math.round(bossPct)}%</span>
-            </div>
-            <div className="boss-hp-bar-bg h-4 sm:h-5 w-full">
-              <div
-                className="boss-hp-bar h-full"
-                style={{ width: `${bossPct}%` }}
-              />
-            </div>
-          </div>
-        )}
-        {isEndless && (
-          <div className="text-center font-pixel text-sm font-semibold text-purple-300">
-            ⏳ Timer menyusut... bertahan selama mungkin!
-          </div>
-        )}
+
 
         {/* Timer Bar */}
         {question && (
@@ -1164,17 +1145,17 @@ export default function BossBattleArena() {
             <div className="font-pixel font-bold text-xs text-stone-300">{playerHp} HP</div>
           </div>
 
-          {/* Wave / Endless info */}
-          <div className="text-center font-pixel font-bold text-stone-300 text-sm hidden sm:block">
+          {/* Wave / Endless info center */}
+          <div className="text-center font-pixel font-bold text-stone-300 text-xs sm:text-sm hidden sm:block">
             {isEndless ? (
               <span className="text-purple-400">⚡ OVERDRIVE<br />Soal #{endlessN}</span>
             ) : (
-              <span>Sombo HP<br /><strong className="text-red-400">{bossHp.toLocaleString()}</strong></span>
+              <span className="text-red-400">⚔️ WAVE {wave}/{TOTAL_WAVES}</span>
             )}
           </div>
 
-          {/* Sombo sprite — flipped LEFT to face student, 1.5× size */}
-          <div className="flex flex-col items-center gap-1">
+          {/* Sombo sprite + Proportional Health Bar directly under Sombo */}
+          <div className="flex flex-col items-center gap-1.5 shrink-0">
             <div className="h-36 sm:h-48 flex items-end justify-center">
               <img
                 src="/sprites/boss_challenging.png"
@@ -1187,7 +1168,27 @@ export default function BossBattleArena() {
                 }}
               />
             </div>
-            <div className="text-red-300 font-pixel font-bold text-xs">SOMBO</div>
+
+            {/* Proportional Sombo HP Bar directly under Sombo */}
+            {!isEndless && (
+              <div className="w-36 sm:w-48 flex flex-col items-center gap-0.5 font-pixel">
+                <div className="flex items-center justify-between w-full text-[11px] sm:text-xs font-bold text-red-300 px-0.5">
+                  <span>SOMBO</span>
+                  <span>{bossHp.toLocaleString()} HP</span>
+                </div>
+                <div className="boss-hp-bar-bg h-3.5 sm:h-4 w-full rounded border border-red-900 overflow-hidden shadow-md">
+                  <div
+                    className="boss-hp-bar h-full transition-all duration-300"
+                    style={{ width: `${bossPct}%` }}
+                  />
+                </div>
+              </div>
+            )}
+            {isEndless && (
+              <div className="bg-red-950/90 border border-red-500/50 text-red-300 font-pixel font-bold text-xs px-2.5 py-0.5 rounded shadow">
+                SOMBO
+              </div>
+            )}
           </div>
 
         </div>
