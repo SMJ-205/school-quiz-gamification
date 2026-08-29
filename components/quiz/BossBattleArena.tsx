@@ -42,7 +42,8 @@ interface FloatDmg {
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
-const BOSS_MAX_HP = 4000;
+const TOTAL_WAVES = 15;
+const BOSS_MAX_HP = 6000;
 const PLAYER_MAX_HP = 100;
 
 const INTRO_SPEECH =
@@ -64,7 +65,7 @@ const WHITE_CELL_SHADING = [
   'drop-shadow(0px 8px 16px rgba(0,0,0,0.85))',
 ].join(' ');
 
-// ─── Question Generator ────────────────────────────────────────────────────────
+// ─── Question Generator (15 Waves Total — 5 Extra Peak Difficulty Waves) ─────
 
 function hasCarrying(a: number, b: number): boolean {
   return (a % 10) + (b % 10) >= 10;
@@ -74,8 +75,8 @@ function hasBorrowing(a: number, b: number): boolean {
 }
 
 function genQuestion(wave: number): BossQuestion {
-  const isEarly  = wave <= 3;
-  const isMid    = wave >= 4 && wave <= 6;
+  const isEarly = wave <= 4;
+  const isMid   = wave >= 5 && wave <= 8;
 
   let a: number, b: number, op: '+' | '-', carry: boolean;
   let timeLimit: number;
@@ -104,24 +105,26 @@ function genQuestion(wave: number): BossQuestion {
     }
     timeLimit = 5.0;
   } else {
+    // Waves 9 to 15: Peak Highest Difficulty (5 Extra Hardest Waves)
     op = Math.random() < 0.5 ? '+' : '-';
     carry = true;
     if (op === '+') {
       do {
-        a = 30 + Math.floor(Math.random() * 60);
-        b = 10 + Math.floor(Math.random() * Math.min(60, 99 - a));
+        a = 35 + Math.floor(Math.random() * 60);
+        b = 15 + Math.floor(Math.random() * Math.min(60, 99 - a));
       } while (!hasCarrying(a, b));
     } else {
       do {
-        a = 30 + Math.floor(Math.random() * 60);
-        b = 10 + Math.floor(Math.random() * (a - 10));
+        a = 40 + Math.floor(Math.random() * 55);
+        b = 15 + Math.floor(Math.random() * (a - 15));
       } while (!hasBorrowing(a, b));
     }
-    timeLimit = wave === 10 ? 3.8 : 4.2;
+    // Shrunken time limit for peak difficulty (Wave 13-15 = 3.2s)
+    timeLimit = wave >= 13 ? 3.2 : wave >= 11 ? 3.8 : 4.2;
   }
 
   const answer = op === '+' ? a + b : a - b;
-  const diffFactor = carry ? 1.35 : 1.0;
+  const diffFactor = carry ? 1.5 : 1.0;
 
   const opts = new Set<number>();
   opts.add(answer);
@@ -388,8 +391,8 @@ export default function BossBattleArena() {
         return;
       }
 
-      const targetWave   = 10 - Math.floor((newBossHp / BOSS_MAX_HP) * 10);
-      const newWave      = Math.max(wave, Math.min(10, targetWave + 1));
+      const targetWave   = TOTAL_WAVES - Math.floor((newBossHp / BOSS_MAX_HP) * TOTAL_WAVES);
+      const newWave      = Math.max(wave, Math.min(TOTAL_WAVES, targetWave + 1));
       if (newWave !== wave) setWave(newWave);
 
       setTimeout(() => afterAnswer(), 700);
@@ -774,7 +777,7 @@ export default function BossBattleArena() {
               ? '!bg-purple-950 !border-purple-500 text-purple-300'
               : '!bg-red-950 !border-red-600 text-red-300'
           }`}>
-            {isEndless ? `⚡ UNLIMITED MATH BATTLE — SOAL #${endlessN}` : `⚔️ WAVE ${wave}/10`}
+            {isEndless ? `⚡ UNLIMITED MATH BATTLE — SOAL #${endlessN}` : `⚔️ WAVE ${wave}/${TOTAL_WAVES}`}
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2">
