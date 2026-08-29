@@ -444,30 +444,36 @@ export default function BossBattleArena() {
           </div>
         </div>
 
-        {/* Comic Panel: Player (left) vs Sombo (right) */}
+
+        {/* Comic Panel: full-width bubble on top, characters standing below */}
         <div className="relative z-10 w-full max-w-3xl crt-arcade-frame bg-[#0d0505] border-4 border-red-900 rounded-2xl p-4 sm:p-6 shadow-2xl">
-          <div className="flex flex-row items-end gap-3 sm:gap-6 mb-6">
+
+          {/* ── ROW 1: Speech Bubble (full width, tail points RIGHT to Sombo) */}
+          <div className="relative mb-5">
+            <div className="boss-bubble boss-bubble-right px-4 sm:px-6 py-4 sm:py-5 shadow-xl w-full">
+              <p className="font-pixel text-sm sm:text-base md:text-lg text-stone-900 leading-relaxed font-semibold">
+                {introText}
+                {introTyping && <span className="animate-pulse">▋</span>}
+              </p>
+            </div>
+          </div>
+
+          {/* ── ROW 2: Player (left) ··· Sombo (right) */}
+          <div className="flex flex-row items-end justify-between gap-3 sm:gap-4 px-2">
 
             {/* Player character (left) */}
-            <div className="flex flex-col items-center gap-2 shrink-0">
+            <div className="flex flex-col items-center gap-1.5 shrink-0">
               <PixelSprite character={character} pixelSize={0.45} animate />
-              <div className="bg-black/80 border border-amber-500/50 text-amber-300 font-pixel text-sm px-2.5 py-0.5 rounded shadow">
+              <div className="bg-black/80 border border-amber-500/50 text-amber-300 font-pixel text-xs sm:text-sm px-2.5 py-0.5 rounded shadow">
                 👤 {studentName || 'Petualang'}
               </div>
             </div>
 
-            {/* Boss speech bubble */}
-            <div className="flex-1 flex flex-col items-start gap-2">
-              <div className="boss-bubble px-4 py-3.5 shadow-xl mr-2 w-full">
-                <p className="font-pixel text-base sm:text-xl text-stone-900 leading-relaxed font-semibold">
-                  {introText}
-                  {introTyping && <span className="animate-pulse">▋</span>}
-                </p>
-              </div>
-            </div>
+            {/* Spacer */}
+            <div className="flex-1" />
 
-            {/* Sombo sprite — flipped LEFT to face student player, 1.5× size */}
-            <div className="shrink-0 flex flex-col items-center gap-2">
+            {/* Sombo sprite — scaleX(-1) faces LEFT toward player, 1.5× size */}
+            <div className="shrink-0 flex flex-col items-center gap-1.5">
               <div className="relative h-40 sm:h-52 flex items-end justify-center">
                 <img
                   src="/sprites/boss_challenging.png"
@@ -479,13 +485,13 @@ export default function BossBattleArena() {
                     transform: 'scaleX(-1)',
                   }}
                 />
-                {/* CSS mouth overlay — X=49% mirrors the scaleX(-1) flip, Y=63.6% */}
+                {/* Mouth overlay — X=49% mirrors scaleX(-1), Y=73.5% (lip-level, not chin) */}
                 <div
                   aria-hidden="true"
                   style={{
                     position: 'absolute',
                     left: '49%',
-                    bottom: '63.6%',
+                    bottom: '73.5%',
                     transform: 'translate(-50%, 50%)',
                     width: bossMouth ? '14%' : '10%',
                     height: bossMouth ? '5%' : '2%',
