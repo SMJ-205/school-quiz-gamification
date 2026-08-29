@@ -194,21 +194,76 @@ const LOFI_NOTES = [
   { freq: 220.00, dur: 0.6 }, { freq: 261.63, dur: 0.6 }, { freq: 329.63, dur: 0.6 }, { freq: 523.25, dur: 0.8 },
 ];
 
-// Track 4: Ultra Fast-Beat Arcade Chiptune for Sombo Boss Battle
-const FAST_BOSS_BEAT_NOTES = [
-  { freq: 220.00, dur: 0.09 }, { freq: 440.00, dur: 0.09 }, { freq: 329.63, dur: 0.09 }, { freq: 523.25, dur: 0.11 },
-  { freq: 261.63, dur: 0.09 }, { freq: 392.00, dur: 0.09 }, { freq: 587.33, dur: 0.11 }, { freq: 349.23, dur: 0.09 },
-  { freq: 440.00, dur: 0.09 }, { freq: 659.25, dur: 0.12 }, { freq: 220.00, dur: 0.09 }, { freq: 329.63, dur: 0.09 },
-  { freq: 493.88, dur: 0.11 }, { freq: 587.33, dur: 0.11 }, { freq: 659.25, dur: 0.13 }, { freq: 880.00, dur: 0.14 },
-];
+// ── Track 4: 32-Second Epic Arcade Chiptune Composition for Sombo Boss Battle ──
+// 4 Distinct Musical Sections (256 Notes Total @ 125ms per note = 32.0 Seconds Seamless Loop)
 
-// Track 4: Energetic High-Beat Lo-Fi Track for Sombo Boss Battle
-const HIGH_BEAT_LOFI_NOTES = [
-  { freq: 220.00, dur: 0.14 }, { freq: 329.63, dur: 0.14 }, { freq: 440.00, dur: 0.18 }, { freq: 261.63, dur: 0.14 },
-  { freq: 392.00, dur: 0.14 }, { freq: 523.25, dur: 0.22 }, { freq: 196.00, dur: 0.14 }, { freq: 293.66, dur: 0.14 },
-  { freq: 349.23, dur: 0.18 }, { freq: 440.00, dur: 0.22 }, { freq: 174.61, dur: 0.14 }, { freq: 261.63, dur: 0.18 },
-  { freq: 329.63, dur: 0.14 }, { freq: 392.00, dur: 0.18 }, { freq: 523.25, dur: 0.25 }, { freq: 440.00, dur: 0.18 },
-];
+const SOMBO_BATTLE_32S_NOTES = (() => {
+  const notes: { freq: number; dur: number; bassFreq?: number }[] = [];
+
+  // Section A: Main Battle Motif (A minor driving arcade theme, 0s - 8s, 64 notes)
+  const motifA = [
+    { f: 220.00, b: 110.00 }, { f: 329.63, b: 110.00 }, { f: 440.00, b: 110.00 }, { f: 523.25, b: 110.00 },
+    { f: 440.00, b: 110.00 }, { f: 329.63, b: 110.00 }, { f: 261.63, b: 110.00 }, { f: 329.63, b: 110.00 },
+    { f: 293.66, b: 146.83 }, { f: 349.23, b: 146.83 }, { f: 440.00, b: 146.83 }, { f: 587.33, b: 146.83 },
+    { f: 523.25, b: 146.83 }, { f: 440.00, b: 146.83 }, { f: 349.23, b: 146.83 }, { f: 293.66, b: 146.83 },
+  ];
+  for (let r = 0; r < 4; r++) {
+    motifA.forEach(n => notes.push({ freq: n.f, bassFreq: n.b, dur: 0.11 }));
+  }
+
+  // Section B: Modulating Escalation & Harmonic Tension (F Major -> G Major -> E7, 8s - 16s, 64 notes)
+  const motifB = [
+    { f: 174.61, b: 87.31 }, { f: 261.63, b: 87.31 }, { f: 349.23, b: 87.31 }, { f: 440.00, b: 87.31 },
+    { f: 523.25, b: 87.31 }, { f: 440.00, b: 87.31 }, { f: 349.23, b: 87.31 }, { f: 261.63, b: 87.31 },
+    { f: 174.61, b: 87.31 }, { f: 261.63, b: 87.31 }, { f: 349.23, b: 87.31 }, { f: 523.25, b: 87.31 },
+    { f: 698.46, b: 87.31 }, { f: 523.25, b: 87.31 }, { f: 349.23, b: 87.31 }, { f: 261.63, b: 87.31 },
+
+    { f: 196.00, b: 98.00 }, { f: 293.66, b: 98.00 }, { f: 392.00, b: 98.00 }, { f: 493.88, b: 98.00 },
+    { f: 587.33, b: 98.00 }, { f: 493.88, b: 98.00 }, { f: 392.00, b: 98.00 }, { f: 293.66, b: 98.00 },
+    { f: 196.00, b: 98.00 }, { f: 293.66, b: 98.00 }, { f: 392.00, b: 98.00 }, { f: 587.33, b: 98.00 },
+    { f: 783.99, b: 98.00 }, { f: 587.33, b: 98.00 }, { f: 392.00, b: 98.00 }, { f: 293.66, b: 98.00 },
+
+    { f: 164.81, b: 82.41 }, { f: 246.94, b: 82.41 }, { f: 329.63, b: 82.41 }, { f: 415.30, b: 82.41 },
+    { f: 493.88, b: 82.41 }, { f: 587.33, b: 82.41 }, { f: 659.25, b: 82.41 }, { f: 830.61, b: 82.41 },
+    { f: 659.25, b: 82.41 }, { f: 587.33, b: 82.41 }, { f: 493.88, b: 82.41 }, { f: 415.30, b: 82.41 },
+    { f: 329.63, b: 82.41 }, { f: 246.94, b: 82.41 }, { f: 164.81, b: 82.41 }, { f: 329.63, b: 82.41 },
+    { f: 415.30, b: 82.41 }, { f: 493.88, b: 82.41 }, { f: 587.33, b: 82.41 }, { f: 659.25, b: 82.41 },
+    { f: 830.61, b: 82.41 }, { f: 987.77, b: 82.41 }, { f: 830.61, b: 82.41 }, { f: 659.25, b: 82.41 },
+    { f: 587.33, b: 82.41 }, { f: 493.88, b: 82.41 }, { f: 415.30, b: 82.41 }, { f: 329.63, b: 82.41 },
+    { f: 246.94, b: 82.41 }, { f: 164.81, b: 82.41 }, { f: 246.94, b: 82.41 }, { f: 329.63, b: 82.41 },
+  ];
+  motifB.forEach(n => notes.push({ freq: n.f, bassFreq: n.b, dur: 0.11 }));
+
+  // Section C: High-Speed Heroic Arcade Solo (High Register A5 Arpeggiated Virtuoso, 16s - 24s, 64 notes)
+  const motifC = [
+    { f: 880.00, b: 220.00 }, { f: 1046.50, b: 220.00 }, { f: 1318.51, b: 220.00 }, { f: 1046.50, b: 220.00 },
+    { f: 880.00, b: 220.00 }, { f: 659.25, b: 220.00 }, { f: 523.25, b: 220.00 }, { f: 659.25, b: 220.00 },
+    { f: 783.99, b: 196.00 }, { f: 987.77, b: 196.00 }, { f: 1174.66, b: 196.00 }, { f: 987.77, b: 196.00 },
+    { f: 783.99, b: 196.00 }, { f: 587.33, b: 196.00 }, { f: 493.88, b: 196.00 }, { f: 587.33, b: 196.00 },
+  ];
+  for (let r = 0; r < 4; r++) {
+    motifC.forEach(n => notes.push({ freq: n.f, bassFreq: n.b, dur: 0.11 }));
+  }
+
+  // Section D: Sub-Bass Rhythmic Cadence & Seamless Resolution back to Section A (24s - 32s, 64 notes)
+  const motifD = [
+    { f: 349.23, b: 87.31 }, { f: 440.00, b: 87.31 }, { f: 523.25, b: 87.31 }, { f: 698.46, b: 87.31 },
+    { f: 523.25, b: 87.31 }, { f: 440.00, b: 87.31 }, { f: 349.23, b: 87.31 }, { f: 261.63, b: 87.31 },
+    { f: 392.00, b: 98.00 }, { f: 493.88, b: 98.00 }, { f: 587.33, b: 98.00 }, { f: 783.99, b: 98.00 },
+    { f: 587.33, b: 98.00 }, { f: 493.88, b: 98.00 }, { f: 392.00, b: 98.00 }, { f: 293.66, b: 98.00 },
+    { f: 329.63, b: 82.41 }, { f: 415.30, b: 82.41 }, { f: 493.88, b: 82.41 }, { f: 659.25, b: 82.41 },
+    { f: 830.61, b: 82.41 }, { f: 659.25, b: 82.41 }, { f: 493.88, b: 82.41 }, { f: 415.30, b: 82.41 },
+    { f: 329.63, b: 82.41 }, { f: 246.94, b: 82.41 }, { f: 164.81, b: 82.41 }, { f: 246.94, b: 82.41 },
+    { f: 329.63, b: 82.41 }, { f: 415.30, b: 82.41 }, { f: 493.88, b: 82.41 }, { f: 659.25, b: 82.41 },
+  ];
+  for (let r = 0; r < 2; r++) {
+    motifD.forEach(n => notes.push({ freq: n.f, bassFreq: n.b, dur: 0.11 }));
+  }
+
+  return notes;
+})();
+
+const FAST_BOSS_BEAT_NOTES = SOMBO_BATTLE_32S_NOTES;
 
 function stopSynthBgm(): void {
   if (synthLoopTimer) {
@@ -224,7 +279,7 @@ function stopSynthBgm(): void {
   }
 }
 
-function startSynthLoop(notes: { freq: number; dur: number }[], oscType: OscillatorType, speedMs: number, vol: number) {
+function startSynthLoop(notes: { freq: number; dur: number; bassFreq?: number }[], oscType: OscillatorType, speedMs: number, vol: number) {
   stopSynthBgm();
   const c = getCtx();
   if (!c) return;
@@ -241,6 +296,7 @@ function startSynthLoop(notes: { freq: number; dur: number }[], oscType: Oscilla
     noteIdx++;
 
     try {
+      // Lead Oscillator
       const osc = c.createOscillator();
       const noteGain = c.createGain();
       osc.type = oscType;
@@ -255,6 +311,24 @@ function startSynthLoop(notes: { freq: number; dur: number }[], oscType: Oscilla
 
       osc.start(c.currentTime);
       osc.stop(c.currentTime + item.dur + 0.04);
+
+      // Sub-bass Accompaniment (if specified)
+      if (item.bassFreq) {
+        const bassOsc = c.createOscillator();
+        const bassGain = c.createGain();
+        bassOsc.type = 'triangle';
+        bassOsc.frequency.setValueAtTime(item.bassFreq, c.currentTime);
+
+        bassGain.gain.setValueAtTime(0.01, c.currentTime);
+        bassGain.gain.linearRampToValueAtTime(0.4, c.currentTime + 0.02);
+        bassGain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + item.dur);
+
+        bassOsc.connect(bassGain);
+        bassGain.connect(synthGainNode);
+
+        bassOsc.start(c.currentTime);
+        bassOsc.stop(c.currentTime + item.dur + 0.04);
+      }
     } catch {}
   }
 
