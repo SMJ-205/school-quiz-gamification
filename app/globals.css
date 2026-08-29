@@ -576,25 +576,25 @@ body {
   pointer-events: none;
 }
 
-/* Boss Question Soal Box — uses Silkscreen pixel font */
+/* Boss Question Soal Box — uses VT323 CRT terminal font */
 .boss-question-box {
   background: rgba(0, 0, 0, 0.92);
   border: 3.5px solid #ef4444;
   border-radius: 16px;
   box-shadow: 0 0 32px rgba(239,68,68,0.4), inset 0 0 40px rgba(0,0,0,0.6);
-  font-family: 'Silkscreen', monospace, sans-serif;
+  font-family: 'VT323', monospace;
   overflow: hidden;
   box-sizing: border-box;
 }
 
-/* Answer Button Boss Style — Silkscreen retro arcade font */
+/* Answer Button Boss Style — VT323 retro CRT font */
 .boss-answer-btn {
   background: rgba(20, 8, 8, 0.92);
   border: 2.5px solid #7f1d1d;
   border-radius: 14px;
   color: #fef08a;
-  font-family: 'Silkscreen', monospace, sans-serif;
-  font-size: 1.85rem;
+  font-family: 'VT323', monospace;
+  font-size: 2.5rem;
   font-weight: 700;
   cursor: pointer;
   padding: 0.85rem 1rem;
@@ -603,11 +603,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  letter-spacing: 1px;
+  letter-spacing: 3px;
 }
 @media (min-width: 640px) {
   .boss-answer-btn {
-    font-size: 2.35rem;
+    font-size: 3.25rem;
     padding: 1rem 1.25rem;
   }
 }

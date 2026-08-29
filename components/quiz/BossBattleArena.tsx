@@ -808,12 +808,12 @@ export default function BossBattleArena() {
       {/* ── MAIN CENTER ARENA: Question & Answers Centered in Screen ──────────── */}
       <div className="relative z-10 flex-1 flex flex-col justify-center items-center p-3 sm:p-5 my-auto w-full">
 
-        {/* Question & Options Center Container */}
-        <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center my-auto">
+        {/* Question & Options Center Container with distinct vertical gap */}
+        <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10 my-auto">
           
           {/* Question Box */}
           {question && (
-            <div className="boss-question-box w-full p-4 sm:p-6 text-center mb-6 sm:mb-8 md:mb-10 shadow-2xl overflow-hidden">
+            <div className="boss-question-box w-full p-4 sm:p-6 text-center shadow-2xl overflow-hidden">
               {/* Combo badge */}
               {combo >= 2 && (
                 <div className="combo-pop inline-block bg-amber-700 border border-amber-400 text-amber-100 font-pixel font-bold text-xs sm:text-sm px-3 py-0.5 rounded-full mb-3 shadow">
@@ -821,15 +821,15 @@ export default function BossBattleArena() {
                 </div>
               )}
 
-              {/* High contrast, ultra-legible pixelated math font ('Silkscreen') — sized to fit border box */}
+              {/* High contrast, ultra-legible pixelated CRT math font ('VT323') */}
               <div
-                className="text-3xl sm:text-5xl md:text-6xl text-amber-300 font-bold tracking-normal mb-1 leading-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] max-w-full overflow-hidden text-ellipsis whitespace-nowrap px-2"
-                style={{ fontFamily: "'Silkscreen', monospace, sans-serif" }}
+                className="text-5xl sm:text-7xl md:text-8xl text-amber-300 font-bold tracking-wider mb-1 leading-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] max-w-full overflow-hidden text-ellipsis whitespace-nowrap px-2"
+                style={{ fontFamily: "'VT323', monospace" }}
               >
                 {question.a}
-                <span className="text-red-400 mx-1 sm:mx-2.5">{question.op}</span>
+                <span className="text-red-400 mx-2 sm:mx-4">{question.op}</span>
                 {question.b}
-                <span className="text-stone-400 mx-1 sm:mx-2.5">=</span>
+                <span className="text-stone-400 mx-2 sm:mx-3">=</span>
                 <span className="text-stone-500">?</span>
               </div>
 
@@ -856,7 +856,7 @@ export default function BossBattleArena() {
                     className={`boss-answer-btn ${btnClass}`}
                     disabled={answered !== null}
                     onClick={() => handleAnswer(opt)}
-                    style={{ fontFamily: "'Silkscreen', monospace, sans-serif" }}
+                    style={{ fontFamily: "'VT323', monospace" }}
                   >
                     {opt}
                   </button>
