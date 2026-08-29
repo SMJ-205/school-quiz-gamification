@@ -180,6 +180,20 @@ export default function BossBattleArena() {
   const [rageShake, setRageShake]   = useState(false);
   const [heartAnim, setHeartAnim]   = useState(false);
   const [heartCount, setHeartCount] = useState(3);
+  const heartCountRef               = useRef(3);
+
+  const resetGameState = useCallback(() => {
+    heartCountRef.current = 3;
+    setHeartCount(3);
+    setBossHp(BOSS_MAX_HP);
+    setPlayerHp(PLAYER_MAX_HP);
+    setWave(1);
+    setCombo(0);
+    setMaxCombo(0);
+    setTotalScore(0);
+    setMistakes([]);
+    setPhase('intro');
+  }, []);
 
   // Endless state
   const [endlessN, setEndlessN]     = useState(1);
@@ -360,15 +374,7 @@ export default function BossBattleArena() {
             <button
               onClick={() => {
                 setShowAnalysisModal(false);
-                setBossHp(BOSS_MAX_HP);
-                setPlayerHp(PLAYER_MAX_HP);
-                setHeartCount(3);
-                setWave(1);
-                setCombo(0);
-                setMaxCombo(0);
-                setTotalScore(0);
-                setMistakes([]);
-                setPhase('intro');
+                resetGameState();
               }}
               className="btn-pixel !bg-red-900 hover:!bg-red-800 !border-red-600 text-red-200 px-6 py-2 text-xs sm:text-sm font-bold w-full sm:w-auto cursor-pointer"
             >
@@ -492,7 +498,7 @@ export default function BossBattleArena() {
   // ─── Timeout Handler ──────────────────────────────────────────────────────────
 
   function handleTimeout() {
-    if (answered !== null || heartCount <= 0) return;
+    if (answered !== null || heartCountRef.current <= 0) return;
     if (timerRef.current) clearInterval(timerRef.current);
     setAnswered(-1);
     sfxWrong();
@@ -511,7 +517,8 @@ export default function BossBattleArena() {
       ]);
     }
 
-    const nextHearts = Math.max(0, heartCount - 1);
+    heartCountRef.current = Math.max(0, heartCountRef.current - 1);
+    const nextHearts = heartCountRef.current;
     setHeartCount(nextHearts);
     setPlayerHp(Math.round((nextHearts / 3) * 100));
     setCombo(0);
@@ -527,7 +534,7 @@ export default function BossBattleArena() {
   // ─── Answer Handler ───────────────────────────────────────────────────────────
 
   function handleAnswer(opt: number) {
-    if (answered !== null || heartCount <= 0 || !question) return;
+    if (answered !== null || heartCountRef.current <= 0 || !question) return;
     if (timerRef.current) clearInterval(timerRef.current);
 
     const elapsed = (Date.now() - startTime.current) / 1000;
@@ -555,7 +562,8 @@ export default function BossBattleArena() {
       }
 
       if (newCombo % 5 === 0) {
-        const nextHearts = Math.min(3, heartCount + 1);
+        heartCountRef.current = Math.min(3, heartCountRef.current + 1);
+        const nextHearts = heartCountRef.current;
         setHeartCount(nextHearts);
         setPlayerHp(Math.round((nextHearts / 3) * 100));
         addFloat('+1 HATI ❤️', false);
@@ -605,7 +613,8 @@ export default function BossBattleArena() {
         ]);
       }
 
-      const nextHearts = Math.max(0, heartCount - 1);
+      heartCountRef.current = Math.max(0, heartCountRef.current - 1);
+      const nextHearts = heartCountRef.current;
       setHeartCount(nextHearts);
       setPlayerHp(Math.round((nextHearts / 3) * 100));
       setCombo(0);
@@ -824,17 +833,7 @@ export default function BossBattleArena() {
             </button>
 
             <button
-              onClick={() => {
-                setBossHp(BOSS_MAX_HP);
-                setPlayerHp(PLAYER_MAX_HP);
-                setHeartCount(3);
-                setWave(1);
-                setCombo(0);
-                setMaxCombo(0);
-                setTotalScore(0);
-                setMistakes([]);
-                setPhase('intro');
-              }}
+              onClick={() => resetGameState()}
               className="btn-pixel !bg-red-900 hover:!bg-red-800 !border-red-600 text-red-200 w-full py-3 text-sm sm:text-base font-bold flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>🔄</span>
