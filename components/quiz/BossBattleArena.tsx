@@ -813,7 +813,7 @@ export default function BossBattleArena() {
           
           {/* Question Box */}
           {question && (
-            <div className="boss-question-box w-full p-4 sm:p-6 md:p-8 text-center mb-6 sm:mb-8 md:mb-10 shadow-2xl">
+            <div className="boss-question-box w-full p-4 sm:p-6 text-center mb-6 sm:mb-8 md:mb-10 shadow-2xl overflow-hidden">
               {/* Combo badge */}
               {combo >= 2 && (
                 <div className="combo-pop inline-block bg-amber-700 border border-amber-400 text-amber-100 font-pixel font-bold text-xs sm:text-sm px-3 py-0.5 rounded-full mb-3 shadow">
@@ -821,15 +821,15 @@ export default function BossBattleArena() {
                 </div>
               )}
 
-              {/* High contrast, ultra-legible pixelated math font ('Pixelify Sans') */}
+              {/* High contrast, ultra-legible pixelated math font ('Silkscreen') — sized to fit border box */}
               <div
-                className="text-6xl sm:text-8xl md:text-9xl text-amber-300 font-black tracking-widest mb-2 leading-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]"
-                style={{ fontFamily: "'Pixelify Sans', sans-serif" }}
+                className="text-3xl sm:text-5xl md:text-6xl text-amber-300 font-bold tracking-normal mb-1 leading-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] max-w-full overflow-hidden text-ellipsis whitespace-nowrap px-2"
+                style={{ fontFamily: "'Silkscreen', monospace, sans-serif" }}
               >
                 {question.a}
-                <span className="text-red-400 mx-2 sm:mx-4">{question.op}</span>
+                <span className="text-red-400 mx-1 sm:mx-2.5">{question.op}</span>
                 {question.b}
-                <span className="text-stone-400 mx-2 sm:mx-3">=</span>
+                <span className="text-stone-400 mx-1 sm:mx-2.5">=</span>
                 <span className="text-stone-500">?</span>
               </div>
 
@@ -856,7 +856,7 @@ export default function BossBattleArena() {
                     className={`boss-answer-btn ${btnClass}`}
                     disabled={answered !== null}
                     onClick={() => handleAnswer(opt)}
-                    style={{ fontFamily: "'Pixelify Sans', sans-serif" }}
+                    style={{ fontFamily: "'Silkscreen', monospace, sans-serif" }}
                   >
                     {opt}
                   </button>
