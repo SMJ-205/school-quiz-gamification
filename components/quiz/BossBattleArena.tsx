@@ -492,7 +492,8 @@ export default function BossBattleArena() {
   // ─── Timeout Handler ──────────────────────────────────────────────────────────
 
   function handleTimeout() {
-    if (answered !== null) return;
+    if (answered !== null || heartCount <= 0) return;
+    if (timerRef.current) clearInterval(timerRef.current);
     setAnswered(-1);
     sfxWrong();
     triggerHeartDamage();
@@ -510,23 +511,23 @@ export default function BossBattleArena() {
       ]);
     }
 
-    const newHp = Math.max(0, playerHp - 34);
-    setPlayerHp(newHp);
-    setHeartCount(hpToHearts(newHp));
+    const nextHearts = Math.max(0, heartCount - 1);
+    setHeartCount(nextHearts);
+    setPlayerHp(Math.round((nextHearts / 3) * 100));
     setCombo(0);
     addFloat('TIMEOUT! -1 ❤️', false);
     if (wave >= 4) triggerRage();
-    if (newHp <= 0) {
-      setTimeout(() => setPhase('gameover'), 1000);
+    if (nextHearts <= 0) {
+      setTimeout(() => setPhase('gameover'), 800);
     } else {
-      setTimeout(() => afterAnswer(), 1000);
+      setTimeout(() => afterAnswer(), 800);
     }
   }
 
   // ─── Answer Handler ───────────────────────────────────────────────────────────
 
   function handleAnswer(opt: number) {
-    if (answered !== null || !question) return;
+    if (answered !== null || heartCount <= 0 || !question) return;
     if (timerRef.current) clearInterval(timerRef.current);
 
     const elapsed = (Date.now() - startTime.current) / 1000;
@@ -554,9 +555,9 @@ export default function BossBattleArena() {
       }
 
       if (newCombo % 5 === 0) {
-        const regenHp = Math.min(PLAYER_MAX_HP, playerHp + 34);
-        setPlayerHp(regenHp);
-        setHeartCount(hpToHearts(regenHp));
+        const nextHearts = Math.min(3, heartCount + 1);
+        setHeartCount(nextHearts);
+        setPlayerHp(Math.round((nextHearts / 3) * 100));
         addFloat('+1 HATI ❤️', false);
       }
 
@@ -604,14 +605,14 @@ export default function BossBattleArena() {
         ]);
       }
 
-      const newHp = Math.max(0, playerHp - 34);
-      setPlayerHp(newHp);
-      setHeartCount(hpToHearts(newHp));
+      const nextHearts = Math.max(0, heartCount - 1);
+      setHeartCount(nextHearts);
+      setPlayerHp(Math.round((nextHearts / 3) * 100));
       setCombo(0);
       addFloat('SALAH! -1 ❤️', false);
       if (wave >= 4) triggerRage();
-      if (newHp <= 0) {
-        setTimeout(() => setPhase('gameover'), 900);
+      if (nextHearts <= 0) {
+        setTimeout(() => setPhase('gameover'), 800);
         return;
       }
       setTimeout(() => afterAnswer(), 700);
@@ -676,7 +677,7 @@ export default function BossBattleArena() {
 
             {/* Student Player (left) */}
             <div className="flex flex-col items-center gap-1.5 shrink-0">
-              <PixelSprite character={character} pixelSize={0.42} animate />
+              <PixelSprite character={character} pixelSize={0.27} animate />
               <div className="bg-black/80 border border-amber-500/50 text-amber-300 font-pixel text-xs sm:text-sm px-2 py-0.5 rounded shadow">
                 👤 {studentName || 'Petualang'}
               </div>
@@ -884,7 +885,7 @@ export default function BossBattleArena() {
 
             {/* Player character (triumphant) */}
             <div className="flex flex-col items-center gap-2 shrink-0">
-              <PixelSprite character={character} pixelSize={0.45} animate />
+              <PixelSprite character={character} pixelSize={0.26} animate />
               <div className="bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-pixel text-sm px-2 py-0.5 rounded shadow">
                 🏆 {studentName || 'Petualang'}
               </div>
@@ -1121,7 +1122,7 @@ export default function BossBattleArena() {
           {/* Answer Options Grid */}
           {question && (
             <div className="grid grid-cols-2 gap-4 sm:gap-6 w-full">
-              {question.options.map((opt) => {
+              {question.options.map((opt, idx) => {
                 let btnClass = '';
                 if (answered !== null) {
                   if (opt === question.answer) btnClass = 'correct';
@@ -1129,7 +1130,7 @@ export default function BossBattleArena() {
                 }
                 return (
                   <button
-                    key={opt}
+                    key={`q-opt-${question.a}-${question.b}-${idx}`}
                     className={`boss-answer-btn ${btnClass}`}
                     disabled={answered !== null}
                     onClick={() => handleAnswer(opt)}
@@ -1149,7 +1150,7 @@ export default function BossBattleArena() {
 
           {/* Player character + HP hearts */}
           <div className="flex flex-col items-center gap-1">
-            <PixelSprite character={character} pixelSize={0.38} animate />
+            <PixelSprite character={character} pixelSize={0.26} animate />
             <div className="flex gap-1">
               {[1, 2, 3].map((h) => (
                 <span
