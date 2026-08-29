@@ -228,6 +228,159 @@ export default function BossBattleArena() {
     return 0;
   }
 
+  const renderAnalysisModal = () => {
+    if (!showAnalysisModal) return null;
+    return (
+      <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-3 sm:p-5 select-none animate-fadeIn">
+        <div className="relative w-full max-w-2xl crt-arcade-frame bg-[#0d0514] border-4 border-amber-500 rounded-2xl p-4 sm:p-6 shadow-2xl text-stone-100 font-pixel max-h-[90vh] flex flex-col justify-between overflow-y-auto">
+
+          {/* Modal Header */}
+          <div>
+            <div className="flex items-center justify-between border-b-2 border-amber-900/60 pb-3 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl sm:text-3xl">📊</span>
+                <div>
+                  <h2 className="text-lg sm:text-2xl font-bold text-amber-300 tracking-wide">
+                    ANALISIS KESALAHAN & EVALUASI
+                  </h2>
+                  <p className="text-xs sm:text-sm text-stone-400">
+                    Laporan evaluasi pengerjaan soal untuk sesi pembelajaran berikutnya
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowAnalysisModal(false)}
+                className="text-stone-400 hover:text-white text-xl px-2 py-0.5 rounded bg-stone-800 border border-stone-700 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Evaluation Summary Banner */}
+            {mistakes.length === 0 ? (
+              <div className="bg-emerald-950/80 border border-emerald-500 rounded-xl p-4 mb-4 text-center">
+                <span className="text-4xl block mb-2">🎉</span>
+                <h3 className="text-lg font-bold text-emerald-300 mb-1">PERFORMA SEMPURNA!</h3>
+                <p className="text-xs sm:text-sm text-stone-300">
+                  Kamu tidak melakukan kesalahan sama sekali! Semua jawaban dihitung dengan akurasi 100%!
+                </p>
+              </div>
+            ) : (
+              <div>
+                {/* Category Breakdown Cards */}
+                <h3 className="text-sm sm:text-base font-bold text-amber-200 mb-2">
+                  📋 Ringkasan Kesalahan per Tipe Soal:
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+                  <div className="bg-red-950/60 border border-red-800 rounded-lg p-2.5 text-center">
+                    <span className="text-xs text-stone-400 block">Simpan (Carry)</span>
+                    <span className="text-lg sm:text-xl font-bold text-red-300">
+                      {mistakes.filter(m => m.category === 'carrying').length}x Salah
+                    </span>
+                  </div>
+                  <div className="bg-blue-950/60 border border-blue-800 rounded-lg p-2.5 text-center">
+                    <span className="text-xs text-stone-400 block">Pinjam (Borrow)</span>
+                    <span className="text-lg sm:text-xl font-bold text-blue-300">
+                      {mistakes.filter(m => m.category === 'borrowing').length}x Salah
+                    </span>
+                  </div>
+                  <div className="bg-amber-950/60 border border-amber-800 rounded-lg p-2.5 text-center">
+                    <span className="text-xs text-stone-400 block">Hitungan Dasar</span>
+                    <span className="text-lg sm:text-xl font-bold text-amber-300">
+                      {mistakes.filter(m => m.category === 'basic').length}x Salah
+                    </span>
+                  </div>
+                  <div className="bg-purple-950/60 border border-purple-800 rounded-lg p-2.5 text-center">
+                    <span className="text-xs text-stone-400 block">Waktu Habis</span>
+                    <span className="text-lg sm:text-xl font-bold text-purple-300">
+                      {mistakes.filter(m => m.category === 'timeout').length}x Timeout
+                    </span>
+                  </div>
+                </div>
+
+                {/* Top Area for Improvement / Pedagogical Recommendation */}
+                <div className="bg-amber-950/40 border border-amber-600/70 rounded-xl p-3.5 mb-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-lg">💡</span>
+                    <h4 className="text-sm sm:text-base font-bold text-amber-300">
+                      Saran Pembelajaran Sesi Berikutnya:
+                    </h4>
+                  </div>
+                  <p className="text-xs sm:text-sm text-amber-100 leading-relaxed font-mono">
+                    {(() => {
+                      const c = mistakes.filter(m => m.category === 'carrying').length;
+                      const b = mistakes.filter(m => m.category === 'borrowing').length;
+                      const t = mistakes.filter(m => m.category === 'timeout').length;
+                      if (c >= b && c >= t && c > 0) {
+                        return '★ Fokus pada Penjumlahan Simpan: Ingatlah untuk selalu menjumlahkan 1 angka simpanan ke kolom puluhan di depannya saat digit satuan ≥ 10!';
+                      } else if (b >= c && b >= t && b > 0) {
+                        return '★ Fokus pada Pengurangan Pinjam: Saat digit atas lebih kecil, pinjam 10 dari angka puluhan di sebelahnya sebelum mengurangi.';
+                      } else if (t > 0) {
+                        return '★ Tingkatkan Kecepatan: Cobalah perkirakan digit terakhir (satuan) terlebih dahulu untuk mengeliminasi pilihan salah dengan cepat.';
+                      } else {
+                        return '★ Latih ketelitian hitung dasar agar tidak terburu-buru memilih jawaban!';
+                      }
+                    })()}
+                  </p>
+                </div>
+
+                {/* List of Missed Questions */}
+                <h3 className="text-sm sm:text-base font-bold text-stone-300 mb-2">
+                  🔍 Daftar Rincian Soal yang Salah:
+                </h3>
+                <div className="space-y-2 mb-4 max-h-48 overflow-y-auto pr-1">
+                  {mistakes.map((m, idx) => (
+                    <div key={idx} className="bg-black/70 border border-red-900/50 rounded-lg p-2.5 flex items-center justify-between text-xs sm:text-sm">
+                      <div>
+                        <span className="font-bold text-amber-300 mr-2">{m.questionStr}</span>
+                        <span className="text-stone-400 block sm:inline text-[11px]">{m.categoryLabel}</span>
+                      </div>
+                      <div className="text-right shrink-0 ml-2">
+                        <span className="text-emerald-400 font-bold block">Benar: {m.correctAnswer}</span>
+                        <span className="text-red-400 text-[11px]">
+                          Kamu: {m.userAnswer !== null ? m.userAnswer : 'Timeout'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Modal Actions */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-stone-800 pt-3 mt-2">
+            <button
+              onClick={() => setShowAnalysisModal(false)}
+              className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 text-stone-300 px-5 py-2 text-xs sm:text-sm w-full sm:w-auto cursor-pointer"
+            >
+              TUTUP
+            </button>
+
+            <button
+              onClick={() => {
+                setShowAnalysisModal(false);
+                setBossHp(BOSS_MAX_HP);
+                setPlayerHp(PLAYER_MAX_HP);
+                setHeartCount(3);
+                setWave(1);
+                setCombo(0);
+                setMaxCombo(0);
+                setTotalScore(0);
+                setMistakes([]);
+                setPhase('intro');
+              }}
+              className="btn-pixel !bg-red-900 hover:!bg-red-800 !border-red-600 text-red-200 px-6 py-2 text-xs sm:text-sm font-bold w-full sm:w-auto cursor-pointer"
+            >
+              🔄 Ulangi Pertarungan
+            </button>
+          </div>
+
+        </div>
+      </div>
+    );
+  };
+
   // ─── Ultra Fast-Beat BGM for All Sessions with Sombo ────────────────────────
   useEffect(() => {
     startQuizBGM('fast_boss_beat');
@@ -696,6 +849,9 @@ export default function BossBattleArena() {
             </button>
           </div>
         </div>
+
+        {/* Modal Overlay inside early return */}
+        {renderAnalysisModal()}
       </div>
     );
   }
@@ -797,6 +953,9 @@ export default function BossBattleArena() {
             </div>
           )}
         </div>
+
+        {/* Modal Overlay inside early return */}
+        {renderAnalysisModal()}
       </div>
     );
   }
@@ -1051,155 +1210,7 @@ export default function BossBattleArena() {
       </div>
 
       {/* ── ANALISIS KESALAHAN MODAL ─────────────────────────────────────────── */}
-      {showAnalysisModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-3 sm:p-5 select-none animate-fadeIn">
-          <div className="relative w-full max-w-2xl crt-arcade-frame bg-[#0d0514] border-4 border-amber-500 rounded-2xl p-4 sm:p-6 shadow-2xl text-stone-100 font-pixel max-h-[90vh] flex flex-col justify-between overflow-y-auto">
-
-            {/* Modal Header */}
-            <div>
-              <div className="flex items-center justify-between border-b-2 border-amber-900/60 pb-3 mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl sm:text-3xl">📊</span>
-                  <div>
-                    <h2 className="text-lg sm:text-2xl font-bold text-amber-300 tracking-wide">
-                      ANALISIS KESALAHAN & EVALUASI
-                    </h2>
-                    <p className="text-xs sm:text-sm text-stone-400">
-                      Laporan evaluasi pengerjaan soal untuk sesi pembelajaran berikutnya
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowAnalysisModal(false)}
-                  className="text-stone-400 hover:text-white text-xl px-2 py-0.5 rounded bg-stone-800 border border-stone-700 cursor-pointer"
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* Evaluation Summary Banner */}
-              {mistakes.length === 0 ? (
-                <div className="bg-emerald-950/80 border border-emerald-500 rounded-xl p-4 mb-4 text-center">
-                  <span className="text-4xl block mb-2">🎉</span>
-                  <h3 className="text-lg font-bold text-emerald-300 mb-1">PERFORMA SEMPURNA!</h3>
-                  <p className="text-xs sm:text-sm text-stone-300">
-                    Kamu tidak melakukan kesalahan sama sekali! Semua jawaban dihitung dengan akurasi 100%!
-                  </p>
-                </div>
-              ) : (
-                <div>
-                  {/* Category Breakdown Cards */}
-                  <h3 className="text-sm sm:text-base font-bold text-amber-200 mb-2">
-                    📋 Ringkasan Kesalahan per Tipe Soal:
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-                    <div className="bg-red-950/60 border border-red-800 rounded-lg p-2.5 text-center">
-                      <span className="text-xs text-stone-400 block">Simpan (Carry)</span>
-                      <span className="text-lg sm:text-xl font-bold text-red-300">
-                        {mistakes.filter(m => m.category === 'carrying').length}x Salah
-                      </span>
-                    </div>
-                    <div className="bg-blue-950/60 border border-blue-800 rounded-lg p-2.5 text-center">
-                      <span className="text-xs text-stone-400 block">Pinjam (Borrow)</span>
-                      <span className="text-lg sm:text-xl font-bold text-blue-300">
-                        {mistakes.filter(m => m.category === 'borrowing').length}x Salah
-                      </span>
-                    </div>
-                    <div className="bg-amber-950/60 border border-amber-800 rounded-lg p-2.5 text-center">
-                      <span className="text-xs text-stone-400 block">Hitungan Dasar</span>
-                      <span className="text-lg sm:text-xl font-bold text-amber-300">
-                        {mistakes.filter(m => m.category === 'basic').length}x Salah
-                      </span>
-                    </div>
-                    <div className="bg-purple-950/60 border border-purple-800 rounded-lg p-2.5 text-center">
-                      <span className="text-xs text-stone-400 block">Waktu Habis</span>
-                      <span className="text-lg sm:text-xl font-bold text-purple-300">
-                        {mistakes.filter(m => m.category === 'timeout').length}x Timeout
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Top Area for Improvement / Pedagogical Recommendation */}
-                  <div className="bg-amber-950/40 border border-amber-600/70 rounded-xl p-3.5 mb-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-lg">💡</span>
-                      <h4 className="text-sm sm:text-base font-bold text-amber-300">
-                        Saran Pembelajaran Sesi Berikutnya:
-                      </h4>
-                    </div>
-                    <p className="text-xs sm:text-sm text-amber-100 leading-relaxed font-mono">
-                      {(() => {
-                        const c = mistakes.filter(m => m.category === 'carrying').length;
-                        const b = mistakes.filter(m => m.category === 'borrowing').length;
-                        const t = mistakes.filter(m => m.category === 'timeout').length;
-                        if (c >= b && c >= t && c > 0) {
-                          return '★ Fokus pada Penjumlahan Simpan: Ingatlah untuk selalu menjumlahkan 1 angka simpanan ke kolom puluhan di depannya saat digit satuan ≥ 10!';
-                        } else if (b >= c && b >= t && b > 0) {
-                          return '★ Fokus pada Pengurangan Pinjam: Saat digit atas lebih kecil, pinjam 10 dari angka puluhan di sebelahnya sebelum mengurangi.';
-                        } else if (t > 0) {
-                          return '★ Tingkatkan Kecepatan: Cobalah perkirakan digit terakhir (satuan) terlebih dahulu untuk mengeliminasi pilihan salah dengan cepat.';
-                        } else {
-                          return '★ Latih ketelitian hitung dasar agar tidak terburu-buru memilih jawaban!';
-                        }
-                      })()}
-                    </p>
-                  </div>
-
-                  {/* List of Missed Questions */}
-                  <h3 className="text-sm sm:text-base font-bold text-stone-300 mb-2">
-                    🔍 Daftar Rincian Soal yang Salah:
-                  </h3>
-                  <div className="space-y-2 mb-4 max-h-48 overflow-y-auto pr-1">
-                    {mistakes.map((m, idx) => (
-                      <div key={idx} className="bg-black/70 border border-red-900/50 rounded-lg p-2.5 flex items-center justify-between text-xs sm:text-sm">
-                        <div>
-                          <span className="font-bold text-amber-300 mr-2">{m.questionStr}</span>
-                          <span className="text-stone-400 block sm:inline text-[11px]">{m.categoryLabel}</span>
-                        </div>
-                        <div className="text-right shrink-0 ml-2">
-                          <span className="text-emerald-400 font-bold block">Benar: {m.correctAnswer}</span>
-                          <span className="text-red-400 text-[11px]">
-                            Kamu: {m.userAnswer !== null ? m.userAnswer : 'Timeout'}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Modal Actions */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-stone-800 pt-3 mt-2">
-              <button
-                onClick={() => setShowAnalysisModal(false)}
-                className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 text-stone-300 px-5 py-2 text-xs sm:text-sm w-full sm:w-auto cursor-pointer"
-              >
-                TUTUP
-              </button>
-
-              <button
-                onClick={() => {
-                  setShowAnalysisModal(false);
-                  setBossHp(BOSS_MAX_HP);
-                  setPlayerHp(PLAYER_MAX_HP);
-                  setHeartCount(3);
-                  setWave(1);
-                  setCombo(0);
-                  setMaxCombo(0);
-                  setTotalScore(0);
-                  setMistakes([]);
-                  setPhase('intro');
-                }}
-                className="btn-pixel !bg-red-900 hover:!bg-red-800 !border-red-600 text-red-200 px-6 py-2 text-xs sm:text-sm font-bold w-full sm:w-auto cursor-pointer"
-              >
-                🔄 Ulangi Pertarungan
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
+      {renderAnalysisModal()}
 
     </div>
   );
