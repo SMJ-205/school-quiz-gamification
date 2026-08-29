@@ -16,7 +16,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import PixelSprite from '../PixelSprite';
-import { sfxCorrect, sfxWrong, sfxTextBlip, unlockAudioEngine, startQuizBGM } from '@/lib/audioEngine';
+import { sfxCorrect, sfxWrong, sfxTextBlip, unlockAudioEngine, startQuizBGM, stopQuizBGM } from '@/lib/audioEngine';
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -212,7 +212,7 @@ export default function BossBattleArena() {
   useEffect(() => {
     startQuizBGM('fast_boss_beat');
     return () => {
-      startQuizBGM('momo_island');
+      stopQuizBGM();
     };
   }, []);
 

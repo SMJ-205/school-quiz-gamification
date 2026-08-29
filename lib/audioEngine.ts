@@ -273,17 +273,31 @@ export function getActiveBgmTrack(): string {
   return activeTrackId;
 }
 
+export function stopAllBgmMedia(): void {
+  if (typeof window === 'undefined') return;
+  const audio = getBgmAudio();
+  if (audio) {
+    audio.pause();
+    try { audio.currentTime = 0; } catch {}
+  }
+  stopSynthBgm();
+
+  if (typeof document !== 'undefined') {
+    const allAudios = document.querySelectorAll('audio');
+    allAudios.forEach((a) => {
+      a.pause();
+      try { a.currentTime = 0; } catch {}
+    });
+  }
+}
+
 export function startQuizBGM(trackId?: string): void {
   if (typeof window === 'undefined') return;
   window.__QUIZ_BGM_RUNNING__ = true;
   if (trackId) activeTrackId = trackId;
 
-  // Stop any running tracks first
-  const audio = getBgmAudio();
-  if (audio) {
-    audio.pause();
-  }
-  stopSynthBgm();
+  // Stop ALL media & synth loops first so tracks NEVER overlap
+  stopAllBgmMedia();
 
   if (isBgmMuted() || activeTrackId === 'muted') {
     return;
@@ -292,6 +306,7 @@ export function startQuizBGM(trackId?: string): void {
   unlockAudioEngine();
 
   if (activeTrackId === 'momo_island') {
+    const audio = getBgmAudio();
     if (!audio) return;
     audio.muted = false;
     audio.volume = BGM_VOLUME;
@@ -313,20 +328,7 @@ export function startQuizBGM(trackId?: string): void {
 export function stopQuizBGM(): void {
   if (typeof window === 'undefined') return;
   window.__QUIZ_BGM_RUNNING__ = false;
-
-  const audio = getBgmAudio();
-  if (audio) {
-    audio.pause();
-    audio.currentTime = 0;
-  }
-  stopSynthBgm();
-
-  if (typeof document !== 'undefined') {
-    const allAudios = document.querySelectorAll('audio');
-    allAudios.forEach((a) => {
-      a.pause();
-    });
-  }
+  stopAllBgmMedia();
 }
 
 export function stopAllBGM(): void {

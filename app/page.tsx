@@ -14,10 +14,12 @@ import { startQuizBGM, stopQuizBGM } from '@/lib/audioEngine';
 export default function Home() {
   const currentScreen = useGameStore((s) => s.currentScreen);
 
-  // BGM is strictly dedicated to Quiz Library session only
+  // Single global BGM controller for screen switching (prevents track overlap)
   useEffect(() => {
     if (currentScreen === 'quiz_library') {
-      startQuizBGM();
+      startQuizBGM('momo_island');
+    } else if (currentScreen === 'boss_battle') {
+      startQuizBGM('fast_boss_beat');
     } else {
       stopQuizBGM();
     }
