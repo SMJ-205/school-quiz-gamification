@@ -158,6 +158,7 @@ export default function BossBattleArena() {
   const [playerHp, setPlayerHp]     = useState(PLAYER_MAX_HP);
   const [wave, setWave]             = useState(1);
   const [combo, setCombo]           = useState(0);
+  const [maxCombo, setMaxCombo]     = useState(0);
   const [totalScore, setTotalScore] = useState(0);
   const [question, setQuestion]     = useState<BossQuestion | null>(null);
   const [answered, setAnswered]     = useState<number | null>(null);
@@ -361,6 +362,7 @@ export default function BossBattleArena() {
 
       const newCombo = combo + 1;
       setCombo(newCombo);
+      setMaxCombo(m => Math.max(m, newCombo));
       setTotalScore(s => s + dmg);
 
       if (isCritical) {
@@ -599,7 +601,7 @@ export default function BossBattleArena() {
             )}
             <div className="flex justify-between text-base">
               <span className="text-stone-400">Streak Tertinggi:</span>
-              <span className="text-amber-400 font-bold">{combo}x</span>
+              <span className="text-amber-400 font-bold">{maxCombo}x</span>
             </div>
           </div>
 
@@ -611,6 +613,7 @@ export default function BossBattleArena() {
                 setHeartCount(3);
                 setWave(1);
                 setCombo(0);
+                setMaxCombo(0);
                 setTotalScore(0);
                 setPhase('intro');
               }}
