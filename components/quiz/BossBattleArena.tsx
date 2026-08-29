@@ -5,11 +5,12 @@
  * QuickMath Arithmo-Boss Battle — Ruang Kelas Unggulan (Lawan Sombo)
  *
  * Visual & Gameplay fixes:
- *  1. Sombo sprite faces LEFT towards student player with clean outer alpha transparency
- *  2. White cell-shading drop-shadow outline (same as Pak Guru) without white rectangle box
- *  3. Recalibrated mouth overlay position to X=51%, Y=63.6% (100% pixel-aligned over mouth)
- *  4. Question box & 4 answer choice buttons centered in middle of screen
- *  5. Crisp, high-contrast, highly legible retro pixelated font ('Pixelify Sans')
+ *  1. Sombo sprite size synchronized with student player (height-matched)
+ *  2. Sombo sprite faces LEFT towards student player with clean outer alpha transparency
+ *  3. White cell-shading drop-shadow outline (same as Pak Guru & Student Player)
+ *  4. Recalibrated mouth overlay position to X=51%, Y=63.6% (100% pixel-aligned)
+ *  5. Question box & 4 answer choices centered in middle of screen
+ *  6. Crisp, high-contrast, highly legible retro pixelated font ('Pixelify Sans')
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -465,13 +466,13 @@ export default function BossBattleArena() {
               </div>
             </div>
 
-            {/* Sombo sprite (right, facing left towards player) */}
+            {/* Sombo sprite (right, facing left towards player — synchronized height!) */}
             <div className="shrink-0 flex flex-col items-center gap-2">
-              <div className="relative">
+              <div className="relative h-28 sm:h-36 flex items-end justify-center">
                 <img
                   src="/sprites/boss_challenging.png"
                   alt="Sombo"
-                  className="w-32 sm:w-44 object-contain"
+                  className="h-full w-auto object-contain"
                   style={{
                     imageRendering: 'pixelated',
                     filter: WHITE_CELL_SHADING,
@@ -485,7 +486,7 @@ export default function BossBattleArena() {
                     left: '51%',
                     bottom: '63.6%',
                     transform: 'translate(-50%, 50%)',
-                    width: bossMouth ? '13%' : '10%',
+                    width: bossMouth ? '14%' : '10%',
                     height: bossMouth ? '5%' : '2%',
                     borderRadius: '50%',
                     backgroundColor: bossMouth ? 'rgba(20,5,5,0.95)' : 'rgba(45,18,10,0.82)',
@@ -651,15 +652,17 @@ export default function BossBattleArena() {
 
             {/* Sombo sprite — defeated */}
             <div className="shrink-0 flex flex-col items-center gap-2">
-              <img
-                src="/sprites/boss_defeated.png"
-                alt="Sombo Defeated"
-                className="w-28 sm:w-36 object-contain"
-                style={{
-                  imageRendering: 'pixelated',
-                  filter: WHITE_CELL_SHADING,
-                }}
-              />
+              <div className="h-24 sm:h-32 flex items-end justify-center">
+                <img
+                  src="/sprites/boss_defeated.png"
+                  alt="Sombo Defeated"
+                  className="h-full w-auto object-contain"
+                  style={{
+                    imageRendering: 'pixelated',
+                    filter: WHITE_CELL_SHADING,
+                  }}
+                />
+              </div>
               <div className="bg-red-950/90 border border-red-500/50 text-red-300 font-pixel font-bold text-xs sm:text-sm px-2 py-0.5 rounded shadow">
                 😭 SOMBO KALAH!
               </div>
@@ -844,7 +847,7 @@ export default function BossBattleArena() {
 
         </div>
 
-        {/* Bottom Stage Row: Player on Left, Sombo on Right */}
+        {/* Bottom Stage Row: Player on Left, Sombo on Right (synchronized size!) */}
         <div className="w-full max-w-4xl flex items-end justify-between gap-4 mt-auto pt-2">
 
           {/* Player character + HP hearts */}
@@ -872,17 +875,19 @@ export default function BossBattleArena() {
             )}
           </div>
 
-          {/* Sombo sprite (facing left towards player!) */}
+          {/* Sombo sprite (facing left towards player — synchronized height!) */}
           <div className="flex flex-col items-center gap-1">
-            <img
-              src="/sprites/boss_challenging.png"
-              alt="Sombo"
-              className="w-28 sm:w-38 object-contain"
-              style={{
-                imageRendering: 'pixelated',
-                filter: WHITE_CELL_SHADING,
-              }}
-            />
+            <div className="h-24 sm:h-32 flex items-end justify-center">
+              <img
+                src="/sprites/boss_challenging.png"
+                alt="Sombo"
+                className="h-full w-auto object-contain"
+                style={{
+                  imageRendering: 'pixelated',
+                  filter: WHITE_CELL_SHADING,
+                }}
+              />
+            </div>
             <div className="text-red-300 font-pixel font-bold text-xs">SOMBO</div>
           </div>
 
