@@ -492,13 +492,13 @@ export default function BossBattleArena() {
                     transform: 'scaleX(-1)',
                   }}
                 />
-                {/* CSS mouth overlay — calibrated pixel-perfect X=58.5%, Y=64.4% */}
+                {/* CSS mouth overlay — calibrated pixel-perfect X=45.7%, Y=69.7% */}
                 <div
                   aria-hidden="true"
                   style={{
                     position: 'absolute',
-                    left: '58.5%',
-                    bottom: '64.4%',
+                    left: '45.7%',
+                    bottom: '69.7%',
                     transform: 'translate(-50%, 50%)',
                     width: bossMouth ? '13%' : '9%',
                     height: bossMouth ? '4.5%' : '2%',
