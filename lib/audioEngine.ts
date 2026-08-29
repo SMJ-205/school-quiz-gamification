@@ -194,6 +194,14 @@ const LOFI_NOTES = [
   { freq: 220.00, dur: 0.6 }, { freq: 261.63, dur: 0.6 }, { freq: 329.63, dur: 0.6 }, { freq: 523.25, dur: 0.8 },
 ];
 
+// Track 4: Ultra Fast-Beat Arcade Chiptune for Sombo Boss Battle
+const FAST_BOSS_BEAT_NOTES = [
+  { freq: 220.00, dur: 0.09 }, { freq: 440.00, dur: 0.09 }, { freq: 329.63, dur: 0.09 }, { freq: 523.25, dur: 0.11 },
+  { freq: 261.63, dur: 0.09 }, { freq: 392.00, dur: 0.09 }, { freq: 587.33, dur: 0.11 }, { freq: 349.23, dur: 0.09 },
+  { freq: 440.00, dur: 0.09 }, { freq: 659.25, dur: 0.12 }, { freq: 220.00, dur: 0.09 }, { freq: 329.63, dur: 0.09 },
+  { freq: 493.88, dur: 0.11 }, { freq: 587.33, dur: 0.11 }, { freq: 659.25, dur: 0.13 }, { freq: 880.00, dur: 0.14 },
+];
+
 // Track 4: Energetic High-Beat Lo-Fi Track for Sombo Boss Battle
 const HIGH_BEAT_LOFI_NOTES = [
   { freq: 220.00, dur: 0.14 }, { freq: 329.63, dur: 0.14 }, { freq: 440.00, dur: 0.18 }, { freq: 261.63, dur: 0.14 },
@@ -297,8 +305,8 @@ export function startQuizBGM(trackId?: string): void {
     startSynthLoop(CHIPTUNE_NOTES, 'square', 240, 0.12);
   } else if (activeTrackId === 'cozy_lofi') {
     startSynthLoop(LOFI_NOTES, 'triangle', 480, 0.15);
-  } else if (activeTrackId === 'high_beat_lofi') {
-    startSynthLoop(HIGH_BEAT_LOFI_NOTES, 'triangle', 190, 0.18);
+  } else if (activeTrackId === 'fast_boss_beat' || activeTrackId === 'high_beat_lofi') {
+    startSynthLoop(FAST_BOSS_BEAT_NOTES, 'square', 125, 0.20);
   }
 }
 

@@ -208,9 +208,9 @@ export default function BossBattleArena() {
     return 0;
   }
 
-  // ─── High-Beat Lo-Fi BGM for All Sessions with Sombo ────────────────────────
+  // ─── Ultra Fast-Beat BGM for All Sessions with Sombo ────────────────────────
   useEffect(() => {
-    startQuizBGM('high_beat_lofi');
+    startQuizBGM('fast_boss_beat');
     return () => {
       startQuizBGM('momo_island');
     };
@@ -498,10 +498,10 @@ export default function BossBattleArena() {
                   style={{
                     position: 'absolute',
                     left: '45.4%',
-                    bottom: '66.9%',
+                    bottom: '66.95%',
                     transform: 'translate(-50%, 50%)',
-                    width: bossMouth ? '16%' : '9%',
-                    height: bossMouth ? '3%' : '2%',
+                    width: bossMouth ? '12%' : '9%',
+                    height: bossMouth ? '3.5%' : '2%',
                     borderRadius: '45%',
                     backgroundColor: bossMouth ? 'rgba(20,5,5,0.95)' : 'rgba(45,18,10,0.82)',
                     transition: 'height 55ms ease, width 55ms ease',
@@ -510,7 +510,7 @@ export default function BossBattleArena() {
                 />
               </div>
               <div className="bg-red-950/90 border border-red-500/50 text-red-200 font-pixel font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded shadow">
-                😤 SOMBO
+                SOMBO
               </div>
             </div>
 
@@ -680,7 +680,7 @@ export default function BossBattleArena() {
                 />
               </div>
               <div className="bg-red-950/90 border border-red-500/50 text-red-300 font-pixel font-bold text-xs sm:text-sm px-2 py-0.5 rounded shadow">
-                😭 SOMBO KALAH!
+                SOMBO KALAH!
               </div>
             </div>
 
@@ -771,7 +771,7 @@ export default function BossBattleArena() {
         {!isEndless && (
           <div>
             <div className="flex justify-between mb-1 font-pixel text-xs sm:text-sm font-bold text-red-400">
-              <span>😤 SOMBO — {bossHp.toLocaleString()} HP</span>
+              <span>SOMBO — {bossHp.toLocaleString()} HP</span>
               <span>{Math.round(bossPct)}%</span>
             </div>
             <div className="boss-hp-bar-bg h-4 sm:h-5 w-full">
