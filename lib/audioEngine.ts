@@ -69,10 +69,10 @@ export function unlockAudioEngine(): void {
     } catch {}
   }
 
-  // 2. Unlock & Resume BGM HTML5 Audio if designated to run
+  // 2. Unlock & Resume BGM HTML5 Audio if designated to run (strictly for momo_island track)
   const bgm = getBgmAudio();
   if (bgm) {
-    if (window.__QUIZ_BGM_RUNNING__ && !isBgmMuted() && bgm.paused) {
+    if (window.__QUIZ_BGM_RUNNING__ && activeTrackId === 'momo_island' && !isBgmMuted() && bgm.paused) {
       bgm.muted = false;
       bgm.volume = BGM_VOLUME;
       bgm.play().catch(() => {});
@@ -119,7 +119,7 @@ export function setBgmMuted(val: boolean): boolean {
     } else {
       audio.muted = false;
       audio.volume = BGM_VOLUME;
-      if (typeof window !== 'undefined' && window.__QUIZ_BGM_RUNNING__) {
+      if (typeof window !== 'undefined' && window.__QUIZ_BGM_RUNNING__ && activeTrackId === 'momo_island') {
         audio.play().catch(() => {});
       }
     }
