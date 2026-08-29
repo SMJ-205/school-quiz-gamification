@@ -141,7 +141,7 @@ export default function ParentReportModal() {
           <div className="flex items-center gap-2.5">
             <span className="text-xl sm:text-2xl">📋</span>
             <div>
-              <h2 className="text-sm sm:text-base font-bold text-amber-300 leading-tight" style={{ fontFamily: "'Pixelify Sans', sans-serif" }}>
+              <h2 className="text-sm sm:text-base font-bold text-amber-300 leading-tight" style={{ fontFamily: "'VT323', monospace" }}>
                 Laporan Evaluasi untuk Orang Tua & Guru
               </h2>
               <p className="text-[11px] sm:text-xs text-stone-400">

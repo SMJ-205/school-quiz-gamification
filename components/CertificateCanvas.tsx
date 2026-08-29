@@ -177,7 +177,7 @@ export default function CertificateCanvas() {
                   <h1
                     className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#22150A] tracking-wider uppercase leading-tight"
                     style={{
-                      fontFamily: "'Pixelify Sans', sans-serif",
+                      fontFamily: "'VT323', monospace",
                       letterSpacing: '1.5px',
                       textShadow: '0 1px 1px rgba(255,255,255,0.7)',
                     }}
@@ -193,7 +193,7 @@ export default function CertificateCanvas() {
                 {/* LEFT COLUMN: Adventurer Details (7 cols) - Styled with Pixelify Sans & VT323 matching Parent Report */}
                 <div
                   className="col-span-7 flex flex-col gap-3 pl-2 sm:pl-4 text-[#1E130A]"
-                  style={{ fontFamily: "'Pixelify Sans', sans-serif" }}
+                  style={{ fontFamily: "'VT323', monospace" }}
                 >
 
                   {/* Row 1: ADVENTURER */}

@@ -273,10 +273,22 @@ export function getActiveBgmTrack(): string {
   return activeTrackId;
 }
 
+let playPromise: Promise<void> | null = null;
+
 export function stopAllBgmMedia(): void {
   if (typeof window === 'undefined') return;
+  window.__QUIZ_BGM_RUNNING__ = false;
+
   const audio = getBgmAudio();
   if (audio) {
+    if (playPromise) {
+      playPromise
+        .then(() => {
+          audio.pause();
+          try { audio.currentTime = 0; } catch {}
+        })
+        .catch(() => {});
+    }
     audio.pause();
     try { audio.currentTime = 0; } catch {}
   }
@@ -298,6 +310,7 @@ export function startQuizBGM(trackId?: string): void {
 
   // Stop ALL media & synth loops first so tracks NEVER overlap
   stopAllBgmMedia();
+  window.__QUIZ_BGM_RUNNING__ = true; // Re-enable after stopAllBgmMedia
 
   if (isBgmMuted() || activeTrackId === 'muted') {
     return;
@@ -312,9 +325,16 @@ export function startQuizBGM(trackId?: string): void {
     audio.volume = BGM_VOLUME;
     if (audio.paused && !isStartingBgm) {
       isStartingBgm = true;
-      audio.play()
-        .then(() => { isStartingBgm = false; })
-        .catch(() => { isStartingBgm = false; });
+      playPromise = audio.play();
+      playPromise
+        .then(() => {
+          isStartingBgm = false;
+          playPromise = null;
+        })
+        .catch(() => {
+          isStartingBgm = false;
+          playPromise = null;
+        });
     }
   } else if (activeTrackId === '8bit_quest') {
     startSynthLoop(CHIPTUNE_NOTES, 'square', 240, 0.12);
@@ -327,7 +347,6 @@ export function startQuizBGM(trackId?: string): void {
 
 export function stopQuizBGM(): void {
   if (typeof window === 'undefined') return;
-  window.__QUIZ_BGM_RUNNING__ = false;
   stopAllBgmMedia();
 }
 

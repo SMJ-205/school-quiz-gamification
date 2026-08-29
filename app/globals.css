@@ -31,8 +31,8 @@
   --pixel-ink:     #100C09;
   --white:         #FFFDF7;
 
-  /* Typography */
-  --font-pixel:    'Pixelify Sans', sans-serif;
+  /* Typography — Universal VT323 Retro Pixel Theme */
+  --font-pixel:    'VT323', monospace;
   --font-dialogue: 'VT323', monospace;
   --font-cursive:  'Great Vibes', cursive;
   --font-cert-head:'Cinzel', serif;
@@ -47,11 +47,11 @@
 }
 
 html {
-  font-family: var(--font-pixel);
+  font-family: 'VT323', monospace;
 }
 
 body {
-  font-family: var(--font-pixel);
+  font-family: 'VT323', monospace;
   background-color: var(--crt-bg);
   color: var(--white);
   overflow-x: hidden;

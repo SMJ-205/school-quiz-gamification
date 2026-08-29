@@ -16,7 +16,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import PixelSprite from '../PixelSprite';
-import { sfxCorrect, sfxWrong, sfxTextBlip, unlockAudioEngine, startQuizBGM, stopQuizBGM } from '@/lib/audioEngine';
+import { sfxCorrect, sfxWrong, sfxTextBlip, unlockAudioEngine, startQuizBGM, stopQuizBGM, isBgmMuted, toggleBgmMute, isSfxMuted, toggleSfxMute } from '@/lib/audioEngine';
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -171,6 +171,10 @@ export default function BossBattleArena() {
 
   // Endless state
   const [endlessN, setEndlessN]     = useState(1);
+
+  // Audio Mute States
+  const [bgmMutedState, setBgmMutedState] = useState(isBgmMuted());
+  const [sfxMutedState, setSfxMutedState] = useState(isSfxMuted());
 
   // Defeated typewriter
   const [defeatText, setDefeatText]   = useState('');
@@ -760,8 +764,8 @@ export default function BossBattleArena() {
       {/* ── TOP BAR ─────────────────────────────────────────────────────────── */}
       <div className="relative z-20 p-2.5 sm:p-3 bg-black/90 border-b-2 border-red-950 flex flex-col gap-2 font-pixel">
 
-        {/* Mode Label */}
-        <div className="flex items-center justify-between">
+        {/* Mode Label & Audio Controls */}
+        <div className="flex items-center justify-between gap-2">
           <div className={`retro-pill-badge text-xs sm:text-sm py-1 px-3 font-pixel font-bold ${
             isEndless
               ? '!bg-purple-950 !border-purple-500 text-purple-300'
@@ -769,9 +773,40 @@ export default function BossBattleArena() {
           }`}>
             {isEndless ? `⚡ UNLIMITED MATH BATTLE — SOAL #${endlessN}` : `⚔️ WAVE ${wave}/10`}
           </div>
-          <div className="flex items-center gap-1.5 font-pixel text-base sm:text-xl font-bold text-amber-300">
-            <span>🏆</span>
-            <span>{totalScore.toLocaleString()}</span>
+
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Audio Mute/Unmute Controls */}
+            <button
+              onClick={() => {
+                const muted = toggleBgmMute();
+                setBgmMutedState(muted);
+              }}
+              className={`btn-pixel text-xs px-2 py-0.5 sm:px-2.5 sm:py-1 flex items-center gap-1 cursor-pointer ${
+                bgmMutedState ? '!bg-red-950 !border-red-600 text-red-300' : '!bg-stone-800 !border-amber-600 text-amber-300'
+              }`}
+              title={bgmMutedState ? 'Unmute Musik BGM' : 'Mute Musik BGM'}
+            >
+              <span>{bgmMutedState ? '🔇 BGM' : '🎵 BGM'}</span>
+            </button>
+
+            <button
+              onClick={() => {
+                const muted = toggleSfxMute();
+                setSfxMutedState(muted);
+              }}
+              className={`btn-pixel text-xs px-2 py-0.5 sm:px-2.5 sm:py-1 flex items-center gap-1 cursor-pointer ${
+                sfxMutedState ? '!bg-red-950 !border-red-600 text-red-300' : '!bg-stone-800 !border-amber-600 text-amber-300'
+              }`}
+              title={sfxMutedState ? 'Unmute SFX' : 'Mute SFX'}
+            >
+              <span>{sfxMutedState ? '🔇 SFX' : '🔊 SFX'}</span>
+            </button>
+
+            {/* Score */}
+            <div className="flex items-center gap-1 font-pixel text-base sm:text-xl font-bold text-amber-300 ml-1">
+              <span>🏆</span>
+              <span>{totalScore.toLocaleString()}</span>
+            </div>
           </div>
         </div>
 
