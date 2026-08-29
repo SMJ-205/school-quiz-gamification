@@ -469,6 +469,16 @@ export default function BossBattleArena() {
 
   useEffect(() => {
     if (phase !== 'battle') return;
+    heartCountRef.current = 3;
+    setHeartCount(3);
+    setPlayerHp(PLAYER_MAX_HP);
+    setBossHp(BOSS_MAX_HP);
+    setWave(1);
+    setCombo(0);
+    setMaxCombo(0);
+    setTotalScore(0);
+    setMistakes([]);
+    setAnswered(null);
     loadQuestion(1);
   }, [phase, loadQuestion]);
 
@@ -525,10 +535,10 @@ export default function BossBattleArena() {
     addFloat('TIMEOUT! -1 ❤️', false);
     if (wave >= 4) triggerRage();
     if (nextHearts <= 0) {
-      setTimeout(() => setPhase('gameover'), 800);
-    } else {
-      setTimeout(() => afterAnswer(), 800);
+      setTimeout(() => setPhase('gameover'), 500);
+      return;
     }
+    setTimeout(() => afterAnswer(), 800);
   }
 
   // ─── Answer Handler ───────────────────────────────────────────────────────────
