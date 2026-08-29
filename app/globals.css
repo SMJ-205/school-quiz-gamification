@@ -537,41 +537,41 @@ body {
 }
 .combo-pop { animation: comboPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 
-/* Boss Speech Bubble (comic style) */
+/* Boss Speech Bubble (comic style, pointing right toward Sombo) */
 .boss-bubble {
   background: #fffdf7;
-  border: 3px solid #1a0808;
+  border: 3.5px solid #1a0808;
   border-radius: 16px;
   position: relative;
   color: #1a0808;
-  font-family: var(--font-cert-body), system-ui, sans-serif;
-  overflow: visible;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
 }
 
-/* Boss bubble variant — tail points RIGHT toward Sombo */
 .boss-bubble-right::before {
   content: '';
   position: absolute;
-  bottom: 28px;
-  right: -20px;
+  top: 42%;
+  right: -18px;
+  transform: translateY(-50%);
   width: 0;
   height: 0;
-  border-top: 14px solid transparent;
-  border-bottom: 14px solid transparent;
-  border-left: 20px solid #1a0808;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  border-left: 18px solid #1a0808;
   z-index: 10;
   pointer-events: none;
 }
 .boss-bubble-right::after {
   content: '';
   position: absolute;
-  bottom: 31px;
-  right: -14px;
+  top: 42%;
+  right: -13px;
+  transform: translateY(-50%);
   width: 0;
   height: 0;
-  border-top: 11px solid transparent;
-  border-bottom: 11px solid transparent;
-  border-left: 15px solid #fffdf7;
+  border-top: 8.5px solid transparent;
+  border-bottom: 8.5px solid transparent;
+  border-left: 14px solid #fffdf7;
   z-index: 11;
   pointer-events: none;
 }
