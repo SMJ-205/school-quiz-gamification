@@ -1,6 +1,6 @@
 # 🎮 The Growth of Knowledge
 
-> **Petualangan Kuis & Eksplorasi Arsip Pengetahuan** — Sebuah platform gamifikasi kuis berbasis RPG 8-bit retro yang mengubah materi belajar Markdown menjadi pengalaman petualangan interaktif.
+> **Petualangan Kuis & Eksplorasi Arsip Pengetahuan** — Sebuah platform gamifikasi kuis berbasis RPG 8-bit retro yang mengubah materi belajar Markdown dan tantangan hitung cepat matematika menjadi pengalaman petualangan interaktif yang menyenangkan.
 
 ![Home Screen](public/screenshots/screen_home.png)
 
@@ -10,80 +10,70 @@
 
 | Fitur | Deskripsi |
 |---|---|
-| 📜 **Upload Materi Markdown** | Unggah file `.md` berisi materi pelajaran — kuis akan dibuat otomatis |
-| 🎓 **Karakter Pelajar** | Pilih petualang (Murid Laki-laki / Murid Perempuan) & masukkan nama sebelum memulai |
-| 🧑‍🏫 **Dialog & Animasi Pak Guru** | Pertanyaan interaktif typewriting dengan animasi bicara natural & outer cell shading putih |
-| ⭐ **Sistem Poin & Bintang** | Jawaban benar memberikan poin; hasil akhir ditampilkan dengan rating bintang |
-| 👨‍👩‍👧 **Laporan & Analisis Orang Tua** | Rangkuman evaluasi belajar & analisis kesalahan jawab untuk bimbingan orang tua/guru di rumah |
-| 📸 **Capture & Export Ringkasan** | Unduh laporan evaluasi dalam bentuk gambar PNG atau salin format teks rapi ke WhatsApp |
-| 🏆 **Sertifikat Digital** | Sertifikat kelulusan bertema *Ancient Academy* berformat PNG & PDF berkualitas tinggi |
-| 🎵 **Audio BGM & SFX** | Musik latar 8-bit retro + efek suara typewriting; dapat dimatikan kapan saja |
-| 📒 **Integrasi NotebookLM** | Buat soal kuis otomatis dari materi melalui Google NotebookLM |
+| ⚔️ **Sombo Boss Battle (15 Waves)** | Pertarungan QuickMath lawan Arithmo-Boss Sombo di *Ruang Kelas Unggulan* dengan 15 gelombang soal bertahap hingga tingkat kesulitan tertinggi (penjumlahan simpan & pengurangan pinjam) |
+| ❤️ **Sistem 3 Nyawa Tepat (3 Hearts)** | Pemain memiliki tepat 3 kesempatan hati. Setiap jawaban salah atau waktu habis akan menguras 1 hati; rekor streak 5x mengembalikan 1 hati |
+| 📊 **Analisis Kesalahan & Evaluasi Belajar** | Laporan evaluasi interaktif pada layar Kalah, Sombo Kalah, & Unlimited Math yang mengelompokkan rincian kesalahan per tipe soal (`Simpan`, `Pinjam`, `Hitung Dasar`, `Timeout`) serta memberikan saran bimbingan pedagogis terarah |
+| ⚡ **Unlimited Math Battle Mode** | Mode pertarungan tanpa batas soal setelah Sombo dikalahkan untuk mencetak rekor *High Score* tertinggi |
+| 📜 **Upload Materi Markdown** | Unggah file `.md` berisi materi pelajaran — kuis akan dibuat otomatis untuk sesi kelas Pak Guru |
+| 🎓 **Kustomisasi Petualang** | Pilih avatar petualang (Murid Laki-laki / Murid Perempuan) & tentukan nama pemain |
+| 🧑‍🏫 **Dialog & Animasi Pak Guru / Sombo** | Pertanyaan interaktif *typewriting* dalam balon komik stabil dengan animasi gerak mulut natural (*talking cadence*) & *outer cell-shading* |
+| 📺 **Font Universal VT323** | Antarmuka CRT retro diseragamkan dengan font pixelated *VT323* yang tegas dan sangat mudah dibaca |
+| 👨‍👩‍👧 **Laporan Evaluasi Orang Tua** | Rangkuman evaluasi belajar & analisis kesalahan jawab untuk bimbingan di rumah |
+| 📸 **Ekspor Laporan & Sertifikat** | Unduh laporan evaluasi dalam bentuk gambar PNG/WhatsApp serta sertifikat digital kelulusan berkualitas tinggi (PNG & PDF) |
+| 🎵 **Engine Audio BGM & SFX Arcade** | Musik BGM 32-detik *fast-beat arcade synth loop* (dual-channel lead + sub-bass, *100% seamless loop*) + efek suara *8-bit Arcade Power-Hit SFX* |
+| 📒 **Integrasi NotebookLM** | Buat kuis otomatis dari dokumen/materi pelajaran via Google NotebookLM |
 
 ---
 
 ## 🖼️ Tampilan & Alur Aplikasi
 
 ### 1. Halaman Utama — Masukkan Nama & Unggah Materi
-
-Saat pertama membuka aplikasi, pelajar akan:
-1. Memasukkan **nama / nama petualang** di kolom yang tersedia
-2. **Mengunggah file Markdown** (`.md`) berisi materi pelajaran dengan cara **seret & jatuhkan** atau klik area unggah
-3. Menekan **"Coba Kuis Contoh"** untuk langsung mencoba tanpa file — atau klik **"Buat Kuis via NotebookLM"** untuk generate soal otomatis
+Saat pertama membuka aplikasi, pelajar dapat:
+1. Memasukkan **nama petualang** pada kolom yang tersedia
+2. Pilih avatar **Murid Laki-laki** atau **Murid Perempuan**
+3. **Mengunggah file Markdown** (`.md`) atau menekan **"Coba Kuis Contoh"** / **"Buat Kuis via NotebookLM"**
 
 ![Home Screen](public/screenshots/screen_home.png)
 
 ---
 
-### 2. Sesi Kuis — Dialog Pak Guru & Pilihan Jawaban
-
-Saat kuis berlangsung:
-- Pertanyaan muncul dengan animasi **typewriting** dalam **balon komik 2 baris yang stabil** dari Pak Guru
-- Karakter Pak Guru memiliki animasi **gerakan mulut natural (*talking cadence*)** saat teks berjalan dan diam saat jeda/selesai
-- Outline karakter dilapisi **white cell shading** tipis untuk kontras visual optimal
-- Sprite **karakter pelajar** berjalan di bawah panggung perpustakaan ajaib
-- **Progress bar** di atas menampilkan lantai soal dan poin terkumpul
-- Pilih jawaban A / B / C / D, lalu lanjut ke soal berikutnya
-- **BGM** dan **SFX** dapat dimatikan/dihidupkan sewaktu-waktu dari pojok kanan atas
-
-![Quiz Screen](public/screenshots/screen_quiz.png)
+### 2. 🏛️ Pilihan Tempat Belajar (Mode Kuis)
+Pemain dapat memilih antara dua tempat belajar interaktif:
+1. **Perpustakaan Ajaib (Kuis Pak Guru)**: Sesi kuis materi pelajaran sekolah dari file Markdown.
+2. **Ruang Kelas Unggulan (Sombo Boss Battle)**: Pertarungan hitung cepat *QuickMath* 15 Wave melawan Sombo si jenius matematika.
 
 ---
 
-### 3. Layar Hasil & Sertifikat Kelulusan
-
-Setelah semua soal terjawab:
-- Layar menampilkan **Skor Akhir** (dalam poin) dan **Akurasi** (persentase jawaban benar)
-- Animasi perayaan menyelesaikan misi eksplorasi ilmu
-- Tekan **"Buka Sertifikat Penyelesaian"** untuk melihat diploma kelulusan bergaya gulungan kuno (dapat diunduh sebagai PNG atau PDF)
-- Tekan tombol **"Laporan Orang Tua 📋"** untuk membuka evaluasi belajar mendalam
-
-![Result Screen](public/screenshots/screen_result.png)
+### 3. ⚔️ Sesi Pertarungan Boss Sombo & Unlimited Math Battle
+Saat bertarung melawan Sombo:
+- Sombo berhadapan langsung dengan pemain dilengkapi animasi gerak mulut dan indikator HP Boss.
+- Pertarungan terdiri dari **15 Waves** bertahap hingga tingkat kesulitan tertinggi:
+  - **Wave 1 – 4**: Hitungan penjumlahan dasar (limit 6.0s)
+  - **Wave 5 – 8**: Kombinasi penjumlahan & pengurangan (limit 5.0s)
+  - **Wave 9 – 15**: Penjumlahan Simpan (`Carrying`) & Pengurangan Pinjam (`Borrowing`) dengan limit ketat (3.2s – 3.8s)
+- **3 Nyawa Hati (3 Hearts)**: Pemain hanya memiliki 3 kali toleransi kesalahan.
+- **Musik Arcade Dual-Channel 32-Detik**: Musik latar *chiptune* 32 detik bervariasi dengan *seamless looping* + *8-bit Arcade Power-Hit SFX* saat menjawab benar.
+- Mengalahkan Sombo di Wave 15 membuka mode **Unlimited Math Battle** untuk mencetak rekor *High Score*.
 
 ---
 
-### 4. 👨‍👩‍👧 Laporan & Analisis Evaluasi Belajar (Fitur Orang Tua & Guru)
+### 4. 📊 Analisis Kesalahan & Evaluasi Belajar (Fitur Pembelajaran)
+Fitur evaluasi otomatis yang dapat diakses dari layar **Kalah (Game Over)**, **Sombo Kalah**, dan **Unlimited Math Battle**:
+1. **Ringkasan Kesalahan per Tipe Soal**: Statistik berapa kali pemain keliru pada tipe *Penjumlahan Simpan*, *Pengurangan Pinjam*, *Hitungan Dasar*, atau *Waktu Habis (Timeout)*.
+2. **Saran Pembelajaran Sesi Berikutnya**: Analisis otomatis yang memberikan tips bimbingan praktis terarah sesuai area kelemahan utama pemain.
+3. **Rincian Soal yang Salah**: Perbandingan langsung antara kunci jawaban benar dan jawaban pemain/timeout.
 
-Fitur khusus yang dirancang untuk membantu orang tua dan guru memahami performa belajar anak secara menyeluruh setelah kuis selesai:
+---
 
-#### 📊 Poin-poin yang Disajikan:
-1. **Rangkuman Capaian**: Skor total, persentase akurasi, rasio jawaban benar/salah, serta status level pemahaman (*Sangat Menguasai*, *Perlu Latihan*, atau *Perlu Bimbingan Khusus*).
-2. **Analisis Kesalahan Jawab (Poin yang Masih Kurang)**:
-   - Filter khusus untuk melihat hanya soal-soal yang salah dijawab oleh anak.
-   - Perbandingan jelas antara **❌ Jawaban Siswa (Keliru)** dan **✅ Kunci Jawaban Benar**.
-   - **💡 Konsep Kunci / Petunjuk Materi**: Penjelasan ringkas mengenai konsep yang perlu diulang bersama orang tua di rumah.
-3. **Rekomendasi Bimbingan**: Panduan praktis bagi orang tua mengenai topik spesifik yang perlu diperkuat.
-
-#### 📸 Fitur Ekspor & Berbagi Laporan:
-- **📸 Unduh Gambar (PNG)**: Meng-capture seluruh kartu laporan evaluasi menjadi gambar beresolusi tinggi dengan 1 klik.
-- **📋 Salin Ringkasan (WhatsApp Ready)**: Menyalin seluruh laporan performa dan rincian kesalahan jawab ke clipboard dalam format teks rapi, siap dikirimkan ke grup chat keluarga atau wali kelas.
+### 5. 👨‍👩‍👧 Laporan Orang Tua & Sertifikat Digital
+- **Laporan Evaluasi Orang Tua**: Menampilkan skor akhir, akurasi %, ringkasan pemahaman, dan opsi ekspor gambar PNG / salin teks format WhatsApp.
+- **Sertifikat Digital**: Sertifikat kelulusan bertema *Ancient Academy* yang dapat diunduh langsung dalam format PNG atau PDF.
 
 ---
 
 ## 🚀 Cara Menjalankan
 
 ### Prasyarat
-
 - [Node.js](https://nodejs.org/) v18 atau lebih baru
 - npm / yarn / pnpm
 
@@ -101,7 +91,7 @@ npm install
 npm run dev
 ```
 
-Buka [http://localhost:3000](http://localhost:3000) di browser.
+Buka [http://localhost:3000](http://localhost:3000) atau [http://localhost:3001](http://localhost:3001) di browser.
 
 ### Build Produksi
 
@@ -117,82 +107,36 @@ npm start
 ```
 school-quiz-gamification/
 ├── app/
-│   ├── page.tsx                 # Routing & screen switcher
-│   ├── layout.tsx               # Root layout & font
-│   └── globals.css              # Global styles, animasi komik & CRT
+│   ├── page.tsx                 # Global BGM manager & screen switcher
+│   ├── layout.tsx               # Root layout, Google Fonts (VT323)
+│   └── globals.css              # Global styles, tema VT323 & komik CRT
 ├── components/
 │   ├── IngestionScreen.tsx      # Upload Markdown & input nama siswa
-│   ├── CharacterCustomizer.tsx  # Pemilihan avatar (Murid Laki-laki/Perempuan)
-│   ├── ParentReportModal.tsx    # Modal analisis kesalahan jawab & laporan orang tua
+│   ├── CharacterCustomizer.tsx  # Pemilihan avatar petualang
+│   ├── BackgroundSelectScreen.tsx # Pilihan tempat belajar (Perpustakaan / Sesi Sombo)
+│   ├── ParentReportModal.tsx    # Modal laporan evaluasi orang tua & ekspor PNG/WA
 │   ├── CertificateCanvas.tsx    # Render & ekspor sertifikat digital (PNG/PDF)
-│   ├── AntigravityCanvas.tsx    # Layar hasil perayaan kuis
-│   ├── PixelProgressBar.tsx     # Progress bar + tombol audio BGM/SFX
+│   ├── AntigravityCanvas.tsx    # Layar perayaan hasil kuis
+│   ├── PixelProgressBar.tsx     # Progress bar + kontrol audio
 │   └── quiz/
-│       ├── QuestionPanel.tsx    # Dialog komik 2 baris + animasi Pak Guru
-│       └── EnchantedLibrary.tsx # Arena kuis panggung perpustakaan
+│       ├── QuestionPanel.tsx    # Dialog komik Pak Guru
+│       ├── EnchantedLibrary.tsx # Arena kuis perpustakaan ajaib
+│       └── BossBattleArena.tsx  # Sesi 15 Wave Boss Battle Sombo, Unlimited Math, & Analisis Kesalahan Modal
 ├── lib/
-│   ├── audioEngine.ts           # Singleton engine audio BGM & SFX
-│   ├── markdownParser.ts        # Parser materi Markdown → struktur soal kuis
+│   ├── audioEngine.ts           # BGM 32s arcade synth loop, SFX power-hit, & unlock audio engine
+│   ├── markdownParser.ts        # Parser materi Markdown → kuis
 │   └── constants.ts             # Opsi karakter, rating bintang, prompt NotebookLM
 ├── public/
 │   ├── audio/                   # File musik latar (.mp3)
-│   ├── sprites/                 # Sprite karakter (teacher_talking.png, teacher_idle.png)
-│   ├── backgrounds/             # Background perpustakaan retro
+│   ├── sprites/                 # Sprite Pak Guru, Sombo, & Petualang
+│   ├── backgrounds/             # Background perpustakaan & ruang kelas
 │   └── screenshots/             # Dokumentasi screenshot
 └── store/
-    └── useGameStore.ts          # Zustand store: tracking jawaban & state kuis
+    └── useGameStore.ts          # Zustand store: tracking jawaban & state game
 ```
-
----
-
-## 📝 Format File Markdown
-
-File Markdown yang diunggah akan diparse secara otomatis. Gunakan format berikut:
-
-```markdown
----
-title: Sejarah & Pengetahuan Umum
-subject: IPS
-grade: 5
-author: The Growth of Knowledge
----
-
-### Q1
-Siapakah tokoh yang membacakan naskah Proklamasi Kemerdekaan Indonesia?
-- [ ] Mohammad Hatta
-- [x] Ir. Soekarno
-- [ ] Sutan Sjahrir
-- [ ] Achmad Soebardjo
-*Hint: Beliau adalah Presiden pertama Republik Indonesia.*
-
-### Q2
-...
-```
-
----
-
-## 🔊 Pengaturan Audio
-
-| Kontrol | Lokasi | Keterangan |
-|---|---|---|
-| **BGM** | Pojok kanan atas | Musik latar 8-bit retro |
-| **SFX** | Pojok kanan atas / Otomatis | Efek suara klik, blip bicara, benar/salah |
-
----
-
-## 🛠️ Tech Stack
-
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
-- **Bahasa**: TypeScript
-- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/)
-- **Styling**: Vanilla CSS + Tailwind CSS + Google Fonts (Press Start 2P, Outfit, Cinzel, Silkscreen)
-- **Image/PDF Generation**: `html-to-image`, `jspdf`
-- **Audio**: Web Audio API + HTML5 Audio (singleton engine)
-- **Deployment**: [Vercel](https://vercel.com)
 
 ---
 
 ## 📄 Lisensi
 
 MIT License — Bebas digunakan untuk keperluan pendidikan dan penelitian.
-

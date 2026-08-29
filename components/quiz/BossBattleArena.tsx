@@ -222,9 +222,9 @@ export default function BossBattleArena() {
   }, []);
 
   function hpToHearts(hp: number): number {
-    if (hp > 75) return 3;
-    if (hp > 50) return 2;
-    if (hp > 25) return 1;
+    if (hp >= 67) return 3;
+    if (hp >= 34) return 2;
+    if (hp > 0)  return 1;
     return 0;
   }
 
@@ -510,11 +510,11 @@ export default function BossBattleArena() {
       ]);
     }
 
-    const newHp = Math.max(0, playerHp - 30);
+    const newHp = Math.max(0, playerHp - 34);
     setPlayerHp(newHp);
     setHeartCount(hpToHearts(newHp));
     setCombo(0);
-    addFloat('TIMEOUT!', false);
+    addFloat('TIMEOUT! -1 ❤️', false);
     if (wave >= 4) triggerRage();
     if (newHp <= 0) {
       setTimeout(() => setPhase('gameover'), 1000);
@@ -554,10 +554,10 @@ export default function BossBattleArena() {
       }
 
       if (newCombo % 5 === 0) {
-        const regenHp = Math.min(PLAYER_MAX_HP, playerHp + 15);
+        const regenHp = Math.min(PLAYER_MAX_HP, playerHp + 34);
         setPlayerHp(regenHp);
         setHeartCount(hpToHearts(regenHp));
-        addFloat('+15 HP ❤️', false);
+        addFloat('+1 HATI ❤️', false);
       }
 
       // Only trigger defeat transition if in Phase 1 ('battle')!
@@ -604,11 +604,11 @@ export default function BossBattleArena() {
         ]);
       }
 
-      const newHp = Math.max(0, playerHp - 25);
+      const newHp = Math.max(0, playerHp - 34);
       setPlayerHp(newHp);
       setHeartCount(hpToHearts(newHp));
       setCombo(0);
-      addFloat('SALAH! -25', false);
+      addFloat('SALAH! -1 ❤️', false);
       if (wave >= 4) triggerRage();
       if (newHp <= 0) {
         setTimeout(() => setPhase('gameover'), 900);
