@@ -194,6 +194,14 @@ const LOFI_NOTES = [
   { freq: 220.00, dur: 0.6 }, { freq: 261.63, dur: 0.6 }, { freq: 329.63, dur: 0.6 }, { freq: 523.25, dur: 0.8 },
 ];
 
+// Track 4: Energetic High-Beat Lo-Fi Track for Sombo Boss Battle
+const HIGH_BEAT_LOFI_NOTES = [
+  { freq: 220.00, dur: 0.14 }, { freq: 329.63, dur: 0.14 }, { freq: 440.00, dur: 0.18 }, { freq: 261.63, dur: 0.14 },
+  { freq: 392.00, dur: 0.14 }, { freq: 523.25, dur: 0.22 }, { freq: 196.00, dur: 0.14 }, { freq: 293.66, dur: 0.14 },
+  { freq: 349.23, dur: 0.18 }, { freq: 440.00, dur: 0.22 }, { freq: 174.61, dur: 0.14 }, { freq: 261.63, dur: 0.18 },
+  { freq: 329.63, dur: 0.14 }, { freq: 392.00, dur: 0.18 }, { freq: 523.25, dur: 0.25 }, { freq: 440.00, dur: 0.18 },
+];
+
 function stopSynthBgm(): void {
   if (synthLoopTimer) {
     clearInterval(synthLoopTimer);
@@ -231,14 +239,14 @@ function startSynthLoop(notes: { freq: number; dur: number }[], oscType: Oscilla
       osc.frequency.setValueAtTime(item.freq, c.currentTime);
 
       noteGain.gain.setValueAtTime(0.01, c.currentTime);
-      noteGain.gain.linearRampToValueAtTime(1.0, c.currentTime + 0.04);
+      noteGain.gain.linearRampToValueAtTime(1.0, c.currentTime + 0.03);
       noteGain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + item.dur);
 
       osc.connect(noteGain);
       noteGain.connect(synthGainNode);
 
       osc.start(c.currentTime);
-      osc.stop(c.currentTime + item.dur + 0.05);
+      osc.stop(c.currentTime + item.dur + 0.04);
     } catch {}
   }
 
@@ -289,6 +297,8 @@ export function startQuizBGM(trackId?: string): void {
     startSynthLoop(CHIPTUNE_NOTES, 'square', 240, 0.12);
   } else if (activeTrackId === 'cozy_lofi') {
     startSynthLoop(LOFI_NOTES, 'triangle', 480, 0.15);
+  } else if (activeTrackId === 'high_beat_lofi') {
+    startSynthLoop(HIGH_BEAT_LOFI_NOTES, 'triangle', 190, 0.18);
   }
 }
 

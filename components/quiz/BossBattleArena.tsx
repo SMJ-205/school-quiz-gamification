@@ -16,7 +16,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import PixelSprite from '../PixelSprite';
-import { sfxCorrect, sfxWrong, sfxTextBlip, unlockAudioEngine } from '@/lib/audioEngine';
+import { sfxCorrect, sfxWrong, sfxTextBlip, unlockAudioEngine, startQuizBGM } from '@/lib/audioEngine';
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -207,6 +207,14 @@ export default function BossBattleArena() {
     if (hp > 25) return 1;
     return 0;
   }
+
+  // ─── High-Beat Lo-Fi BGM for All Sessions with Sombo ────────────────────────
+  useEffect(() => {
+    startQuizBGM('high_beat_lofi');
+    return () => {
+      startQuizBGM('momo_island');
+    };
+  }, []);
 
   // ─── Intro Typewriter ─────────────────────────────────────────────────────────
 
@@ -459,13 +467,15 @@ export default function BossBattleArena() {
               </div>
             </div>
 
-            {/* Chat Bubble (center, beak points RIGHT to Sombo) */}
+            {/* Chat Bubble (center, beak points RIGHT to Sombo, fit for 2 lines from start) */}
             <div className="flex-1 flex flex-col items-center justify-center">
-              <div className="boss-bubble boss-bubble-right px-4 sm:px-5 py-3.5 sm:py-4 shadow-xl w-full">
-                <p className="font-pixel text-sm sm:text-base md:text-lg text-stone-900 leading-relaxed font-semibold">
-                  {introText}
-                  {introTyping && <span className="animate-pulse">▋</span>}
-                </p>
+              <div className="boss-bubble boss-bubble-right px-4 sm:px-5 py-3.5 sm:py-4 shadow-xl w-full min-h-[90px] sm:min-h-[112px] flex flex-col justify-center">
+                <div className="w-full min-h-[50px] sm:min-h-[64px] flex items-center">
+                  <p className="font-pixel text-sm sm:text-base md:text-lg text-stone-900 leading-relaxed font-semibold">
+                    {introText}
+                    {introTyping && <span className="animate-pulse">▋</span>}
+                  </p>
+                </div>
               </div>
             </div>
 
