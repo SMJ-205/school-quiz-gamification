@@ -677,7 +677,7 @@ export default function BossBattleArena() {
 
             {/* Student Player (left) */}
             <div className="flex flex-col items-center gap-1.5 shrink-0">
-              <PixelSprite character={character} pixelSize={0.31} animate />
+              <PixelSprite character={character} pixelSize={0.33} animate />
               <div className="bg-black/80 border border-amber-500/50 text-amber-300 font-pixel text-xs sm:text-sm px-2 py-0.5 rounded shadow">
                 👤 {studentName || 'Petualang'}
               </div>
@@ -885,7 +885,7 @@ export default function BossBattleArena() {
 
             {/* Player character (triumphant) */}
             <div className="flex flex-col items-center gap-2 shrink-0">
-              <PixelSprite character={character} pixelSize={0.32} animate />
+              <PixelSprite character={character} pixelSize={0.34} animate />
               <div className="bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-pixel text-sm px-2 py-0.5 rounded shadow">
                 🏆 {studentName || 'Petualang'}
               </div>
@@ -1150,7 +1150,7 @@ export default function BossBattleArena() {
 
           {/* Player character + HP hearts */}
           <div className="flex flex-col items-center gap-1">
-            <PixelSprite character={character} pixelSize={0.31} animate />
+            <PixelSprite character={character} pixelSize={0.33} animate />
             <div className="flex gap-1">
               {[1, 2, 3].map((h) => (
                 <span
