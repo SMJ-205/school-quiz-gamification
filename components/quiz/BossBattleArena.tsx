@@ -445,69 +445,68 @@ export default function BossBattleArena() {
         </div>
 
 
-        {/* Comic Panel: full-width bubble on top, characters standing below */}
-        <div className="relative z-10 w-full max-w-3xl crt-arcade-frame bg-[#0d0505] border-4 border-red-900 rounded-2xl p-4 sm:p-6 shadow-2xl">
+        {/* ── Outer wrapper: panel on left, Sombo floats on right absolutely ── */}
+        <div className="relative z-10 w-full max-w-3xl">
 
-          {/* ── ROW 1: Speech Bubble (full width, tail points RIGHT to Sombo) */}
-          <div className="relative mb-5">
-            <div className="boss-bubble boss-bubble-right px-4 sm:px-6 py-4 sm:py-5 shadow-xl w-full">
-              <p className="font-pixel text-sm sm:text-base md:text-lg text-stone-900 leading-relaxed font-semibold">
-                {introText}
-                {introTyping && <span className="animate-pulse">▋</span>}
-              </p>
+          {/* Sombo stands OUTSIDE the panel — absolute right, bottom-aligned */}
+          <div className="absolute right-0 bottom-0 z-20 flex flex-col items-center gap-1.5"
+               style={{ transform: 'translateX(10px)' }}>
+            <div className="relative h-48 sm:h-64 flex items-end justify-center">
+              <img
+                src="/sprites/boss_challenging.png"
+                alt="Sombo"
+                className="h-full w-auto object-contain"
+                style={{
+                  imageRendering: 'pixelated',
+                  filter: WHITE_CELL_SHADING,
+                  transform: 'scaleX(-1)',
+                }}
+              />
+              {/* Mouth overlay — X=49% mirrors scaleX(-1), bottom=65% (lip level) */}
+              <div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  left: '49%',
+                  bottom: '65%',
+                  transform: 'translate(-50%, 50%)',
+                  width: bossMouth ? '14%' : '10%',
+                  height: bossMouth ? '5%' : '2%',
+                  borderRadius: '50%',
+                  backgroundColor: bossMouth ? 'rgba(20,5,5,0.95)' : 'rgba(45,18,10,0.82)',
+                  transition: 'height 55ms ease, width 55ms ease',
+                  pointerEvents: 'none',
+                }}
+              />
+            </div>
+            <div className="bg-red-950/90 border border-red-500/50 text-red-200 font-pixel font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded shadow">
+              😤 SOMBO
             </div>
           </div>
 
-          {/* ── ROW 2: Player (left) ··· Sombo (right) */}
-          <div className="flex flex-row items-end justify-between gap-3 sm:gap-4 px-2">
+          {/* Panel (leaves right margin so Sombo doesn't overlap) */}
+          <div className="crt-arcade-frame bg-[#0d0505] border-4 border-red-900 rounded-2xl p-4 sm:p-6 shadow-2xl"
+               style={{ marginRight: '130px' }}>
 
-            {/* Player character (left) */}
-            <div className="flex flex-col items-center gap-1.5 shrink-0">
-              <PixelSprite character={character} pixelSize={0.45} animate />
-              <div className="bg-black/80 border border-amber-500/50 text-amber-300 font-pixel text-xs sm:text-sm px-2.5 py-0.5 rounded shadow">
-                👤 {studentName || 'Petualang'}
+            {/* Speech Bubble — tail points RIGHT toward Sombo */}
+            <div className="relative mb-5">
+              <div className="boss-bubble boss-bubble-right px-4 sm:px-5 py-4 sm:py-5 shadow-xl w-full">
+                <p className="font-pixel text-sm sm:text-base text-stone-900 leading-relaxed font-semibold">
+                  {introText}
+                  {introTyping && <span className="animate-pulse">▋</span>}
+                </p>
               </div>
             </div>
 
-            {/* Spacer */}
-            <div className="flex-1" />
-
-            {/* Sombo sprite — scaleX(-1) faces LEFT toward player, 1.5× size */}
-            <div className="shrink-0 flex flex-col items-center gap-1.5">
-              <div className="relative h-40 sm:h-52 flex items-end justify-center">
-                <img
-                  src="/sprites/boss_challenging.png"
-                  alt="Sombo"
-                  className="h-full w-auto object-contain"
-                  style={{
-                    imageRendering: 'pixelated',
-                    filter: WHITE_CELL_SHADING,
-                    transform: 'scaleX(-1)',
-                  }}
-                />
-                {/* Mouth overlay — X=49% mirrors scaleX(-1), Y=73.5% (lip-level, not chin) */}
-                <div
-                  aria-hidden="true"
-                  style={{
-                    position: 'absolute',
-                    left: '49%',
-                    bottom: '73.5%',
-                    transform: 'translate(-50%, 50%)',
-                    width: bossMouth ? '14%' : '10%',
-                    height: bossMouth ? '5%' : '2%',
-                    borderRadius: '50%',
-                    backgroundColor: bossMouth ? 'rgba(20,5,5,0.95)' : 'rgba(45,18,10,0.82)',
-                    transition: 'height 55ms ease, width 55ms ease',
-                    pointerEvents: 'none',
-                  }}
-                />
-              </div>
-              <div className="bg-red-950/90 border border-red-500/50 text-red-200 font-pixel font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded shadow">
-                😤 SOMBO
+            {/* Player character bottom-left */}
+            <div className="flex flex-row items-end justify-start gap-3 px-1 mt-2">
+              <div className="flex flex-col items-center gap-1.5 shrink-0">
+                <PixelSprite character={character} pixelSize={0.45} animate />
+                <div className="bg-black/80 border border-amber-500/50 text-amber-300 font-pixel text-xs sm:text-sm px-2.5 py-0.5 rounded shadow">
+                  👤 {studentName || 'Petualang'}
+                </div>
               </div>
             </div>
-
-          </div>
 
           {/* Action Navigation */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-red-950/80">
@@ -546,10 +545,13 @@ export default function BossBattleArena() {
               </button>
             )}
           </div>
-        </div>
+
+          </div>{/* end inner panel */}
+        </div>{/* end outer wrapper */}
       </div>
     );
   }
+
 
   // ── GAMEOVER ───────────────────────────────────────────────────────────────
 
