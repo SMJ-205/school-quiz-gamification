@@ -2,12 +2,12 @@
 
 /**
  * BossBattleArena.tsx
- * QuickMath Arithmo-Boss Battle — Ruang Kelas Unggulan
+ * QuickMath Arithmo-Boss Battle — Ruang Kelas Unggulan (Lawan Sombo)
  *
  * Phases:
- *  1. INTRO   — Comic cutscene: boss menantang player
+ *  1. INTRO   — Comic cutscene: Sombo menantang player
  *  2. BATTLE  — 10 Wave boss fight, soal 2-digit +/−, timer dinamis
- *  3. DEFEATED — Boss kalah, speech bubble, transisi ke Endless
+ *  3. DEFEATED — Sombo kalah, speech bubble, transisi ke Endless
  *  4. ENDLESS  — Survival tanpa batas, timer menyusut eksponensial
  *  5. GAMEOVER — Player HP = 0, layar skor
  */
@@ -44,16 +44,8 @@ interface FloatDmg {
 const BOSS_MAX_HP = 4000;
 const PLAYER_MAX_HP = 100;
 
-// Wave → HP threshold: Boss loses this much HP per wave completion
-const WAVE_PHASES = [
-  { waves: [1, 2, 3], hpTarget: 3000 },
-  { waves: [4, 5, 6], hpTarget: 1800 },
-  { waves: [7, 8, 9], hpTarget: 400  },
-  { waves: [10],       hpTarget: 0    },
-];
-
 const INTRO_SPEECH =
-  'Heh, kalian semua cuma buang-buang waktu kalau mikir bisa ngalahin aku. ' +
+  'Heh, kalian semua cuma buang-buang waktu kalau mikir bisa ngalahin Sombo! ' +
   'Otak jeniusku ini beda kelas! ' +
   'Berani adu hitung cepat lawan aku? ' +
   'Cuma butuh beberapa babak tantangan buat bikin kalian sadar batas kemampuan kalian!';
@@ -61,6 +53,15 @@ const INTRO_SPEECH =
 const DEFEATED_SPEECH =
   'Aaargh! tidak mungkin aku bisa dikalahkan olehmu. ' +
   'Apakah rajin-mu bisa mengalahkan bakat-ku?';
+
+// White outer cell-shading drop-shadow style (same as Pak Guru)
+const WHITE_CELL_SHADING = [
+  'drop-shadow(1px 0px 0px rgba(255,255,255,0.85))',
+  'drop-shadow(-1px 0px 0px rgba(255,255,255,0.85))',
+  'drop-shadow(0px 1px 0px rgba(255,255,255,0.85))',
+  'drop-shadow(0px -1px 0px rgba(255,255,255,0.85))',
+  'drop-shadow(0px 8px 16px rgba(0,0,0,0.85))',
+].join(' ');
 
 // ─── Question Generator ────────────────────────────────────────────────────────
 
@@ -72,7 +73,6 @@ function hasBorrowing(a: number, b: number): boolean {
 }
 
 function genQuestion(wave: number): BossQuestion {
-  // Wave determines difficulty
   const isEarly  = wave <= 3;
   const isMid    = wave >= 4 && wave <= 6;
   const isFierce = wave >= 7;
@@ -81,16 +81,14 @@ function genQuestion(wave: number): BossQuestion {
   let timeLimit: number;
 
   if (isEarly) {
-    // Simple addition, no carry
     op = '+';
     do {
-      a = 10 + Math.floor(Math.random() * 80); // 10..89
+      a = 10 + Math.floor(Math.random() * 80);
       b = 10 + Math.floor(Math.random() * (99 - a));
     } while (hasCarrying(a, b));
     carry = false;
     timeLimit = 6.0;
   } else if (isMid) {
-    // Mixed, 50% with carry/borrow
     op = Math.random() < 0.5 ? '+' : '-';
     carry = Math.random() < 0.5;
     if (op === '+') {
@@ -106,7 +104,6 @@ function genQuestion(wave: number): BossQuestion {
     }
     timeLimit = 5.0;
   } else {
-    // Fierce/climax: dominan carry/borrow
     op = Math.random() < 0.5 ? '+' : '-';
     carry = true;
     if (op === '+') {
@@ -126,7 +123,6 @@ function genQuestion(wave: number): BossQuestion {
   const answer = op === '+' ? a + b : a - b;
   const diffFactor = carry ? 1.35 : 1.0;
 
-  // Generate 4 unique options including correct answer
   const opts = new Set<number>();
   opts.add(answer);
   while (opts.size < 4) {
@@ -171,11 +167,10 @@ export default function BossBattleArena() {
   const [showFlash, setShowFlash]   = useState(false);
   const [rageShake, setRageShake]   = useState(false);
   const [heartAnim, setHeartAnim]   = useState(false);
-  const [heartCount, setHeartCount] = useState(3); // 3 = full, 2, 1, 0
+  const [heartCount, setHeartCount] = useState(3);
 
   // Endless state
   const [endlessN, setEndlessN]     = useState(1);
-  const [endlessScore, setEndlessScore] = useState(0);
 
   // Defeated typewriter
   const [defeatText, setDefeatText]   = useState('');
@@ -191,7 +186,7 @@ export default function BossBattleArena() {
 
   const addFloat = useCallback((text: string, isCritical: boolean) => {
     const id = ++dmgId.current;
-    const x = 30 + Math.random() * 40; // random x 30%..70%
+    const x = 30 + Math.random() * 40;
     setFloatDmgs(prev => [...prev.slice(-4), { id, value: text, isCritical, x }]);
     setTimeout(() => setFloatDmgs(prev => prev.filter(d => d.id !== id)), 1200);
   }, []);
@@ -206,7 +201,6 @@ export default function BossBattleArena() {
     setTimeout(() => setRageShake(false), 600);
   }, []);
 
-  // Compute hearts from HP
   function hpToHearts(hp: number): number {
     if (hp > 75) return 3;
     if (hp > 50) return 2;
@@ -286,7 +280,6 @@ export default function BossBattleArena() {
     setTimePct(100);
   }, []);
 
-  // Start battle
   useEffect(() => {
     if (phase !== 'battle') return;
     loadQuestion(1);
@@ -346,7 +339,6 @@ export default function BossBattleArena() {
 
     if (opt === question.answer) {
       sfxCorrect();
-      // Compute damage
       const speedMult = 1.0 + (qTimeLimit.current - elapsed) / qTimeLimit.current;
       const comboMult = 1.0 + Math.min(combo, 10) * 0.1;
       const dmg = Math.round(100 * speedMult * comboMult * question.difficultyFactor);
@@ -365,7 +357,6 @@ export default function BossBattleArena() {
         addFloat(`-${dmg}`, false);
       }
 
-      // Streak regen: every 5 correct
       if (newCombo % 5 === 0) {
         const regenHp = Math.min(PLAYER_MAX_HP, playerHp + 15);
         setPlayerHp(regenHp);
@@ -382,8 +373,6 @@ export default function BossBattleArena() {
         return;
       }
 
-      // Wave advancement
-      const hpThresholds = [4000, 3000, 1800, 400, 0];
       const targetWave   = 10 - Math.floor((newBossHp / BOSS_MAX_HP) * 10);
       const newWave      = Math.max(wave, Math.min(10, targetWave + 1));
       if (newWave !== wave) setWave(newWave);
@@ -416,31 +405,18 @@ export default function BossBattleArena() {
     }
   }
 
-  // ─── Endless Start ────────────────────────────────────────────────────────────
-
   function startEndless() {
     setEndlessN(1);
-    setEndlessScore(0);
     setPhase('endless');
     setCombo(0);
-    // Player carries remaining HP into endless
     loadEndlessQuestion(1);
   }
-
-  useEffect(() => {
-    if (phase !== 'endless' || !question) return;
-    // update endless score for correct answers tracked via totalScore updates
-  }, [phase, question]);
-
-  // ─── Timer Color ──────────────────────────────────────────────────────────────
 
   function timerClass(pct: number): string {
     if (pct > 60) return 'timer-bar-green';
     if (pct > 30) return 'timer-bar-yellow';
     return `timer-bar-red ${pct <= 29 ? 'timer-bar-blink' : ''}`;
   }
-
-  // ─── Render ───────────────────────────────────────────────────────────────────
 
   const bossPct = Math.max(0, (bossHp / BOSS_MAX_HP) * 100);
 
@@ -456,55 +432,58 @@ export default function BossBattleArena() {
           backgroundPosition: 'center',
         }}
       >
-        <div className="absolute inset-0 bg-black/70" />
+        <div className="absolute inset-0 bg-black/75" />
         {showFlash && <div className="screen-flash" />}
 
         {/* Comic Battle Title */}
         <div className="relative z-10 text-center mb-4">
           <div className="inline-block bg-red-700 border-4 border-red-400 px-6 py-1.5 rounded-full shadow-xl mb-2">
-            <span className="font-pixel text-white text-base sm:text-xl tracking-widest">
-              ⚔️ RUANG KELAS UNGGULAN — BOSS BATTLE
+            <span className="font-sans font-bold text-white text-base sm:text-xl tracking-widest uppercase">
+              ⚔️ RUANG KELAS UNGGULAN — TANTANGAN SOMBO
             </span>
           </div>
         </div>
 
-        {/* Comic Panel: Boss (right) vs Player (left) */}
+        {/* Comic Panel: Player (left) vs Sombo (right) */}
         <div className="relative z-10 w-full max-w-3xl crt-arcade-frame bg-[#0d0505] border-4 border-red-900 rounded-2xl p-4 sm:p-6 shadow-2xl">
-          <div className="flex flex-row items-end gap-4 sm:gap-8 mb-5">
+          <div className="flex flex-row items-end gap-4 sm:gap-8 mb-6">
 
             {/* Player character (left) */}
             <div className="flex flex-col items-center gap-2 shrink-0">
               <PixelSprite character={character} pixelSize={0.45} animate />
-              <div className="bg-black/70 border border-amber-500/40 text-amber-300 font-dialogue text-sm px-2 py-0.5 rounded">
+              <div className="bg-black/80 border border-amber-500/50 text-amber-300 font-sans font-bold text-sm px-2.5 py-0.5 rounded shadow">
                 👤 {studentName || 'Petualang'}
               </div>
             </div>
 
-            {/* Boss speech bubble (pointing RIGHT, toward boss) */}
+            {/* Boss speech bubble */}
             <div className="flex-1 flex flex-col items-start gap-2">
-              <div className="boss-bubble px-4 py-3 shadow-xl mr-4 w-full">
-                <p className="font-dialogue text-base sm:text-xl text-[#1a0808] leading-snug">
+              <div className="boss-bubble px-4 py-3.5 shadow-xl mr-2 w-full">
+                <p className="font-sans font-semibold text-base sm:text-xl text-stone-900 leading-relaxed">
                   {introText}
                   {introTyping && <span className="animate-pulse">▋</span>}
                 </p>
               </div>
             </div>
 
-            {/* Boss sprite (right) */}
-            <div className="shrink-0 flex flex-col items-center gap-2 scale-x-[-1]">
+            {/* Sombo sprite (right, facing left towards player) */}
+            <div className="shrink-0 flex flex-col items-center gap-2">
               <div className="relative">
                 <img
                   src="/sprites/boss_challenging.png"
-                  alt="Boss"
-                  className="w-24 sm:w-32 object-contain drop-shadow-2xl"
-                  style={{ imageRendering: 'pixelated' }}
+                  alt="Sombo"
+                  className="w-24 sm:w-32 object-contain"
+                  style={{
+                    imageRendering: 'pixelated',
+                    filter: WHITE_CELL_SHADING,
+                  }}
                 />
-                {/* CSS mouth overlay on boss */}
+                {/* CSS mouth overlay on Sombo */}
                 <div
                   aria-hidden="true"
                   style={{
                     position: 'absolute',
-                    left: '48%',
+                    left: '52%',
                     bottom: '61%',
                     transform: 'translate(-50%, 50%)',
                     width: bossMouth ? '14%' : '11%',
@@ -516,16 +495,24 @@ export default function BossBattleArena() {
                   }}
                 />
               </div>
-              <div className="bg-red-950/80 border border-red-500/40 text-red-300 font-dialogue text-sm px-2 py-0.5 rounded scale-x-[-1]">
-                😤 SI JENIUS
+              <div className="bg-red-950/90 border border-red-500/50 text-red-200 font-sans font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded shadow">
+                😤 SOMBO
               </div>
             </div>
 
           </div>
 
-          {/* Start Button */}
-          <div className="text-center">
-            {!introTyping && (
+          {/* Action Navigation */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-red-950/80">
+            <button
+              onClick={() => setScreen('background_select')}
+              className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 text-stone-300 px-5 py-2.5 text-xs sm:text-sm inline-flex items-center justify-center gap-2 cursor-pointer shadow-md w-full sm:w-auto"
+            >
+              <span>◀</span>
+              <span>PILIH TEMPAT BELAJAR</span>
+            </button>
+
+            {!introTyping ? (
               <button
                 onClick={() => {
                   unlockAudioEngine();
@@ -533,12 +520,12 @@ export default function BossBattleArena() {
                   setTimeout(() => setShowFlash(false), 400);
                   setTimeout(() => setPhase('battle'), 200);
                 }}
-                className="btn-pixel !bg-red-800 hover:!bg-red-700 !border-red-500 text-white px-8 py-3 text-base sm:text-xl shadow-xl"
+                className="btn-pixel !bg-red-800 hover:!bg-red-700 !border-red-500 text-white px-8 py-3 text-sm sm:text-base font-bold shadow-xl w-full sm:w-auto flex items-center justify-center gap-2"
               >
-                ⚔️ TERIMA TANTANGAN
+                <span>⚔️</span>
+                <span>TERIMA TANTANGAN</span>
               </button>
-            )}
-            {introTyping && (
+            ) : (
               <button
                 onClick={() => {
                   if (introTimerRef.current) clearInterval(introTimerRef.current);
@@ -546,17 +533,11 @@ export default function BossBattleArena() {
                   setIntroTyping(false);
                   setBossMouth(false);
                 }}
-                className="btn-pixel !bg-stone-800 !border-stone-600 text-stone-400 px-6 py-2 text-sm"
+                className="btn-pixel !bg-stone-800 !border-stone-600 text-stone-300 px-6 py-2 text-xs sm:text-sm w-full sm:w-auto"
               >
-                Klik untuk lanjutkan ▶
+                Klik untuk skip ▶
               </button>
             )}
-            <button
-              onClick={() => setScreen('background_select')}
-              className="ml-3 text-stone-500 font-dialogue text-sm underline hover:text-stone-300 transition-colors"
-            >
-              ← Kembali
-            </button>
           </div>
         </div>
       </div>
@@ -571,24 +552,24 @@ export default function BossBattleArena() {
         <div className="absolute inset-0 overdrive-bg opacity-60" />
         <div className="relative z-10 w-full max-w-md crt-arcade-frame bg-[#0d0010] border-4 border-purple-700 rounded-2xl p-6 text-center shadow-2xl">
           <div className="text-5xl mb-3">💔</div>
-          <h2 className="font-pixel text-2xl sm:text-3xl text-red-400 mb-1">PERTARUNGAN SELESAI</h2>
-          <p className="font-dialogue text-stone-400 text-lg mb-5">Kamu kehabisan tenaga...</p>
+          <h2 className="font-sans font-bold text-2xl sm:text-3xl text-red-400 mb-1">PERTARUNGAN SELESAI</h2>
+          <p className="font-sans text-stone-400 text-base mb-5">Kamu kehabisan tenaga...</p>
 
-          <div className="bg-black/60 border border-purple-800 rounded-xl p-4 mb-5 space-y-2">
-            <div className="flex justify-between font-dialogue text-lg">
-              <span className="text-stone-400">Total Damage ke Boss:</span>
+          <div className="bg-black/60 border border-purple-800 rounded-xl p-4 mb-5 space-y-2 font-sans">
+            <div className="flex justify-between text-base">
+              <span className="text-stone-400">Total Damage ke Sombo:</span>
               <span className="text-amber-300 font-bold">{totalScore.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between font-dialogue text-lg">
-              <span className="text-stone-400">Boss HP Sisa:</span>
+            <div className="flex justify-between text-base">
+              <span className="text-stone-400">Sombo HP Sisa:</span>
               <span className="text-red-400 font-bold">{bossHp.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between font-dialogue text-lg">
+            <div className="flex justify-between text-base">
               <span className="text-stone-400">Wave Tertinggi:</span>
               <span className="text-purple-300 font-bold">Wave {wave}</span>
             </div>
             {phase === 'gameover' && endlessN > 1 && (
-              <div className="flex justify-between font-dialogue text-lg">
+              <div className="flex justify-between text-base">
                 <span className="text-stone-400">Soal Endless:</span>
                 <span className="text-cyan-300 font-bold">{endlessN - 1}</span>
               </div>
@@ -606,15 +587,18 @@ export default function BossBattleArena() {
                 setTotalScore(0);
                 setPhase('intro');
               }}
-              className="btn-pixel !bg-red-900 hover:!bg-red-800 !border-red-600 text-red-200 w-full py-3 text-base"
+              className="btn-pixel !bg-red-900 hover:!bg-red-800 !border-red-600 text-red-200 w-full py-3 text-sm sm:text-base font-bold flex items-center justify-center gap-2"
             >
-              🔄 COBA LAGI
+              <span>🔄</span>
+              <span>COBA LAGI</span>
             </button>
+
             <button
               onClick={() => setScreen('background_select')}
-              className="btn-pixel !bg-stone-800 !border-stone-600 text-stone-300 w-full py-3 text-sm"
+              className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 text-stone-300 w-full py-3 text-xs sm:text-sm flex items-center justify-center gap-2"
             >
-              ← Pilih Tempat Belajar
+              <span>◀</span>
+              <span>PILIH TEMPAT BELAJAR</span>
             </button>
           </div>
         </div>
@@ -622,7 +606,7 @@ export default function BossBattleArena() {
     );
   }
 
-  // ── DEFEATED (Boss kalah) ─────────────────────────────────────────────────
+  // ── DEFEATED (Sombo kalah) ─────────────────────────────────────────────────
 
   if (phase === 'defeated') {
     return (
@@ -639,51 +623,53 @@ export default function BossBattleArena() {
 
         <div className="relative z-10 text-center mb-4">
           <div className="inline-block bg-emerald-800 border-4 border-emerald-400 px-5 py-1.5 rounded-full shadow-xl">
-            <span className="font-pixel text-emerald-200 text-base sm:text-xl tracking-widest">
-              🏆 BOSS DIKALAHKAN!
+            <span className="font-sans font-bold text-emerald-200 text-base sm:text-xl tracking-widest uppercase">
+              🏆 SOMBO DIKALAHKAN!
             </span>
           </div>
         </div>
 
         <div className="relative z-10 w-full max-w-3xl crt-arcade-frame bg-[#040d05] border-4 border-emerald-800 rounded-2xl p-4 sm:p-6 shadow-2xl">
-          {/* Boss defeated layout */}
           <div className="flex flex-row items-end gap-4 sm:gap-8 mb-5">
 
             {/* Player character (triumphant) */}
             <div className="flex flex-col items-center gap-2 shrink-0">
               <PixelSprite character={character} pixelSize={0.45} animate />
-              <div className="bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-dialogue text-sm px-2 py-0.5 rounded">
+              <div className="bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-sans font-bold text-sm px-2 py-0.5 rounded shadow">
                 🏆 {studentName || 'Petualang'}
               </div>
             </div>
 
-            {/* Defeated speech bubble → boss */}
+            {/* Defeated speech bubble */}
             <div className="flex-1 flex flex-col items-start gap-2">
-              <div className="boss-bubble px-4 py-3 shadow-xl mr-4 w-full border-red-400/60">
-                <p className="font-dialogue text-base sm:text-xl text-[#1a0808] leading-snug">
+              <div className="boss-bubble px-4 py-3 shadow-xl mr-2 w-full border-red-400/60">
+                <p className="font-sans font-semibold text-base sm:text-xl text-stone-900 leading-relaxed">
                   {defeatText}
                   {defeatTyping && <span className="animate-pulse">▋</span>}
                 </p>
               </div>
             </div>
 
-            {/* Boss sprite — defeated, mirrored */}
+            {/* Sombo sprite — defeated (crying on floor, facing left) */}
             <div className="shrink-0 flex flex-col items-center gap-2">
               <img
                 src="/sprites/boss_defeated.png"
-                alt="Boss Defeated"
-                className="w-20 sm:w-28 object-contain drop-shadow-2xl"
-                style={{ imageRendering: 'pixelated' }}
+                alt="Sombo Defeated"
+                className="w-20 sm:w-28 object-contain"
+                style={{
+                  imageRendering: 'pixelated',
+                  filter: WHITE_CELL_SHADING,
+                }}
               />
-              <div className="bg-red-950/80 border border-red-500/40 text-red-400 font-dialogue text-sm px-2 py-0.5 rounded">
-                😭 KALAH!
+              <div className="bg-red-950/90 border border-red-500/50 text-red-300 font-sans font-bold text-xs sm:text-sm px-2 py-0.5 rounded shadow">
+                😭 SOMBO KALAH!
               </div>
             </div>
 
           </div>
 
           {/* Stats & Proceed */}
-          <div className="bg-black/50 border border-emerald-900 rounded-xl p-3 mb-4 grid grid-cols-2 gap-2 font-dialogue text-base sm:text-lg">
+          <div className="bg-black/60 border border-emerald-900 rounded-xl p-3.5 mb-4 grid grid-cols-2 gap-2 font-sans text-base sm:text-lg">
             <div className="text-stone-400">Total Damage:</div>
             <div className="text-amber-300 font-bold text-right">{totalScore.toLocaleString()}</div>
             <div className="text-stone-400">HP Tersisa:</div>
@@ -698,9 +684,10 @@ export default function BossBattleArena() {
                   setTimeout(() => setShowFlash(false), 500);
                   setTimeout(() => startEndless(), 250);
                 }}
-                className="btn-pixel !bg-purple-900 hover:!bg-purple-800 !border-purple-500 text-purple-200 px-8 py-3 text-base sm:text-xl shadow-xl"
+                className="btn-pixel !bg-purple-900 hover:!bg-purple-800 !border-purple-500 text-purple-200 px-8 py-3 text-base sm:text-xl font-bold shadow-xl flex items-center justify-center gap-2 mx-auto"
               >
-                ⚡ OVERDRIVE MODE — LANJUTKAN!
+                <span>⚡</span>
+                <span>OVERDRIVE MODE — LANJUTKAN!</span>
               </button>
             </div>
           )}
@@ -745,28 +732,28 @@ export default function BossBattleArena() {
       </div>
 
       {/* ── TOP BAR ─────────────────────────────────────────────────────────── */}
-      <div className="relative z-20 p-2 sm:p-3 bg-black/85 border-b-2 border-red-950 flex flex-col gap-2">
+      <div className="relative z-20 p-2.5 sm:p-3 bg-black/90 border-b-2 border-red-950 flex flex-col gap-2 font-sans">
 
         {/* Mode Label */}
         <div className="flex items-center justify-between">
-          <div className={`retro-pill-badge text-xs sm:text-sm py-1 px-3 ${
+          <div className={`retro-pill-badge text-xs sm:text-sm py-1 px-3 font-sans font-bold ${
             isEndless
               ? '!bg-purple-950 !border-purple-500 text-purple-300'
               : '!bg-red-950 !border-red-600 text-red-300'
           }`}>
             {isEndless ? `⚡ OVERDRIVE MODE — SOAL #${endlessN}` : `⚔️ WAVE ${wave}/10`}
           </div>
-          <div className="flex items-center gap-1.5 font-dialogue text-base sm:text-xl text-amber-300">
+          <div className="flex items-center gap-1.5 font-sans text-base sm:text-xl font-bold text-amber-300">
             <span>🏆</span>
             <span>{totalScore.toLocaleString()}</span>
           </div>
         </div>
 
-        {/* Boss HP Bar */}
+        {/* Sombo HP Bar */}
         {!isEndless && (
           <div>
-            <div className="flex justify-between mb-1 font-dialogue text-xs sm:text-sm text-red-400">
-              <span>😤 SI JENIUS — {bossHp.toLocaleString()} HP</span>
+            <div className="flex justify-between mb-1 font-sans text-xs sm:text-sm font-bold text-red-400">
+              <span>😤 SOMBO — {bossHp.toLocaleString()} HP</span>
               <span>{Math.round(bossPct)}%</span>
             </div>
             <div className="boss-hp-bar-bg h-4 sm:h-5 w-full">
@@ -778,7 +765,7 @@ export default function BossBattleArena() {
           </div>
         )}
         {isEndless && (
-          <div className="text-center font-dialogue text-sm text-purple-300">
+          <div className="text-center font-sans text-sm font-semibold text-purple-300">
             ⏳ Timer menyusut... bertahan selama mungkin!
           </div>
         )}
@@ -786,7 +773,7 @@ export default function BossBattleArena() {
         {/* Timer Bar */}
         {question && (
           <div>
-            <div className="flex justify-between mb-0.5 font-dialogue text-xs text-stone-400">
+            <div className="flex justify-between mb-0.5 font-sans text-xs font-bold text-stone-300">
               <span>⏱ WAKTU</span>
               <span>{timeLeft.toFixed(1)}s</span>
             </div>
@@ -805,26 +792,26 @@ export default function BossBattleArena() {
 
         {/* Question Box */}
         {question && (
-          <div className="boss-question-box max-w-xl mx-auto w-full p-4 sm:p-6 text-center mb-4">
+          <div className="boss-question-box max-w-xl mx-auto w-full p-4 sm:p-6 text-center mb-3">
             {/* Combo badge */}
             {combo >= 2 && (
-              <div className="combo-pop inline-block bg-amber-700 border border-amber-400 text-amber-200 font-pixel text-xs sm:text-sm px-3 py-0.5 rounded-full mb-2 shadow">
+              <div className="combo-pop inline-block bg-amber-700 border border-amber-400 text-amber-100 font-sans font-bold text-xs sm:text-sm px-3 py-0.5 rounded-full mb-2 shadow">
                 🔥 {combo}x STREAK!
               </div>
             )}
 
-            {/* The math question */}
-            <div className="font-pixel text-4xl sm:text-6xl md:text-7xl text-white font-black tracking-wider mb-2 leading-none">
+            {/* Crisp, easy-to-read math question font */}
+            <div className="font-sans font-bold text-5xl sm:text-7xl md:text-8xl text-amber-300 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] mb-2 leading-none">
               {question.a}
               <span className="text-red-400 mx-2 sm:mx-4">{question.op}</span>
               {question.b}
-              <span className="text-stone-500 mx-2">=</span>
-              <span className="text-stone-600">?</span>
+              <span className="text-stone-400 mx-2 sm:mx-3">=</span>
+              <span className="text-stone-500">?</span>
             </div>
 
             {question.hasCarryBorrow && (
-              <div className="font-dialogue text-xs text-red-500 mb-1 opacity-80">
-                {question.op === '+' ? '★ Simpan' : '★ Pinjam'}
+              <div className="font-sans text-xs sm:text-sm font-bold text-red-400 opacity-90">
+                {question.op === '+' ? '★ Simpan (Carrying)' : '★ Pinjam (Borrowing)'}
               </div>
             )}
           </div>
@@ -853,7 +840,7 @@ export default function BossBattleArena() {
           </div>
         )}
 
-        {/* Bottom row: player + hearts + boss sprite */}
+        {/* Bottom row: player + hearts + Sombo sprite */}
         <div className="flex items-end justify-between gap-4">
 
           {/* Player character + HP hearts */}
@@ -869,27 +856,30 @@ export default function BossBattleArena() {
                 </span>
               ))}
             </div>
-            <div className="font-dialogue text-xs text-stone-400">{playerHp} HP</div>
+            <div className="font-sans font-bold text-xs text-stone-300">{playerHp} HP</div>
           </div>
 
           {/* Wave / Endless info */}
-          <div className="text-center font-dialogue text-stone-400 text-sm hidden sm:block">
+          <div className="text-center font-sans font-bold text-stone-300 text-sm hidden sm:block">
             {isEndless ? (
               <span className="text-purple-400">⚡ OVERDRIVE<br />Soal #{endlessN}</span>
             ) : (
-              <span>Boss HP<br /><strong className="text-red-400">{bossHp.toLocaleString()}</strong></span>
+              <span>Sombo HP<br /><strong className="text-red-400">{bossHp.toLocaleString()}</strong></span>
             )}
           </div>
 
-          {/* Boss sprite */}
-          <div className="flex flex-col items-center gap-1 scale-x-[-1]">
+          {/* Sombo sprite (facing left) */}
+          <div className="flex flex-col items-center gap-1">
             <img
               src="/sprites/boss_challenging.png"
-              alt="Boss"
+              alt="Sombo"
               className="w-20 sm:w-28 object-contain"
-              style={{ imageRendering: 'pixelated', filter: 'drop-shadow(0 4px 16px rgba(220,38,38,0.6))' }}
+              style={{
+                imageRendering: 'pixelated',
+                filter: WHITE_CELL_SHADING,
+              }}
             />
-            <div className="text-red-400 font-dialogue text-xs scale-x-[-1]">SI JENIUS</div>
+            <div className="text-red-300 font-sans font-bold text-xs">SOMBO</div>
           </div>
 
         </div>
@@ -897,17 +887,18 @@ export default function BossBattleArena() {
       </div>
 
       {/* ── BOTTOM BAR ──────────────────────────────────────────────────────── */}
-      <div className="relative z-20 p-2 sm:p-3 bg-black/85 border-t-2 border-red-950 flex items-center justify-between font-dialogue text-xs sm:text-sm text-stone-400">
-        <div className="flex items-center gap-1.5">
+      <div className="relative z-20 p-2 sm:p-3 bg-black/90 border-t-2 border-red-950 flex items-center justify-between font-sans text-xs sm:text-sm text-stone-300">
+        <div className="flex items-center gap-1.5 font-bold">
           <span className={`w-2 h-2 rounded-full ${isEndless ? 'bg-purple-400' : 'bg-red-400'} animate-pulse`} />
           <span>{isEndless ? 'OVERDRIVE' : `WAVE ${wave}/10`}</span>
         </div>
-        <div className="text-stone-500">Combo: <span className="text-amber-400 font-bold">{combo}x</span></div>
+        <div className="text-stone-400 font-medium">Combo: <span className="text-amber-400 font-bold">{combo}x</span></div>
         <button
           onClick={() => setScreen('background_select')}
-          className="text-stone-600 hover:text-stone-400 underline text-xs transition-colors"
+          className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 text-stone-300 px-3 py-1 text-xs inline-flex items-center gap-1.5 cursor-pointer"
         >
-          Menyerah ↩
+          <span>◀</span>
+          <span>PILIH TEMPAT BELAJAR</span>
         </button>
       </div>
 
