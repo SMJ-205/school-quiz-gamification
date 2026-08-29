@@ -4,11 +4,12 @@
  * BossBattleArena.tsx
  * QuickMath Arithmo-Boss Battle — Ruang Kelas Unggulan (Lawan Sombo)
  *
- * Updates:
- *  1. Sombo sprite enlarged & aligned cleanly with white cell-shading
- *  2. Mouth overlay position recalibrated to X=40%, Y=61.5% (pixel-aligned)
- *  3. Question box & 4 answer choices centered in middle of screen
- *  4. High-contrast, legible retro pixelated font ('Pixelify Sans')
+ * Visual & Gameplay fixes:
+ *  1. Sombo sprite faces LEFT towards student player with clean outer alpha transparency
+ *  2. White cell-shading drop-shadow outline (same as Pak Guru) without white rectangle box
+ *  3. Recalibrated mouth overlay position to X=51%, Y=63.6% (100% pixel-aligned over mouth)
+ *  4. Question box & 4 answer choice buttons centered in middle of screen
+ *  5. Crisp, high-contrast, highly legible retro pixelated font ('Pixelify Sans')
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -53,12 +54,12 @@ const DEFEATED_SPEECH =
   'Aaargh! tidak mungkin aku bisa dikalahkan olehmu. ' +
   'Apakah rajin-mu bisa mengalahkan bakat-ku?';
 
-// White outer cell-shading drop-shadow style (same as Pak Guru)
+// White outer cell-shading drop-shadow style (same as Pak Guru & Student Player)
 const WHITE_CELL_SHADING = [
-  'drop-shadow(1.5px 0px 0px rgba(255,255,255,0.9))',
-  'drop-shadow(-1.5px 0px 0px rgba(255,255,255,0.9))',
-  'drop-shadow(0px 1.5px 0px rgba(255,255,255,0.9))',
-  'drop-shadow(0px -1.5px 0px rgba(255,255,255,0.9))',
+  'drop-shadow(1.5px 0px 0px rgba(255,255,255,0.95))',
+  'drop-shadow(-1.5px 0px 0px rgba(255,255,255,0.95))',
+  'drop-shadow(0px 1.5px 0px rgba(255,255,255,0.95))',
+  'drop-shadow(0px -1.5px 0px rgba(255,255,255,0.95))',
   'drop-shadow(0px 8px 16px rgba(0,0,0,0.85))',
 ].join(' ');
 
@@ -464,7 +465,7 @@ export default function BossBattleArena() {
               </div>
             </div>
 
-            {/* Sombo sprite (right, facing left towards player - enlarged!) */}
+            {/* Sombo sprite (right, facing left towards player) */}
             <div className="shrink-0 flex flex-col items-center gap-2">
               <div className="relative">
                 <img
@@ -476,13 +477,13 @@ export default function BossBattleArena() {
                     filter: WHITE_CELL_SHADING,
                   }}
                 />
-                {/* CSS mouth overlay on Sombo — calibrated X=40%, Y=61.5% */}
+                {/* CSS mouth overlay on Sombo — calibrated X=51%, Y=63.6% */}
                 <div
                   aria-hidden="true"
                   style={{
                     position: 'absolute',
-                    left: '40%',
-                    bottom: '61.5%',
+                    left: '51%',
+                    bottom: '63.6%',
                     transform: 'translate(-50%, 50%)',
                     width: bossMouth ? '13%' : '10%',
                     height: bossMouth ? '5%' : '2%',
@@ -648,7 +649,7 @@ export default function BossBattleArena() {
               </div>
             </div>
 
-            {/* Sombo sprite — defeated (enlarged!) */}
+            {/* Sombo sprite — defeated */}
             <div className="shrink-0 flex flex-col items-center gap-2">
               <img
                 src="/sprites/boss_defeated.png"
@@ -871,7 +872,7 @@ export default function BossBattleArena() {
             )}
           </div>
 
-          {/* Sombo sprite (facing left - enlarged!) */}
+          {/* Sombo sprite (facing left towards player!) */}
           <div className="flex flex-col items-center gap-1">
             <img
               src="/sprites/boss_challenging.png"
