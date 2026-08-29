@@ -497,12 +497,12 @@ export default function BossBattleArena() {
                   aria-hidden="true"
                   style={{
                     position: 'absolute',
-                    left: '45.7%',
-                    bottom: '69.7%',
+                    left: '45.4%',
+                    bottom: '66.9%',
                     transform: 'translate(-50%, 50%)',
-                    width: bossMouth ? '13%' : '9%',
-                    height: bossMouth ? '4.5%' : '2%',
-                    borderRadius: '50%',
+                    width: bossMouth ? '16%' : '9%',
+                    height: bossMouth ? '3%' : '2%',
+                    borderRadius: '45%',
                     backgroundColor: bossMouth ? 'rgba(20,5,5,0.95)' : 'rgba(45,18,10,0.82)',
                     transition: 'height 55ms ease, width 55ms ease',
                     pointerEvents: 'none',
@@ -813,16 +813,19 @@ export default function BossBattleArena() {
           
           {/* Question Box */}
           {question && (
-            <div className="boss-question-box w-full p-4 sm:p-6 text-center mb-4 shadow-2xl">
+            <div className="boss-question-box w-full p-4 sm:p-6 md:p-8 text-center mb-6 sm:mb-8 md:mb-10 shadow-2xl">
               {/* Combo badge */}
               {combo >= 2 && (
-                <div className="combo-pop inline-block bg-amber-700 border border-amber-400 text-amber-100 font-pixel font-bold text-xs sm:text-sm px-3 py-0.5 rounded-full mb-2 shadow">
+                <div className="combo-pop inline-block bg-amber-700 border border-amber-400 text-amber-100 font-pixel font-bold text-xs sm:text-sm px-3 py-0.5 rounded-full mb-3 shadow">
                   🔥 {combo}x STREAK!
                 </div>
               )}
 
-              {/* High contrast, ultra-legible pixelated math font */}
-              <div className="font-pixel text-5xl sm:text-7xl md:text-8xl text-amber-300 font-black tracking-widest mb-2 leading-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
+              {/* High contrast, ultra-legible pixelated math font ('Pixelify Sans') */}
+              <div
+                className="text-6xl sm:text-8xl md:text-9xl text-amber-300 font-black tracking-widest mb-2 leading-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]"
+                style={{ fontFamily: "'Pixelify Sans', sans-serif" }}
+              >
                 {question.a}
                 <span className="text-red-400 mx-2 sm:mx-4">{question.op}</span>
                 {question.b}
@@ -831,7 +834,7 @@ export default function BossBattleArena() {
               </div>
 
               {question.hasCarryBorrow && (
-                <div className="font-pixel text-xs sm:text-sm font-bold text-red-400 opacity-90">
+                <div className="font-pixel text-xs sm:text-sm font-bold text-red-400 opacity-90 mt-1">
                   {question.op === '+' ? '★ Simpan (Carrying)' : '★ Pinjam (Borrowing)'}
                 </div>
               )}
@@ -840,7 +843,7 @@ export default function BossBattleArena() {
 
           {/* Answer Options Grid */}
           {question && (
-            <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
+            <div className="grid grid-cols-2 gap-4 sm:gap-6 w-full">
               {question.options.map((opt) => {
                 let btnClass = '';
                 if (answered !== null) {
@@ -853,6 +856,7 @@ export default function BossBattleArena() {
                     className={`boss-answer-btn ${btnClass}`}
                     disabled={answered !== null}
                     onClick={() => handleAnswer(opt)}
+                    style={{ fontFamily: "'Pixelify Sans', sans-serif" }}
                   >
                     {opt}
                   </button>
