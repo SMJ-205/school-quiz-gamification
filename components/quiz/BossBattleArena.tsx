@@ -466,9 +466,9 @@ export default function BossBattleArena() {
               </div>
             </div>
 
-            {/* Sombo sprite (right, facing left towards player — synchronized height!) */}
+            {/* Sombo sprite — flipped LEFT to face student player, 1.5× size */}
             <div className="shrink-0 flex flex-col items-center gap-2">
-              <div className="relative h-28 sm:h-36 flex items-end justify-center">
+              <div className="relative h-40 sm:h-52 flex items-end justify-center">
                 <img
                   src="/sprites/boss_challenging.png"
                   alt="Sombo"
@@ -476,14 +476,15 @@ export default function BossBattleArena() {
                   style={{
                     imageRendering: 'pixelated',
                     filter: WHITE_CELL_SHADING,
+                    transform: 'scaleX(-1)',
                   }}
                 />
-                {/* CSS mouth overlay on Sombo — calibrated X=51%, Y=63.6% */}
+                {/* CSS mouth overlay — X=49% mirrors the scaleX(-1) flip, Y=63.6% */}
                 <div
                   aria-hidden="true"
                   style={{
                     position: 'absolute',
-                    left: '51%',
+                    left: '49%',
                     bottom: '63.6%',
                     transform: 'translate(-50%, 50%)',
                     width: bossMouth ? '14%' : '10%',
@@ -875,9 +876,9 @@ export default function BossBattleArena() {
             )}
           </div>
 
-          {/* Sombo sprite (facing left towards player — synchronized height!) */}
+          {/* Sombo sprite — flipped LEFT to face student, 1.5× size */}
           <div className="flex flex-col items-center gap-1">
-            <div className="h-24 sm:h-32 flex items-end justify-center">
+            <div className="h-36 sm:h-48 flex items-end justify-center">
               <img
                 src="/sprites/boss_challenging.png"
                 alt="Sombo"
@@ -885,6 +886,7 @@ export default function BossBattleArena() {
                 style={{
                   imageRendering: 'pixelated',
                   filter: WHITE_CELL_SHADING,
+                  transform: 'scaleX(-1)',
                 }}
               />
             </div>
