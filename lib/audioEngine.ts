@@ -516,14 +516,30 @@ export function sfxGearEquip(): void {
 }
 
 export function sfxCorrect(): void {
+  if (isSfxMuted()) return;
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  const notes = [261.63, 329.63, 392.0, 523.25];
-  notes.forEach((freq, i) => {
-    playSfxTone(freq, 0.12, t + i * 0.1, 'square', 0.22);
-  });
-  playSfxTone(1046.5, 0.2, t + 0.4, 'sine', 0.16);
+
+  // Ultra High-Energy Arcade Power-Hit SFX for Sombo Boss Battle
+  if (activeTrackId === 'fast_boss_beat' || activeTrackId === 'high_beat_lofi') {
+    // 1. High-speed 16th-note 8-Bit Arcade Power-Hit (C5 -> E5 -> G5 -> C6 -> E6 -> G6)
+    const bossHitNotes = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98];
+    bossHitNotes.forEach((freq, i) => {
+      playSfxTone(freq, 0.07, t + i * 0.04, 'square', 0.28);
+    });
+
+    // 2. High octave power chime overlay
+    playSfxTone(1046.50, 0.15, t + 0.18, 'triangle', 0.25);
+    playSfxTone(1567.98, 0.22, t + 0.24, 'sine', 0.22);
+  } else {
+    // Standard Quiz Classroom Correct SFX
+    const notes = [261.63, 329.63, 392.0, 523.25];
+    notes.forEach((freq, i) => {
+      playSfxTone(freq, 0.12, t + i * 0.1, 'square', 0.22);
+    });
+    playSfxTone(1046.5, 0.2, t + 0.4, 'sine', 0.16);
+  }
 }
 
 export function sfxWrong(): void {
