@@ -4,12 +4,11 @@
  * BossBattleArena.tsx
  * QuickMath Arithmo-Boss Battle — Ruang Kelas Unggulan (Lawan Sombo)
  *
- * Phases:
- *  1. INTRO   — Comic cutscene: Sombo menantang player
- *  2. BATTLE  — 10 Wave boss fight, soal 2-digit +/−, timer dinamis
- *  3. DEFEATED — Sombo kalah, speech bubble, transisi ke Endless
- *  4. ENDLESS  — Survival tanpa batas, timer menyusut eksponensial
- *  5. GAMEOVER — Player HP = 0, layar skor
+ * Updates:
+ *  1. Sombo sprite enlarged & aligned cleanly with white cell-shading
+ *  2. Mouth overlay position recalibrated to X=40%, Y=61.5% (pixel-aligned)
+ *  3. Question box & 4 answer choices centered in middle of screen
+ *  4. High-contrast, legible retro pixelated font ('Pixelify Sans')
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -56,10 +55,10 @@ const DEFEATED_SPEECH =
 
 // White outer cell-shading drop-shadow style (same as Pak Guru)
 const WHITE_CELL_SHADING = [
-  'drop-shadow(1px 0px 0px rgba(255,255,255,0.85))',
-  'drop-shadow(-1px 0px 0px rgba(255,255,255,0.85))',
-  'drop-shadow(0px 1px 0px rgba(255,255,255,0.85))',
-  'drop-shadow(0px -1px 0px rgba(255,255,255,0.85))',
+  'drop-shadow(1.5px 0px 0px rgba(255,255,255,0.9))',
+  'drop-shadow(-1.5px 0px 0px rgba(255,255,255,0.9))',
+  'drop-shadow(0px 1.5px 0px rgba(255,255,255,0.9))',
+  'drop-shadow(0px -1.5px 0px rgba(255,255,255,0.9))',
   'drop-shadow(0px 8px 16px rgba(0,0,0,0.85))',
 ].join(' ');
 
@@ -75,7 +74,6 @@ function hasBorrowing(a: number, b: number): boolean {
 function genQuestion(wave: number): BossQuestion {
   const isEarly  = wave <= 3;
   const isMid    = wave >= 4 && wave <= 6;
-  const isFierce = wave >= 7;
 
   let a: number, b: number, op: '+' | '-', carry: boolean;
   let timeLimit: number;
@@ -425,7 +423,7 @@ export default function BossBattleArena() {
   if (phase === 'intro') {
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden"
+        className="min-h-screen flex flex-col items-center justify-center p-3 sm:p-5 relative overflow-hidden select-none"
         style={{
           backgroundImage: 'url(/backgrounds/classroom_battle.jpg)',
           backgroundSize: 'cover',
@@ -438,7 +436,7 @@ export default function BossBattleArena() {
         {/* Comic Battle Title */}
         <div className="relative z-10 text-center mb-4">
           <div className="inline-block bg-red-700 border-4 border-red-400 px-6 py-1.5 rounded-full shadow-xl mb-2">
-            <span className="font-sans font-bold text-white text-base sm:text-xl tracking-widest uppercase">
+            <span className="font-pixel text-white text-base sm:text-xl tracking-widest uppercase">
               ⚔️ RUANG KELAS UNGGULAN — TANTANGAN SOMBO
             </span>
           </div>
@@ -446,12 +444,12 @@ export default function BossBattleArena() {
 
         {/* Comic Panel: Player (left) vs Sombo (right) */}
         <div className="relative z-10 w-full max-w-3xl crt-arcade-frame bg-[#0d0505] border-4 border-red-900 rounded-2xl p-4 sm:p-6 shadow-2xl">
-          <div className="flex flex-row items-end gap-4 sm:gap-8 mb-6">
+          <div className="flex flex-row items-end gap-3 sm:gap-6 mb-6">
 
             {/* Player character (left) */}
             <div className="flex flex-col items-center gap-2 shrink-0">
               <PixelSprite character={character} pixelSize={0.45} animate />
-              <div className="bg-black/80 border border-amber-500/50 text-amber-300 font-sans font-bold text-sm px-2.5 py-0.5 rounded shadow">
+              <div className="bg-black/80 border border-amber-500/50 text-amber-300 font-pixel text-sm px-2.5 py-0.5 rounded shadow">
                 👤 {studentName || 'Petualang'}
               </div>
             </div>
@@ -459,34 +457,34 @@ export default function BossBattleArena() {
             {/* Boss speech bubble */}
             <div className="flex-1 flex flex-col items-start gap-2">
               <div className="boss-bubble px-4 py-3.5 shadow-xl mr-2 w-full">
-                <p className="font-sans font-semibold text-base sm:text-xl text-stone-900 leading-relaxed">
+                <p className="font-pixel text-base sm:text-xl text-stone-900 leading-relaxed font-semibold">
                   {introText}
                   {introTyping && <span className="animate-pulse">▋</span>}
                 </p>
               </div>
             </div>
 
-            {/* Sombo sprite (right, facing left towards player) */}
+            {/* Sombo sprite (right, facing left towards player - enlarged!) */}
             <div className="shrink-0 flex flex-col items-center gap-2">
               <div className="relative">
                 <img
                   src="/sprites/boss_challenging.png"
                   alt="Sombo"
-                  className="w-24 sm:w-32 object-contain"
+                  className="w-32 sm:w-44 object-contain"
                   style={{
                     imageRendering: 'pixelated',
                     filter: WHITE_CELL_SHADING,
                   }}
                 />
-                {/* CSS mouth overlay on Sombo */}
+                {/* CSS mouth overlay on Sombo — calibrated X=40%, Y=61.5% */}
                 <div
                   aria-hidden="true"
                   style={{
                     position: 'absolute',
-                    left: '52%',
-                    bottom: '61%',
+                    left: '40%',
+                    bottom: '61.5%',
                     transform: 'translate(-50%, 50%)',
-                    width: bossMouth ? '14%' : '11%',
+                    width: bossMouth ? '13%' : '10%',
                     height: bossMouth ? '5%' : '2%',
                     borderRadius: '50%',
                     backgroundColor: bossMouth ? 'rgba(20,5,5,0.95)' : 'rgba(45,18,10,0.82)',
@@ -495,7 +493,7 @@ export default function BossBattleArena() {
                   }}
                 />
               </div>
-              <div className="bg-red-950/90 border border-red-500/50 text-red-200 font-sans font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded shadow">
+              <div className="bg-red-950/90 border border-red-500/50 text-red-200 font-pixel font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded shadow">
                 😤 SOMBO
               </div>
             </div>
@@ -520,7 +518,7 @@ export default function BossBattleArena() {
                   setTimeout(() => setShowFlash(false), 400);
                   setTimeout(() => setPhase('battle'), 200);
                 }}
-                className="btn-pixel !bg-red-800 hover:!bg-red-700 !border-red-500 text-white px-8 py-3 text-sm sm:text-base font-bold shadow-xl w-full sm:w-auto flex items-center justify-center gap-2"
+                className="btn-pixel !bg-red-800 hover:!bg-red-700 !border-red-500 text-white px-8 py-3 text-sm sm:text-base font-bold shadow-xl w-full sm:w-auto flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>⚔️</span>
                 <span>TERIMA TANTANGAN</span>
@@ -533,7 +531,7 @@ export default function BossBattleArena() {
                   setIntroTyping(false);
                   setBossMouth(false);
                 }}
-                className="btn-pixel !bg-stone-800 !border-stone-600 text-stone-300 px-6 py-2 text-xs sm:text-sm w-full sm:w-auto"
+                className="btn-pixel !bg-stone-800 !border-stone-600 text-stone-300 px-6 py-2 text-xs sm:text-sm w-full sm:w-auto cursor-pointer"
               >
                 Klik untuk skip ▶
               </button>
@@ -548,14 +546,14 @@ export default function BossBattleArena() {
 
   if (phase === 'gameover') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#0a0005] relative overflow-hidden">
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#0a0005] relative overflow-hidden select-none">
         <div className="absolute inset-0 overdrive-bg opacity-60" />
         <div className="relative z-10 w-full max-w-md crt-arcade-frame bg-[#0d0010] border-4 border-purple-700 rounded-2xl p-6 text-center shadow-2xl">
           <div className="text-5xl mb-3">💔</div>
-          <h2 className="font-sans font-bold text-2xl sm:text-3xl text-red-400 mb-1">PERTARUNGAN SELESAI</h2>
-          <p className="font-sans text-stone-400 text-base mb-5">Kamu kehabisan tenaga...</p>
+          <h2 className="font-pixel text-2xl sm:text-3xl text-red-400 mb-1">PERTARUNGAN SELESAI</h2>
+          <p className="font-pixel text-stone-400 text-base mb-5">Kamu kehabisan tenaga...</p>
 
-          <div className="bg-black/60 border border-purple-800 rounded-xl p-4 mb-5 space-y-2 font-sans">
+          <div className="bg-black/60 border border-purple-800 rounded-xl p-4 mb-5 space-y-2 font-pixel">
             <div className="flex justify-between text-base">
               <span className="text-stone-400">Total Damage ke Sombo:</span>
               <span className="text-amber-300 font-bold">{totalScore.toLocaleString()}</span>
@@ -587,7 +585,7 @@ export default function BossBattleArena() {
                 setTotalScore(0);
                 setPhase('intro');
               }}
-              className="btn-pixel !bg-red-900 hover:!bg-red-800 !border-red-600 text-red-200 w-full py-3 text-sm sm:text-base font-bold flex items-center justify-center gap-2"
+              className="btn-pixel !bg-red-900 hover:!bg-red-800 !border-red-600 text-red-200 w-full py-3 text-sm sm:text-base font-bold flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>🔄</span>
               <span>COBA LAGI</span>
@@ -595,7 +593,7 @@ export default function BossBattleArena() {
 
             <button
               onClick={() => setScreen('background_select')}
-              className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 text-stone-300 w-full py-3 text-xs sm:text-sm flex items-center justify-center gap-2"
+              className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 text-stone-300 w-full py-3 text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>◀</span>
               <span>PILIH TEMPAT BELAJAR</span>
@@ -611,7 +609,7 @@ export default function BossBattleArena() {
   if (phase === 'defeated') {
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden"
+        className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden select-none"
         style={{
           backgroundImage: 'url(/backgrounds/classroom_battle.jpg)',
           backgroundSize: 'cover',
@@ -623,7 +621,7 @@ export default function BossBattleArena() {
 
         <div className="relative z-10 text-center mb-4">
           <div className="inline-block bg-emerald-800 border-4 border-emerald-400 px-5 py-1.5 rounded-full shadow-xl">
-            <span className="font-sans font-bold text-emerald-200 text-base sm:text-xl tracking-widest uppercase">
+            <span className="font-pixel text-emerald-200 text-base sm:text-xl tracking-widest uppercase">
               🏆 SOMBO DIKALAHKAN!
             </span>
           </div>
@@ -635,7 +633,7 @@ export default function BossBattleArena() {
             {/* Player character (triumphant) */}
             <div className="flex flex-col items-center gap-2 shrink-0">
               <PixelSprite character={character} pixelSize={0.45} animate />
-              <div className="bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-sans font-bold text-sm px-2 py-0.5 rounded shadow">
+              <div className="bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-pixel text-sm px-2 py-0.5 rounded shadow">
                 🏆 {studentName || 'Petualang'}
               </div>
             </div>
@@ -643,25 +641,25 @@ export default function BossBattleArena() {
             {/* Defeated speech bubble */}
             <div className="flex-1 flex flex-col items-start gap-2">
               <div className="boss-bubble px-4 py-3 shadow-xl mr-2 w-full border-red-400/60">
-                <p className="font-sans font-semibold text-base sm:text-xl text-stone-900 leading-relaxed">
+                <p className="font-pixel text-base sm:text-xl text-stone-900 leading-relaxed font-semibold">
                   {defeatText}
                   {defeatTyping && <span className="animate-pulse">▋</span>}
                 </p>
               </div>
             </div>
 
-            {/* Sombo sprite — defeated (crying on floor, facing left) */}
+            {/* Sombo sprite — defeated (enlarged!) */}
             <div className="shrink-0 flex flex-col items-center gap-2">
               <img
                 src="/sprites/boss_defeated.png"
                 alt="Sombo Defeated"
-                className="w-20 sm:w-28 object-contain"
+                className="w-28 sm:w-36 object-contain"
                 style={{
                   imageRendering: 'pixelated',
                   filter: WHITE_CELL_SHADING,
                 }}
               />
-              <div className="bg-red-950/90 border border-red-500/50 text-red-300 font-sans font-bold text-xs sm:text-sm px-2 py-0.5 rounded shadow">
+              <div className="bg-red-950/90 border border-red-500/50 text-red-300 font-pixel font-bold text-xs sm:text-sm px-2 py-0.5 rounded shadow">
                 😭 SOMBO KALAH!
               </div>
             </div>
@@ -669,7 +667,7 @@ export default function BossBattleArena() {
           </div>
 
           {/* Stats & Proceed */}
-          <div className="bg-black/60 border border-emerald-900 rounded-xl p-3.5 mb-4 grid grid-cols-2 gap-2 font-sans text-base sm:text-lg">
+          <div className="bg-black/60 border border-emerald-900 rounded-xl p-3.5 mb-4 grid grid-cols-2 gap-2 font-pixel text-base sm:text-lg">
             <div className="text-stone-400">Total Damage:</div>
             <div className="text-amber-300 font-bold text-right">{totalScore.toLocaleString()}</div>
             <div className="text-stone-400">HP Tersisa:</div>
@@ -684,7 +682,7 @@ export default function BossBattleArena() {
                   setTimeout(() => setShowFlash(false), 500);
                   setTimeout(() => startEndless(), 250);
                 }}
-                className="btn-pixel !bg-purple-900 hover:!bg-purple-800 !border-purple-500 text-purple-200 px-8 py-3 text-base sm:text-xl font-bold shadow-xl flex items-center justify-center gap-2 mx-auto"
+                className="btn-pixel !bg-purple-900 hover:!bg-purple-800 !border-purple-500 text-purple-200 px-8 py-3 text-base sm:text-xl font-bold shadow-xl flex items-center justify-center gap-2 mx-auto cursor-pointer"
               >
                 <span>⚡</span>
                 <span>OVERDRIVE MODE — LANJUTKAN!</span>
@@ -710,7 +708,7 @@ export default function BossBattleArena() {
 
   return (
     <div
-      className={`min-h-screen flex flex-col relative overflow-hidden ${bgClass} ${rageShake ? 'boss-rage-shake' : ''}`}
+      className={`min-h-screen flex flex-col justify-between relative overflow-hidden select-none ${bgClass} ${rageShake ? 'boss-rage-shake' : ''}`}
       style={bgStyle}
     >
       {/* Overlays */}
@@ -732,18 +730,18 @@ export default function BossBattleArena() {
       </div>
 
       {/* ── TOP BAR ─────────────────────────────────────────────────────────── */}
-      <div className="relative z-20 p-2.5 sm:p-3 bg-black/90 border-b-2 border-red-950 flex flex-col gap-2 font-sans">
+      <div className="relative z-20 p-2.5 sm:p-3 bg-black/90 border-b-2 border-red-950 flex flex-col gap-2 font-pixel">
 
         {/* Mode Label */}
         <div className="flex items-center justify-between">
-          <div className={`retro-pill-badge text-xs sm:text-sm py-1 px-3 font-sans font-bold ${
+          <div className={`retro-pill-badge text-xs sm:text-sm py-1 px-3 font-pixel font-bold ${
             isEndless
               ? '!bg-purple-950 !border-purple-500 text-purple-300'
               : '!bg-red-950 !border-red-600 text-red-300'
           }`}>
             {isEndless ? `⚡ OVERDRIVE MODE — SOAL #${endlessN}` : `⚔️ WAVE ${wave}/10`}
           </div>
-          <div className="flex items-center gap-1.5 font-sans text-base sm:text-xl font-bold text-amber-300">
+          <div className="flex items-center gap-1.5 font-pixel text-base sm:text-xl font-bold text-amber-300">
             <span>🏆</span>
             <span>{totalScore.toLocaleString()}</span>
           </div>
@@ -752,7 +750,7 @@ export default function BossBattleArena() {
         {/* Sombo HP Bar */}
         {!isEndless && (
           <div>
-            <div className="flex justify-between mb-1 font-sans text-xs sm:text-sm font-bold text-red-400">
+            <div className="flex justify-between mb-1 font-pixel text-xs sm:text-sm font-bold text-red-400">
               <span>😤 SOMBO — {bossHp.toLocaleString()} HP</span>
               <span>{Math.round(bossPct)}%</span>
             </div>
@@ -765,7 +763,7 @@ export default function BossBattleArena() {
           </div>
         )}
         {isEndless && (
-          <div className="text-center font-sans text-sm font-semibold text-purple-300">
+          <div className="text-center font-pixel text-sm font-semibold text-purple-300">
             ⏳ Timer menyusut... bertahan selama mungkin!
           </div>
         )}
@@ -773,7 +771,7 @@ export default function BossBattleArena() {
         {/* Timer Bar */}
         {question && (
           <div>
-            <div className="flex justify-between mb-0.5 font-sans text-xs font-bold text-stone-300">
+            <div className="flex justify-between mb-0.5 font-pixel text-xs font-bold text-stone-300">
               <span>⏱ WAKTU</span>
               <span>{timeLeft.toFixed(1)}s</span>
             </div>
@@ -787,65 +785,70 @@ export default function BossBattleArena() {
         )}
       </div>
 
-      {/* ── MAIN ARENA ──────────────────────────────────────────────────────── */}
-      <div className="relative z-10 flex-1 flex flex-col justify-between p-3 sm:p-5">
+      {/* ── MAIN CENTER ARENA: Question & Answers Centered in Screen ──────────── */}
+      <div className="relative z-10 flex-1 flex flex-col justify-center items-center p-3 sm:p-5 my-auto w-full">
 
-        {/* Question Box */}
-        {question && (
-          <div className="boss-question-box max-w-xl mx-auto w-full p-4 sm:p-6 text-center mb-3">
-            {/* Combo badge */}
-            {combo >= 2 && (
-              <div className="combo-pop inline-block bg-amber-700 border border-amber-400 text-amber-100 font-sans font-bold text-xs sm:text-sm px-3 py-0.5 rounded-full mb-2 shadow">
-                🔥 {combo}x STREAK!
+        {/* Question & Options Center Container */}
+        <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center my-auto">
+          
+          {/* Question Box */}
+          {question && (
+            <div className="boss-question-box w-full p-4 sm:p-6 text-center mb-4 shadow-2xl">
+              {/* Combo badge */}
+              {combo >= 2 && (
+                <div className="combo-pop inline-block bg-amber-700 border border-amber-400 text-amber-100 font-pixel font-bold text-xs sm:text-sm px-3 py-0.5 rounded-full mb-2 shadow">
+                  🔥 {combo}x STREAK!
+                </div>
+              )}
+
+              {/* High contrast, ultra-legible pixelated math font */}
+              <div className="font-pixel text-5xl sm:text-7xl md:text-8xl text-amber-300 font-black tracking-widest mb-2 leading-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
+                {question.a}
+                <span className="text-red-400 mx-2 sm:mx-4">{question.op}</span>
+                {question.b}
+                <span className="text-stone-400 mx-2 sm:mx-3">=</span>
+                <span className="text-stone-500">?</span>
               </div>
-            )}
 
-            {/* Crisp, easy-to-read math question font */}
-            <div className="font-sans font-bold text-5xl sm:text-7xl md:text-8xl text-amber-300 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] mb-2 leading-none">
-              {question.a}
-              <span className="text-red-400 mx-2 sm:mx-4">{question.op}</span>
-              {question.b}
-              <span className="text-stone-400 mx-2 sm:mx-3">=</span>
-              <span className="text-stone-500">?</span>
+              {question.hasCarryBorrow && (
+                <div className="font-pixel text-xs sm:text-sm font-bold text-red-400 opacity-90">
+                  {question.op === '+' ? '★ Simpan (Carrying)' : '★ Pinjam (Borrowing)'}
+                </div>
+              )}
             </div>
+          )}
 
-            {question.hasCarryBorrow && (
-              <div className="font-sans text-xs sm:text-sm font-bold text-red-400 opacity-90">
-                {question.op === '+' ? '★ Simpan (Carrying)' : '★ Pinjam (Borrowing)'}
-              </div>
-            )}
-          </div>
-        )}
+          {/* Answer Options Grid */}
+          {question && (
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
+              {question.options.map((opt) => {
+                let btnClass = '';
+                if (answered !== null) {
+                  if (opt === question.answer) btnClass = 'correct';
+                  else if (opt === answered) btnClass = 'wrong';
+                }
+                return (
+                  <button
+                    key={opt}
+                    className={`boss-answer-btn ${btnClass}`}
+                    disabled={answered !== null}
+                    onClick={() => handleAnswer(opt)}
+                  >
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-        {/* Answer Options */}
-        {question && (
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-xl mx-auto w-full mb-4">
-            {question.options.map((opt) => {
-              let btnClass = '';
-              if (answered !== null) {
-                if (opt === question.answer) btnClass = 'correct';
-                else if (opt === answered) btnClass = 'wrong';
-              }
-              return (
-                <button
-                  key={opt}
-                  className={`boss-answer-btn ${btnClass}`}
-                  disabled={answered !== null}
-                  onClick={() => handleAnswer(opt)}
-                >
-                  {opt}
-                </button>
-              );
-            })}
-          </div>
-        )}
+        </div>
 
-        {/* Bottom row: player + hearts + Sombo sprite */}
-        <div className="flex items-end justify-between gap-4">
+        {/* Bottom Stage Row: Player on Left, Sombo on Right */}
+        <div className="w-full max-w-4xl flex items-end justify-between gap-4 mt-auto pt-2">
 
           {/* Player character + HP hearts */}
           <div className="flex flex-col items-center gap-1">
-            <PixelSprite character={character} pixelSize={0.35} animate />
+            <PixelSprite character={character} pixelSize={0.38} animate />
             <div className="flex gap-1">
               {[1, 2, 3].map((h) => (
                 <span
@@ -856,11 +859,11 @@ export default function BossBattleArena() {
                 </span>
               ))}
             </div>
-            <div className="font-sans font-bold text-xs text-stone-300">{playerHp} HP</div>
+            <div className="font-pixel font-bold text-xs text-stone-300">{playerHp} HP</div>
           </div>
 
           {/* Wave / Endless info */}
-          <div className="text-center font-sans font-bold text-stone-300 text-sm hidden sm:block">
+          <div className="text-center font-pixel font-bold text-stone-300 text-sm hidden sm:block">
             {isEndless ? (
               <span className="text-purple-400">⚡ OVERDRIVE<br />Soal #{endlessN}</span>
             ) : (
@@ -868,18 +871,18 @@ export default function BossBattleArena() {
             )}
           </div>
 
-          {/* Sombo sprite (facing left) */}
+          {/* Sombo sprite (facing left - enlarged!) */}
           <div className="flex flex-col items-center gap-1">
             <img
               src="/sprites/boss_challenging.png"
               alt="Sombo"
-              className="w-20 sm:w-28 object-contain"
+              className="w-28 sm:w-38 object-contain"
               style={{
                 imageRendering: 'pixelated',
                 filter: WHITE_CELL_SHADING,
               }}
             />
-            <div className="text-red-300 font-sans font-bold text-xs">SOMBO</div>
+            <div className="text-red-300 font-pixel font-bold text-xs">SOMBO</div>
           </div>
 
         </div>
@@ -887,7 +890,7 @@ export default function BossBattleArena() {
       </div>
 
       {/* ── BOTTOM BAR ──────────────────────────────────────────────────────── */}
-      <div className="relative z-20 p-2 sm:p-3 bg-black/90 border-t-2 border-red-950 flex items-center justify-between font-sans text-xs sm:text-sm text-stone-300">
+      <div className="relative z-20 p-2 sm:p-3 bg-black/90 border-t-2 border-red-950 flex items-center justify-between font-pixel text-xs sm:text-sm text-stone-300">
         <div className="flex items-center gap-1.5 font-bold">
           <span className={`w-2 h-2 rounded-full ${isEndless ? 'bg-purple-400' : 'bg-red-400'} animate-pulse`} />
           <span>{isEndless ? 'OVERDRIVE' : `WAVE ${wave}/10`}</span>
