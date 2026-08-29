@@ -6,6 +6,7 @@ import IngestionScreen from '@/components/IngestionScreen';
 import CharacterCustomizer from '@/components/CharacterCustomizer';
 import BackgroundSelectScreen from '@/components/BackgroundSelectScreen';
 import EnchantedLibrary from '@/components/quiz/EnchantedLibrary';
+import BossBattleArena from '@/components/quiz/BossBattleArena';
 import AntigravityCanvas from '@/components/AntigravityCanvas';
 import CertificateCanvas from '@/components/CertificateCanvas';
 import { startQuizBGM, stopQuizBGM } from '@/lib/audioEngine';
@@ -27,6 +28,7 @@ export default function Home() {
     case 'character':          return <CharacterCustomizer />;
     case 'background_select':  return <BackgroundSelectScreen />;
     case 'quiz_library':       return <EnchantedLibrary />;
+    case 'boss_battle':        return <BossBattleArena />;
     case 'antigravity':        return <AntigravityCanvas />;
     case 'certificate':        return <CertificateCanvas />;
     default:                   return <IngestionScreen />;

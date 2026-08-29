@@ -2,10 +2,8 @@
 
 /**
  * BackgroundSelectScreen.tsx
- * Aesthetic Retro RPG Library Atmosphere Customization Screen:
- * - Select Library Background (Ghibli Sunlit Botanical vs Enchanted Midnight Archive).
- * - Retro CRT Arcade aesthetic with student character avatar.
- * - 100% Mobile Responsive.
+ * Pilihan "Tempat Belajar" — 3 lokasi: 2 perpustakaan + Ruang Kelas Unggulan (boss battle).
+ * Perpustakaan → quiz_library | Ruang Kelas Unggulan → boss_battle
  */
 
 import React from 'react';
@@ -13,7 +11,7 @@ import { useGameStore } from '@/store/useGameStore';
 import PixelSprite from './PixelSprite';
 import { sfxPageTurn, sfxGearEquip, unlockAudioEngine } from '@/lib/audioEngine';
 
-interface BackgroundOption {
+interface PlaceOption {
   id: string;
   title: string;
   subtitle: string;
@@ -21,9 +19,10 @@ interface BackgroundOption {
   url: string;
   tag: string;
   badgeColor: string;
+  isBoss?: boolean;
 }
 
-const BG_OPTIONS: BackgroundOption[] = [
+const PLACE_OPTIONS: PlaceOption[] = [
   {
     id: 'sunlit',
     title: 'Perpustakaan Taman Pagi',
@@ -42,6 +41,16 @@ const BG_OPTIONS: BackgroundOption[] = [
     tag: 'KLASIK 🏛️',
     badgeColor: 'bg-indigo-950 text-indigo-200 border-indigo-500',
   },
+  {
+    id: 'classroom',
+    title: 'Ruang Kelas Unggulan',
+    subtitle: '⚡ Boss Battle — Hitung Cepat',
+    desc: 'Tantang sang rival berbakat di Ruang Kelas Unggulan! Buktikan bahwa rajinmu bisa mengalahkan bakatnya dalam duel hitung cepat.',
+    url: '/backgrounds/classroom_battle.jpg',
+    tag: '⚔️ BOSS BATTLE',
+    badgeColor: 'bg-red-900 text-red-200 border-red-400',
+    isBoss: true,
+  },
 ];
 
 export default function BackgroundSelectScreen() {
@@ -53,16 +62,45 @@ export default function BackgroundSelectScreen() {
     setScreen,
   } = useGameStore();
 
-  function handleSelectBackground(url: string) {
+  function handleSelectPlace(opt: PlaceOption) {
     unlockAudioEngine();
     sfxGearEquip();
-    setSelectedBackground(url);
+    if (!opt.isBoss) {
+      setSelectedBackground(opt.url);
+    }
   }
 
-  function handleStartQuiz() {
+  const selectedOpt = PLACE_OPTIONS.find(
+    (o) => o.isBoss ? false : selectedBackground === o.url
+  );
+  const isBossSelected = PLACE_OPTIONS.find((o) => o.isBoss)?.url === undefined
+    ? false
+    : false; // track boss selection separately
+
+  // Track which option is "active" — boss has its own selection state
+  const [activePlaceId, setActivePlaceId] = React.useState<string>(
+    selectedBackground === '/backgrounds/library_sunlit.jpg' ? 'sunlit'
+    : selectedBackground === '/backgrounds/library_bg.jpg' ? 'midnight'
+    : 'sunlit'
+  );
+
+  function handleSelect(opt: PlaceOption) {
+    unlockAudioEngine();
+    sfxGearEquip();
+    setActivePlaceId(opt.id);
+    if (!opt.isBoss) {
+      setSelectedBackground(opt.url);
+    }
+  }
+
+  function handleStart() {
     unlockAudioEngine();
     sfxPageTurn();
-    setScreen('quiz_library');
+    if (activePlaceId === 'classroom') {
+      setScreen('boss_battle');
+    } else {
+      setScreen('quiz_library');
+    }
   }
 
   function handleBack() {
@@ -70,64 +108,87 @@ export default function BackgroundSelectScreen() {
     setScreen('character');
   }
 
+  const activeOpt = PLACE_OPTIONS.find((o) => o.id === activePlaceId) ?? PLACE_OPTIONS[0];
+
   return (
     <div className="relative min-h-screen bg-[#07040B] flex flex-col items-center justify-center p-3 sm:p-5 md:p-8 overflow-x-hidden select-none">
       
       {/* Dynamic Ambient Background Blur */}
       <div
         className="absolute inset-0 bg-cover bg-center filter blur-md opacity-30 scale-105 pointer-events-none transition-all duration-700"
-        style={{ backgroundImage: `url(${selectedBackground || '/backgrounds/library_sunlit.jpg'})` }}
+        style={{ backgroundImage: `url(${activeOpt.url})` }}
       />
-      <div className="absolute inset-0 bg-black/75 pointer-events-none" />
+      <div className={`absolute inset-0 pointer-events-none transition-all duration-700 ${
+        activePlaceId === 'classroom'
+          ? 'bg-red-950/80'
+          : 'bg-black/75'
+      }`} />
 
       {/* Main CRT Frame Container */}
-      <div className="relative z-10 w-full max-w-3xl crt-arcade-frame bg-[#140E0A] p-4 sm:p-7 md:p-8 flex flex-col items-center text-center border-4 border-[#7D4E2D] shadow-2xl rounded-2xl my-auto">
+      <div className="relative z-10 w-full max-w-4xl crt-arcade-frame bg-[#140E0A] p-4 sm:p-7 md:p-8 flex flex-col items-center text-center border-4 border-[#7D4E2D] shadow-2xl rounded-2xl my-auto">
 
         {/* Top Header */}
         <div className="mb-5 sm:mb-7">
           <div className="retro-pill-badge !bg-amber-950 !border-amber-400 text-amber-300 mb-2.5 inline-flex items-center gap-1.5">
-            <span>🏛️</span>
-            <span>SUASANA BELAJAR</span>
+            <span>🏫</span>
+            <span>PILIH TEMPAT BELAJAR</span>
           </div>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-amber-300 drop-shadow-[0_2px_8px_rgba(255,179,0,0.5)] leading-tight">
-            PILIH RUANG PERPUSTAKAAN
+            TEMPAT BELAJAR
           </h1>
           <p className="font-dialogue text-base sm:text-xl text-stone-300 max-w-lg mx-auto mt-1">
-            Tentukan latar tempat petualangan kuis ilmu akan berlangsung
+            Tentukan tempat belajarmu — perpustakaan tenang atau tantang lawan di kelas!
           </p>
         </div>
 
-        {/* 2 Large Background Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full mb-6 sm:mb-8 text-left">
-          {BG_OPTIONS.map((bg) => {
-            const isSelected = selectedBackground === bg.url;
+        {/* 3 Cards Grid: 2 col on sm+, stacked on mobile */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-4 w-full mb-6 sm:mb-8 text-left">
+          {PLACE_OPTIONS.map((opt) => {
+            const isSelected = activePlaceId === opt.id;
 
             return (
               <div
-                key={bg.id}
-                onClick={() => handleSelectBackground(bg.url)}
+                key={opt.id}
+                onClick={() => handleSelect(opt)}
                 className={`rounded-2xl border-4 overflow-hidden transition-all duration-300 cursor-pointer relative flex flex-col group ${
                   isSelected
-                    ? 'border-amber-400 shadow-[0_0_28px_rgba(255,179,0,0.45)] scale-[1.02] bg-[#1F130B]'
+                    ? opt.isBoss
+                      ? 'border-red-500 shadow-[0_0_32px_rgba(220,38,38,0.55)] scale-[1.02] bg-[#1A0808]'
+                      : 'border-amber-400 shadow-[0_0_28px_rgba(255,179,0,0.45)] scale-[1.02] bg-[#1F130B]'
+                    : opt.isBoss
+                    ? 'border-red-900/70 bg-stone-950/70 hover:border-red-500/60 opacity-80 hover:opacity-100'
                     : 'border-stone-700 bg-stone-950/70 hover:border-amber-500/60 opacity-80 hover:opacity-100'
                 }`}
               >
                 {/* Thumbnail Image Banner */}
-                <div className="relative h-40 sm:h-48 w-full bg-stone-950 overflow-hidden">
+                <div className="relative h-40 sm:h-44 w-full bg-stone-950 overflow-hidden">
                   <img
-                    src={bg.url}
-                    alt={bg.title}
+                    src={opt.url}
+                    alt={opt.title}
                     className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
 
+                  {/* Boss battle overlay effect */}
+                  {opt.isBoss && (
+                    <div className="absolute inset-0 bg-red-900/20 pointer-events-none" />
+                  )}
+
                   {/* Top Badges */}
-                  <div className="absolute top-3 right-3 bg-black/80 border border-amber-500/50 text-amber-300 text-xs font-bold px-2.5 py-1 rounded shadow">
-                    {bg.tag}
+                  <div className={`absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded shadow border ${
+                    opt.isBoss
+                      ? 'bg-red-900/90 border-red-500/60 text-red-300'
+                      : 'bg-black/80 border-amber-500/50 text-amber-300'
+                  }`}>
+                    {opt.tag}
                   </div>
 
                   {isSelected && (
-                    <div className="absolute top-3 left-3 bg-amber-400 text-stone-950 text-xs font-black px-2.5 py-1 rounded shadow flex items-center gap-1 animate-pulse">
+                    <div className={`absolute top-3 left-3 text-xs font-black px-2.5 py-1 rounded shadow flex items-center gap-1 animate-pulse ${
+                      opt.isBoss
+                        ? 'bg-red-500 text-white'
+                        : 'bg-amber-400 text-stone-950'
+                    }`}>
                       <span>✓</span>
                       <span>DIPILIH</span>
                     </div>
@@ -135,11 +196,15 @@ export default function BackgroundSelectScreen() {
 
                   {/* Image Overlay Title */}
                   <div className="absolute bottom-2.5 left-3 right-3">
-                    <h3 className="text-base sm:text-lg font-bold text-amber-200 leading-tight">
-                      {bg.title}
+                    <h3 className={`text-base sm:text-lg font-bold leading-tight ${
+                      opt.isBoss ? 'text-red-200' : 'text-amber-200'
+                    }`}>
+                      {opt.title}
                     </h3>
-                    <span className="text-xs text-amber-400 font-medium">
-                      {bg.subtitle}
+                    <span className={`text-xs font-medium ${
+                      opt.isBoss ? 'text-red-400' : 'text-amber-400'
+                    }`}>
+                      {opt.subtitle}
                     </span>
                   </div>
                 </div>
@@ -147,8 +212,13 @@ export default function BackgroundSelectScreen() {
                 {/* Description Body */}
                 <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between">
                   <p className="font-dialogue text-sm sm:text-base text-stone-300 leading-relaxed">
-                    {bg.desc}
+                    {opt.desc}
                   </p>
+                  {opt.isBoss && (
+                    <div className="mt-2 text-[11px] text-red-400 font-dialogue border border-red-900/60 rounded px-2 py-1 bg-red-950/40">
+                      ⚡ Mode Khusus — Soal otomatis • 10 Wave Boss • Endless Overdrive
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -171,12 +241,26 @@ export default function BackgroundSelectScreen() {
           </div>
 
           <button
-            onClick={handleStartQuiz}
-            className="btn-pixel btn-pixel-gold w-full sm:w-auto px-7 py-3 text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl cursor-pointer"
+            onClick={handleStart}
+            className={`w-full sm:w-auto px-7 py-3 text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl cursor-pointer btn-pixel ${
+              activePlaceId === 'classroom'
+                ? '!bg-red-800 hover:!bg-red-700 !border-red-500 text-white'
+                : 'btn-pixel-gold'
+            }`}
           >
-            <span>⚔️</span>
-            <span>MASUKI PERPUSTAKAAN</span>
-            <span>▶</span>
+            {activePlaceId === 'classroom' ? (
+              <>
+                <span>⚔️</span>
+                <span>TANTANG BOSS</span>
+                <span>▶</span>
+              </>
+            ) : (
+              <>
+                <span>📖</span>
+                <span>MASUKI TEMPAT BELAJAR</span>
+                <span>▶</span>
+              </>
+            )}
           </button>
         </div>
 
