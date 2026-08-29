@@ -695,7 +695,7 @@ export default function BossBattleArena() {
             </div>
 
             {/* Sombo sprite (right, inside the box, scaleX(-1) faces left) */}
-            <div className="shrink-0 flex flex-col items-center gap-1.5">
+            <div className="shrink-0 flex flex-col items-center gap-1.5 pr-2 sm:pr-4">
               <div className="relative h-36 sm:h-48 flex items-end justify-center">
                 <img
                   src="/sprites/boss_challenging.png"
@@ -890,9 +890,9 @@ export default function BossBattleArena() {
               </div>
             </div>
 
-            {/* Defeated speech bubble */}
+            {/* Defeated speech bubble (beak points RIGHT to Sombo) */}
             <div className="flex-1 flex flex-col items-start gap-2">
-              <div className="boss-bubble px-6 sm:px-8 py-4 sm:py-5 shadow-xl mr-2 w-full border-red-400/60">
+              <div className="boss-bubble boss-bubble-right px-6 sm:px-8 py-4 sm:py-5 shadow-xl w-full border-red-400/60">
                 <p className="font-pixel text-lg sm:text-2xl md:text-3xl text-stone-900 leading-snug sm:leading-relaxed font-bold tracking-wide px-3 sm:px-5">
                   {defeatText}
                   {defeatTyping && <span className="animate-pulse">▋</span>}
@@ -900,8 +900,8 @@ export default function BossBattleArena() {
               </div>
             </div>
 
-            {/* Sombo sprite — defeated, scaleX(-1) faces left */}
-            <div className="shrink-0 flex flex-col items-center gap-2">
+            {/* Sombo sprite — defeated, scaleX(-1) faces left, shifted left away from right edge */}
+            <div className="shrink-0 flex flex-col items-center gap-2 pr-3 sm:pr-6">
               <div className="h-24 sm:h-32 flex items-end justify-center">
                 <img
                   src="/sprites/boss_defeated.png"
