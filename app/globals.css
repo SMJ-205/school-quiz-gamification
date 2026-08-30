@@ -95,14 +95,14 @@ body {
     to bottom,
     transparent 0px,
     transparent 2px,
-    rgba(0, 0, 0, 0.22) 2px,
-    rgba(0, 0, 0, 0.22) 4px
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
   );
   pointer-events: none;
-  z-index: 99;
+  z-index: 10;
 }
 
-/* Fullscreen CRT Scanlines Overlay (Identical to Pak Guru Quiz CRT Scanlines) */
+/* Fullscreen CRT Scanlines Overlay (Subtle & Comfortable to Read) */
 .crt-scanlines-overlay {
   position: absolute;
   inset: 0;
@@ -110,8 +110,8 @@ body {
     to bottom,
     transparent 0px,
     transparent 2px,
-    rgba(0, 0, 0, 0.24) 2px,
-    rgba(0, 0, 0, 0.24) 4px
+    rgba(0, 0, 0, 0.07) 2px,
+    rgba(0, 0, 0, 0.07) 4px
   );
   pointer-events: none;
   z-index: 15;
@@ -558,6 +558,7 @@ body {
   border: 3.5px solid #1a0808;
   border-radius: 16px;
   position: relative;
+  z-index: 100;
   color: #1a0808;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
   padding: 16px 24px;
