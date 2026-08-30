@@ -227,14 +227,14 @@ Cahaya matahari membutuhkan waktu sekitar berapa menit untuk sampai ke Bumi?
           <div
             key={shakeKey}
             {...getRootProps()}
-            className={`border-3 border-dashed rounded-xl p-6 sm:p-8 pt-7 sm:pt-9 text-center cursor-pointer transition-all ${
+            className={`border-3 border-dashed rounded-xl p-5 sm:p-7 text-center cursor-pointer transition-all ${
               isDragActive
                 ? 'border-amber-400 bg-amber-500/10 scale-[1.01]'
                 : 'border-amber-600/60 hover:border-amber-400 bg-black/50 hover:bg-black/70'
             }`}
           >
             <input {...getInputProps()} />
-            <div className="text-4xl sm:text-5xl mb-3 pt-2">
+            <div className="text-2xl sm:text-3xl mb-2 mt-1">
               {loading ? '⏳' : isDragActive ? '📥' : '📜'}
             </div>
             <p className="text-stone-100 text-base sm:text-lg font-bold mb-1">
