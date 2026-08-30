@@ -134,19 +134,19 @@ function genQuestion(qIndex: number): BossQuestion {
     diffFactor = 1.5;
   } else {
     // ─── TIER TERSULIT (Pertanyaan 15 Ke Atas) ──────────────────────────────
-    // 3-digit carrying / borrowing & complex math challenges!
+    // Strict 2-digit carrying & borrowing (strictly 10 to 99, NO 3-digit numbers!)
     op = Math.random() < 0.5 ? '+' : '-';
     carry = true;
     if (op === '+') {
       do {
-        a = 45 + Math.floor(Math.random() * 105);
-        b = 25 + Math.floor(Math.random() * 95);
-      } while (!hasCarrying(a, b));
+        a = 35 + Math.floor(Math.random() * 55);
+        b = 25 + Math.floor(Math.random() * Math.min(65, 99 - a));
+      } while (!hasCarrying(a, b) || a > 99 || b > 99 || a < 10 || b < 10);
     } else {
       do {
-        a = 60 + Math.floor(Math.random() * 115);
-        b = 25 + Math.floor(Math.random() * (a - 25));
-      } while (!hasBorrowing(a, b));
+        a = 45 + Math.floor(Math.random() * 54);
+        b = 18 + Math.floor(Math.random() * (a - 18));
+      } while (!hasBorrowing(a, b) || a > 99 || b > 99 || a < 10 || b < 10);
     }
     timeLimit = qIndex >= 20 ? 3.2 : 3.6;
     diffFactor = 2.0;
@@ -504,7 +504,7 @@ export default function BossBattleArena() {
     loadQuestion(1);
   }, [phase, loadQuestion]);
 
-  // ─── Passive Auto Recover (Sombo recovers +100 HP every 10 seconds) ─────────
+  // ─── Passive Auto Recover (Sombo recovers +200 HP every 10 seconds) ─────────
 
   useEffect(() => {
     if (phase !== 'battle') return;
@@ -512,8 +512,8 @@ export default function BossBattleArena() {
     const autoHealInterval = setInterval(() => {
       setBossHp(prevHp => {
         if (prevHp <= 0 || prevHp >= BOSS_MAX_HP) return prevHp;
-        const newHp = Math.min(BOSS_MAX_HP, prevHp + 100);
-        addFloat('+100 HP SOMBO RECOVER! ❤️‍🩹', false);
+        const newHp = Math.min(BOSS_MAX_HP, prevHp + 200);
+        addFloat('+200 HP SOMBO RECOVER! ❤️‍🩹', false);
         return newHp;
       });
     }, 10000);
@@ -593,7 +593,7 @@ export default function BossBattleArena() {
       sfxCorrect();
       const speedMult = 1.0 + (qTimeLimit.current - elapsed) / qTimeLimit.current;
       const comboMult = 1.0 + Math.min(combo, 10) * 0.1;
-      const dmg = Math.round(145 * speedMult * comboMult * question.difficultyFactor);
+      const dmg = Math.round(160 * speedMult * comboMult * question.difficultyFactor);
       const isCritical = speedMult > 1.6;
 
       const newBossHp = Math.max(0, bossHp - dmg);
