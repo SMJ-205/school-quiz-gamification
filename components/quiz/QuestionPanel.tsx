@@ -173,7 +173,13 @@ export default function QuestionPanel() {
 
           {/* Teacher Sprite — height matched to comic box so head never exceeds bubble top */}
           <div className="shrink-0 flex items-end justify-center self-end mb-0.5">
-            <div className="relative w-16 h-24 sm:w-19 sm:h-28 md:w-21 md:h-30 flex items-end justify-center">
+            <div
+              className="relative w-16 h-24 sm:w-19 sm:h-28 md:w-21 md:h-30 flex items-end justify-center"
+              style={{
+                transform: isFemaleTeacher ? 'scale(1.1)' : 'none',
+                transformOrigin: 'bottom center',
+              }}
+            >
               {/* Always show idle PNG — mouth animation is handled by CSS overlay */}
               <img
                 src={teacherImg}
