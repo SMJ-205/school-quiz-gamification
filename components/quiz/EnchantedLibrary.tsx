@@ -15,9 +15,10 @@ import PixelSprite from '../PixelSprite';
 import { sfxArchiveUnlock } from '@/lib/audioEngine';
 
 export default function EnchantedLibrary() {
-  const { currentQuestionIndex, correctAnswersCount, questions, character, studentName, selectedBackground } = useGameStore();
+  const { currentQuestionIndex, correctAnswersCount, questions, character, studentName, selectedBackground, setScreen } = useGameStore();
   const [archiveOpened, setArchiveOpened] = useState(false);
   const [prevCorrect, setPrevCorrect] = useState(correctAnswersCount);
+  const [showExitModal, setShowExitModal] = useState(false);
 
   useEffect(() => {
     if (correctAnswersCount > prevCorrect) {
@@ -51,6 +52,14 @@ export default function EnchantedLibrary() {
             </div>
 
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowExitModal(true)}
+                className="btn-pixel !bg-red-950/90 hover:!bg-red-900 !border-red-600/80 text-red-200 !text-[10px] sm:!text-xs !py-1 !px-2.5 flex items-center gap-1 cursor-pointer"
+                title="Kembali ke Menu Utama"
+              >
+                <span>🏠</span>
+                <span>MENU UTAMA</span>
+              </button>
               <div className="retro-pill-badge !bg-stone-900/90 !border-amber-500/60 text-amber-300 !text-[10px] sm:!text-xs !py-1 !px-2.5">
                 ⚔️ KUIS ILMU
               </div>
@@ -120,6 +129,48 @@ export default function EnchantedLibrary() {
 
         </div>
       </div>
+
+      {/* ── Exit Confirmation Modal ────────────────────────────────────────────────── */}
+      {showExitModal && (
+        <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-3 sm:p-5 select-none animate-fadeIn">
+          <div className="relative w-full max-w-md crt-arcade-frame bg-[#140a0a] border-4 border-red-600 rounded-2xl p-5 sm:p-6 shadow-2xl text-stone-100 font-pixel text-center">
+            {/* Warning Icon & Badge */}
+            <div className="inline-block bg-red-950 border-2 border-red-500 text-red-300 font-bold text-xs px-3 py-1 rounded-full mb-3 shadow uppercase tracking-widest">
+              ⚠️ KONFIRMASI KEMBALI
+            </div>
+
+            <h3 className="text-xl sm:text-2xl font-bold text-red-400 mb-2 leading-tight">
+              KEMBALI KE MENU UTAMA?
+            </h3>
+
+            <p className="font-dialogue text-base sm:text-lg text-stone-300 mb-6 leading-relaxed">
+              Apakah kamu yakin akan mengakhiri kuis? Semua progres di sesi ini akan hilang.
+            </p>
+
+            {/* Modal Actions */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                onClick={() => setShowExitModal(false)}
+                className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 text-stone-200 px-5 py-2.5 text-xs sm:text-sm font-bold w-full sm:w-auto cursor-pointer"
+              >
+                <span>✕</span>
+                <span>BATAL (LANJUT KUIS)</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowExitModal(false);
+                  setScreen('background_select');
+                }}
+                className="btn-pixel !bg-red-900 hover:!bg-red-800 !border-red-600 text-red-200 px-5 py-2.5 text-xs sm:text-sm font-bold w-full sm:w-auto cursor-pointer"
+              >
+                <span>🏠</span>
+                <span>YA, KELUAR</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
