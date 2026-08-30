@@ -176,7 +176,7 @@ export default function QuestionPanel() {
             <div
               className="relative w-16 h-24 sm:w-19 sm:h-28 md:w-21 md:h-30 flex items-end justify-center"
               style={{
-                transform: isFemaleTeacher ? 'scale(1.2)' : 'none',
+                transform: isFemaleTeacher ? 'scale(1.1)' : 'none',
                 transformOrigin: 'bottom center',
               }}
             >
@@ -205,11 +205,11 @@ export default function QuestionPanel() {
                 aria-hidden="true"
                 style={{
                   position: 'absolute',
-                  left: isFemaleTeacher ? '45.8%' : '38.5%',
-                  bottom: isFemaleTeacher ? '60.9%' : '63.5%',
+                  left: isFemaleTeacher ? '41.8%' : '38.5%',
+                  bottom: isFemaleTeacher ? '59.9%' : '63.5%',
                   transform: 'translate(-50%, 50%)',
-                  width: mouthOpen ? (isFemaleTeacher ? '14%' : '15%') : (isFemaleTeacher ? '11%' : '13%'),
-                  height: mouthOpen ? (isFemaleTeacher ? '4.5%' : '5%') : (isFemaleTeacher ? '1.8%' : '2%'),
+                  width: mouthOpen ? (isFemaleTeacher ? '13%' : '15%') : (isFemaleTeacher ? '11%' : '13%'),
+                  height: mouthOpen ? (isFemaleTeacher ? '4%' : '5%') : (isFemaleTeacher ? '1.8%' : '2%'),
                   borderRadius: '50%',
                   backgroundColor: mouthOpen ? 'rgba(25,6,6,0.95)' : 'rgba(50,20,12,0.82)',
                   boxShadow: mouthOpen ? 'inset 0 1px 2px rgba(255,220,210,0.3)' : 'none',
