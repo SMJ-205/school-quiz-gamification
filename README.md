@@ -10,7 +10,7 @@
 
 | Fitur | Deskripsi |
 |---|---|
-| ⚔️ **Sombo Dynamic Boss Battle** | Pertarungan QuickMath lawan Arithmo-Boss Sombo di *Ruang Kelas Unggulan* tanpa batasan wave kaku. Dibutuhkan ~20-25 jawaban cepat & tepat untuk menang. Dilengkapi mekanik **Sombo HP Recovery** (+400 HP saat pemain salah/timeout) dan **Tier 4 Tersulit** (soal 15+)! |
+| ⚔️ **Sombo Dynamic Boss Battle** | Pertarungan QuickMath lawan Arithmo-Boss Sombo di *Ruang Kelas Unggulan* tanpa batasan wave kaku. Target ~20-25 pertanyaan (menoleransi kesalahan). Dilengkapi mekanik **Sombo Passive Auto Recover** (+100 HP tiap 10s) dan **Tier 4 Tersulit** (soal 15+)! |
 | ❤️ **Sistem 3 Nyawa Tepat (3 Hearts)** | Pemain memiliki tepat 3 kesempatan hati. Setiap jawaban salah atau waktu habis akan menguras 1 hati; rekor streak 5x mengembalikan 1 hati |
 | 📊 **Analisis Kesalahan & Evaluasi Belajar** | Laporan evaluasi interaktif pada layar Kalah, Sombo Kalah, & Unlimited Math yang mengelompokkan rincian kesalahan per tipe soal (`Simpan`, `Pinjam`, `Hitung Dasar`, `Timeout`) serta memberikan saran bimbingan pedagogis terarah |
 | ⚡ **Unlimited Math Battle Mode** | Mode pertarungan tanpa batas soal setelah Sombo dikalahkan untuk mencetak rekor *High Score* tertinggi |

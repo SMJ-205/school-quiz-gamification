@@ -504,6 +504,23 @@ export default function BossBattleArena() {
     loadQuestion(1);
   }, [phase, loadQuestion]);
 
+  // ─── Passive Auto Recover (Sombo recovers +100 HP every 10 seconds) ─────────
+
+  useEffect(() => {
+    if (phase !== 'battle') return;
+
+    const autoHealInterval = setInterval(() => {
+      setBossHp(prevHp => {
+        if (prevHp <= 0 || prevHp >= BOSS_MAX_HP) return prevHp;
+        const newHp = Math.min(BOSS_MAX_HP, prevHp + 100);
+        addFloat('+100 HP SOMBO RECOVER! ❤️‍🩹', false);
+        return newHp;
+      });
+    }, 10000);
+
+    return () => clearInterval(autoHealInterval);
+  }, [phase, addFloat]);
+
   // ─── Timer Tick ───────────────────────────────────────────────────────────────
 
   useEffect(() => {
@@ -549,16 +566,13 @@ export default function BossBattleArena() {
       ]);
     }
 
-    // Sombo HP Recovery on Timeout (+400 HP up to max 6000)
-    setBossHp(prevHp => Math.min(BOSS_MAX_HP, prevHp + 400));
-    addFloat('+400 HP SOMBO RECOVER! ❤️‍d', false);
-    triggerRage();
-
     heartCountRef.current = Math.max(0, heartCountRef.current - 1);
     const nextHearts = heartCountRef.current;
     setHeartCount(nextHearts);
     setPlayerHp(Math.round((nextHearts / 3) * 100));
     setCombo(0);
+    addFloat('TIMEOUT! -1 ❤️', false);
+    triggerRage();
     if (nextHearts <= 0) {
       setTimeout(() => setPhase('gameover'), 500);
       return;
@@ -579,7 +593,7 @@ export default function BossBattleArena() {
       sfxCorrect();
       const speedMult = 1.0 + (qTimeLimit.current - elapsed) / qTimeLimit.current;
       const comboMult = 1.0 + Math.min(combo, 10) * 0.1;
-      const dmg = Math.round(135 * speedMult * comboMult * question.difficultyFactor);
+      const dmg = Math.round(145 * speedMult * comboMult * question.difficultyFactor);
       const isCritical = speedMult > 1.6;
 
       const newBossHp = Math.max(0, bossHp - dmg);
@@ -644,16 +658,13 @@ export default function BossBattleArena() {
         ]);
       }
 
-      // Sombo HP Recovery on Wrong Answer (+400 HP up to max 6000)
-      setBossHp(prevHp => Math.min(BOSS_MAX_HP, prevHp + 400));
-      addFloat('+400 HP SOMBO RECOVER! ❤️‍d', false);
-      triggerRage();
-
       heartCountRef.current = Math.max(0, heartCountRef.current - 1);
       const nextHearts = heartCountRef.current;
       setHeartCount(nextHearts);
       setPlayerHp(Math.round((nextHearts / 3) * 100));
       setCombo(0);
+      addFloat('SALAH! -1 ❤️', false);
+      triggerRage();
       if (nextHearts <= 0) {
         setTimeout(() => setPhase('gameover'), 800);
         return;
