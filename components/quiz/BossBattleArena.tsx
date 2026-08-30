@@ -50,7 +50,6 @@ interface MistakeLog {
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
-const TOTAL_WAVES = 15;
 const BOSS_MAX_HP = 6000;
 const PLAYER_MAX_HP = 100;
 
@@ -58,7 +57,7 @@ const INTRO_SPEECH =
   'Heh, kalian semua cuma buang-buang waktu kalau mikir bisa ngalahin Sombo! ' +
   'Otak jeniusku ini beda kelas! ' +
   'Berani adu hitung cepat lawan aku? ' +
-  'Cuma butuh beberapa babak tantangan buat bikin kalian sadar batas kemampuan kalian!';
+  'Cuma butuh beberapa tantangan buat bikin kalian sadar batas kemampuan kalian!';
 
 const DEFEATED_SPEECH =
   'Aaargh! tidak mungkin aku bisa dikalahkan olehmu. ' +
@@ -73,7 +72,7 @@ const WHITE_CELL_SHADING = [
   'drop-shadow(0px 8px 16px rgba(0,0,0,0.85))',
 ].join(' ');
 
-// ─── Question Generator (15 Waves Total — 5 Extra Peak Difficulty Waves) ─────
+// ─── Question Generator (Dynamic Tiered System — Q15+ Peak Difficulty) ─────────
 
 function hasCarrying(a: number, b: number): boolean {
   return (a % 10) + (b % 10) >= 10;
@@ -82,64 +81,85 @@ function hasBorrowing(a: number, b: number): boolean {
   return (a % 10) < (b % 10);
 }
 
-function genQuestion(wave: number): BossQuestion {
-  const isEarly = wave <= 4;
-  const isMid   = wave >= 5 && wave <= 8;
+function genQuestion(qIndex: number): BossQuestion {
+  const isTier1 = qIndex <= 4;
+  const isTier2 = qIndex >= 5 && qIndex <= 9;
+  const isTier3 = qIndex >= 10 && qIndex <= 14;
+  // Tier 4 = qIndex >= 15 (TIER TERSULIT / PEAK TIER)
 
   let a: number, b: number, op: '+' | '-', carry: boolean;
   let timeLimit: number;
+  let diffFactor: number;
 
-  if (isEarly) {
+  if (isTier1) {
     op = '+';
     do {
       a = 10 + Math.floor(Math.random() * 80);
       b = 10 + Math.floor(Math.random() * (99 - a));
     } while (hasCarrying(a, b));
     carry = false;
-    timeLimit = 6.0;
-  } else if (isMid) {
+    timeLimit = 6.5;
+    diffFactor = 1.0;
+  } else if (isTier2) {
     op = Math.random() < 0.5 ? '+' : '-';
     carry = Math.random() < 0.5;
     if (op === '+') {
       do {
-        a = 10 + Math.floor(Math.random() * 80);
-        b = 10 + Math.floor(Math.random() * Math.min(90, 99 - a));
+        a = 15 + Math.floor(Math.random() * 75);
+        b = 10 + Math.floor(Math.random() * Math.min(80, 99 - a));
       } while (hasCarrying(a, b) !== carry);
     } else {
       do {
-        a = 20 + Math.floor(Math.random() * 70);
+        a = 25 + Math.floor(Math.random() * 65);
         b = 10 + Math.floor(Math.random() * (a - 10));
       } while (hasBorrowing(a, b) !== carry);
     }
-    timeLimit = 5.0;
-  } else {
-    // Waves 9 to 15: Peak Highest Difficulty (5 Extra Hardest Waves)
+    timeLimit = 5.5;
+    diffFactor = 1.2;
+  } else if (isTier3) {
     op = Math.random() < 0.5 ? '+' : '-';
     carry = true;
     if (op === '+') {
       do {
-        a = 35 + Math.floor(Math.random() * 60);
-        b = 15 + Math.floor(Math.random() * Math.min(60, 99 - a));
+        a = 35 + Math.floor(Math.random() * 55);
+        b = 15 + Math.floor(Math.random() * Math.min(55, 99 - a));
       } while (!hasCarrying(a, b));
     } else {
       do {
-        a = 40 + Math.floor(Math.random() * 55);
+        a = 40 + Math.floor(Math.random() * 50);
         b = 15 + Math.floor(Math.random() * (a - 15));
       } while (!hasBorrowing(a, b));
     }
-    // Shrunken time limit for peak difficulty (Wave 13-15 = 3.2s)
-    timeLimit = wave >= 13 ? 3.2 : wave >= 11 ? 3.8 : 4.2;
+    timeLimit = 4.5;
+    diffFactor = 1.5;
+  } else {
+    // ─── TIER TERSULIT (Pertanyaan 15 Ke Atas) ──────────────────────────────
+    // 3-digit carrying / borrowing & complex math challenges!
+    op = Math.random() < 0.5 ? '+' : '-';
+    carry = true;
+    if (op === '+') {
+      do {
+        a = 45 + Math.floor(Math.random() * 105);
+        b = 25 + Math.floor(Math.random() * 95);
+      } while (!hasCarrying(a, b));
+    } else {
+      do {
+        a = 60 + Math.floor(Math.random() * 115);
+        b = 25 + Math.floor(Math.random() * (a - 25));
+      } while (!hasBorrowing(a, b));
+    }
+    timeLimit = qIndex >= 20 ? 3.2 : 3.6;
+    diffFactor = 2.0;
   }
 
   const answer = op === '+' ? a + b : a - b;
-  const diffFactor = carry ? 1.5 : 1.0;
 
   const opts = new Set<number>();
   opts.add(answer);
   while (opts.size < 4) {
-    const delta = Math.floor(Math.random() * 20) - 10;
+    const delta = (Math.floor(Math.random() * 20) - 10) || 3;
     const fake = answer + delta;
-    if (fake !== answer && fake > 0 && fake < 200) opts.add(fake);
+    if (fake !== answer && fake > 0 && fake < 400) opts.add(fake);
   }
   const options = Array.from(opts).sort(() => Math.random() - 0.5);
 
@@ -167,7 +187,7 @@ export default function BossBattleArena() {
   // Battle state
   const [bossHp, setBossHp]         = useState(BOSS_MAX_HP);
   const [playerHp, setPlayerHp]     = useState(PLAYER_MAX_HP);
-  const [wave, setWave]             = useState(1);
+  const [questionNumber, setQuestionNumber] = useState(1);
   const [combo, setCombo]           = useState(0);
   const [maxCombo, setMaxCombo]     = useState(0);
   const [totalScore, setTotalScore] = useState(0);
@@ -187,7 +207,7 @@ export default function BossBattleArena() {
     setHeartCount(3);
     setBossHp(BOSS_MAX_HP);
     setPlayerHp(PLAYER_MAX_HP);
-    setWave(1);
+    setQuestionNumber(1);
     setCombo(0);
     setMaxCombo(0);
     setTotalScore(0);
@@ -446,8 +466,10 @@ export default function BossBattleArena() {
 
   // ─── Load Question ────────────────────────────────────────────────────────────
 
-  const loadQuestion = useCallback((currentWave: number) => {
-    const q = genQuestion(currentWave);
+  // ─── Load Question ────────────────────────────────────────────────────────────
+
+  const loadQuestion = useCallback((qIndex: number) => {
+    const q = genQuestion(qIndex);
     setQuestion(q);
     setAnswered(null);
     qTimeLimit.current = q.timeLimit;
@@ -473,7 +495,7 @@ export default function BossBattleArena() {
     setHeartCount(3);
     setPlayerHp(PLAYER_MAX_HP);
     setBossHp(BOSS_MAX_HP);
-    setWave(1);
+    setQuestionNumber(1);
     setCombo(0);
     setMaxCombo(0);
     setTotalScore(0);
@@ -527,13 +549,16 @@ export default function BossBattleArena() {
       ]);
     }
 
+    // Sombo HP Recovery on Timeout (+400 HP up to max 6000)
+    setBossHp(prevHp => Math.min(BOSS_MAX_HP, prevHp + 400));
+    addFloat('+400 HP SOMBO RECOVER! ❤️‍d', false);
+    triggerRage();
+
     heartCountRef.current = Math.max(0, heartCountRef.current - 1);
     const nextHearts = heartCountRef.current;
     setHeartCount(nextHearts);
     setPlayerHp(Math.round((nextHearts / 3) * 100));
     setCombo(0);
-    addFloat('TIMEOUT! -1 ❤️', false);
-    if (wave >= 4) triggerRage();
     if (nextHearts <= 0) {
       setTimeout(() => setPhase('gameover'), 500);
       return;
@@ -554,7 +579,7 @@ export default function BossBattleArena() {
       sfxCorrect();
       const speedMult = 1.0 + (qTimeLimit.current - elapsed) / qTimeLimit.current;
       const comboMult = 1.0 + Math.min(combo, 10) * 0.1;
-      const dmg = Math.round(100 * speedMult * comboMult * question.difficultyFactor);
+      const dmg = Math.round(135 * speedMult * comboMult * question.difficultyFactor);
       const isCritical = speedMult > 1.6;
 
       const newBossHp = Math.max(0, bossHp - dmg);
@@ -579,7 +604,7 @@ export default function BossBattleArena() {
         addFloat('+1 HATI ❤️', false);
       }
 
-      // Only trigger defeat transition if in Phase 1 ('battle')!
+      // Defeat transition if boss HP reaches 0
       if (phase === 'battle' && newBossHp <= 0) {
         setTimeout(() => {
           setShowFlash(true);
@@ -588,10 +613,6 @@ export default function BossBattleArena() {
         }, 700);
         return;
       }
-
-      const targetWave   = TOTAL_WAVES - Math.floor((newBossHp / BOSS_MAX_HP) * TOTAL_WAVES);
-      const newWave      = Math.max(wave, Math.min(TOTAL_WAVES, targetWave + 1));
-      if (newWave !== wave) setWave(newWave);
 
       setTimeout(() => afterAnswer(), 700);
     } else {
@@ -623,13 +644,16 @@ export default function BossBattleArena() {
         ]);
       }
 
+      // Sombo HP Recovery on Wrong Answer (+400 HP up to max 6000)
+      setBossHp(prevHp => Math.min(BOSS_MAX_HP, prevHp + 400));
+      addFloat('+400 HP SOMBO RECOVER! ❤️‍d', false);
+      triggerRage();
+
       heartCountRef.current = Math.max(0, heartCountRef.current - 1);
       const nextHearts = heartCountRef.current;
       setHeartCount(nextHearts);
       setPlayerHp(Math.round((nextHearts / 3) * 100));
       setCombo(0);
-      addFloat('SALAH! -1 ❤️', false);
-      if (wave >= 4) triggerRage();
       if (nextHearts <= 0) {
         setTimeout(() => setPhase('gameover'), 800);
         return;
@@ -640,7 +664,11 @@ export default function BossBattleArena() {
 
   function afterAnswer() {
     if (phase === 'battle') {
-      loadQuestion(wave);
+      setQuestionNumber(prev => {
+        const nextQ = prev + 1;
+        loadQuestion(nextQ);
+        return nextQ;
+      });
     } else if (phase === 'endless') {
       const nextN = endlessN + 1;
       setEndlessN(nextN);
@@ -1018,7 +1046,7 @@ export default function BossBattleArena() {
               ? '!bg-purple-950 !border-purple-500 text-purple-300'
               : '!bg-red-950 !border-red-600 text-red-300'
           }`}>
-            {isEndless ? `⚡ UNLIMITED MATH BATTLE — SOAL #${endlessN}` : `⚔️ WAVE ${wave}/${TOTAL_WAVES}`}
+            {isEndless ? `⚡ UNLIMITED MATH BATTLE — SOAL #${endlessN}` : `⚔️ PERTARUNGAN SOMBO — SOAL #${questionNumber}${questionNumber >= 15 ? ' 🔥 TIER TERSULIT' : ''}`}
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2">
@@ -1157,12 +1185,12 @@ export default function BossBattleArena() {
             <div className="font-pixel font-bold text-xs text-stone-300">{playerHp} HP</div>
           </div>
 
-          {/* Wave / Endless info center */}
+          {/* Question / Endless info center */}
           <div className="text-center font-pixel font-bold text-stone-300 text-xs sm:text-sm hidden sm:block">
             {isEndless ? (
               <span className="text-purple-400">⚡ OVERDRIVE<br />Soal #{endlessN}</span>
             ) : (
-              <span className="text-red-400">⚔️ WAVE {wave}/{TOTAL_WAVES}</span>
+              <span className="text-red-400">⚔️ SOAL #{questionNumber}<br />{questionNumber >= 15 ? '🔥 TIER TERSULIT' : ''}</span>
             )}
           </div>
 
@@ -1211,7 +1239,7 @@ export default function BossBattleArena() {
       <div className="relative z-20 p-2 sm:p-3 bg-black/90 border-t-2 border-red-950 flex items-center justify-between font-pixel text-xs sm:text-sm text-stone-300">
         <div className="flex items-center gap-1.5 font-bold">
           <span className={`w-2 h-2 rounded-full ${isEndless ? 'bg-purple-400' : 'bg-red-400'} animate-pulse`} />
-          <span>{isEndless ? 'UNLIMITED MATH' : `WAVE ${wave}/${TOTAL_WAVES}`}</span>
+          <span>{isEndless ? 'UNLIMITED MATH' : `PERTARUNGAN SOMBO — SOAL #${questionNumber}`}</span>
         </div>
         <div className="text-stone-400 font-medium">Combo: <span className="text-amber-400 font-bold">{combo}x</span></div>
         <button
