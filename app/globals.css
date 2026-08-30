@@ -102,6 +102,21 @@ body {
   z-index: 99;
 }
 
+/* Fullscreen CRT Scanlines Overlay (Identical to Pak Guru Quiz CRT Scanlines) */
+.crt-scanlines-overlay {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.24) 2px,
+    rgba(0, 0, 0, 0.24) 4px
+  );
+  pointer-events: none;
+  z-index: 15;
+}
+
 /* ─── Retro Badge Pill ─────────────────────────────────────────────────────── */
 .retro-pill-badge {
   font-family: var(--font-pixel);

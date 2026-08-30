@@ -676,6 +676,7 @@ export default function BossBattleArena() {
         }}
       >
         <div className="absolute inset-0 bg-black/75" />
+        <div className="crt-scanlines-overlay" />
         {showFlash && <div className="screen-flash" />}
 
         {/* Comic Battle Title */}
@@ -879,6 +880,7 @@ export default function BossBattleArena() {
         }}
       >
         <div className="absolute inset-0 bg-black/75" />
+        <div className="crt-scanlines-overlay" />
         {showFlash && <div className="screen-flash" />}
 
         <div className="relative z-10 text-center mb-4">
@@ -990,6 +992,7 @@ export default function BossBattleArena() {
       {/* Overlays */}
       {!isEndless && <div className="absolute inset-0 bg-black/65 pointer-events-none" />}
       {isEndless && <div className="absolute inset-0 overdrive-grid pointer-events-none opacity-80" />}
+      <div className="crt-scanlines-overlay" />
       {showFlash && <div className="screen-flash" />}
 
       {/* Floating damage numbers */}
