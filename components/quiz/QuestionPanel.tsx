@@ -176,7 +176,7 @@ export default function QuestionPanel() {
             <div
               className="relative w-16 h-24 sm:w-19 sm:h-28 md:w-21 md:h-30 flex items-end justify-center"
               style={{
-                transform: isFemaleTeacher ? 'scale(1.1)' : 'none',
+                transform: isFemaleTeacher ? 'scale(1.2)' : 'none',
                 transformOrigin: 'bottom center',
               }}
             >
@@ -199,13 +199,13 @@ export default function QuestionPanel() {
               {/*
                 CSS Mouth Overlay:
                 - Pak Guru (teacher_idle.png): left 38.5%, bottom 63.5%
-                - Bu Guru (teacher_female_idle.png): left 49.9%, bottom 60.9%
+                - Bu Guru (teacher_female_idle.png): left 45.8%, bottom 60.9%
               */}
               <div
                 aria-hidden="true"
                 style={{
                   position: 'absolute',
-                  left: isFemaleTeacher ? '49.9%' : '38.5%',
+                  left: isFemaleTeacher ? '45.8%' : '38.5%',
                   bottom: isFemaleTeacher ? '60.9%' : '63.5%',
                   transform: 'translate(-50%, 50%)',
                   width: mouthOpen ? (isFemaleTeacher ? '14%' : '15%') : (isFemaleTeacher ? '11%' : '13%'),
