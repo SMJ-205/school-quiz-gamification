@@ -126,24 +126,24 @@ export default function BackgroundSelectScreen() {
       <div className="crt-scanlines-overlay" />
 
       {/* Main CRT Frame Container */}
-      <div className="relative z-10 w-full max-w-4xl crt-arcade-frame bg-[#140E0A] p-4 sm:p-7 md:p-8 flex flex-col items-center text-center border-4 border-[#7D4E2D] shadow-2xl rounded-2xl my-auto">
+      <div className="relative z-10 w-full max-w-5xl crt-arcade-frame bg-[#140E0A] p-4 sm:p-7 md:p-8 flex flex-col items-center text-center border-4 border-[#7D4E2D] shadow-2xl rounded-2xl my-auto">
 
         {/* Top Header */}
         <div className="mb-5 sm:mb-7">
-          <div className="retro-pill-badge !bg-amber-950 !border-amber-400 text-amber-300 mb-2.5 inline-flex items-center gap-1.5">
+          <div className="retro-pill-badge !bg-amber-950 !border-amber-400 text-amber-300 mb-2.5 inline-flex items-center gap-1.5 !text-xs sm:!text-sm">
             <span>🏫</span>
             <span>PILIH TEMPAT BELAJAR</span>
           </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-amber-300 drop-shadow-[0_2px_8px_rgba(255,179,0,0.5)] leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-amber-300 drop-shadow-[0_2px_8px_rgba(255,179,0,0.5)] leading-tight">
             TEMPAT BELAJAR
           </h1>
-          <p className="font-dialogue text-base sm:text-xl text-stone-300 max-w-lg mx-auto mt-1">
+          <p className="font-dialogue text-lg sm:text-2xl text-stone-200 max-w-xl mx-auto mt-1 leading-snug">
             Tentukan tempat belajarmu — perpustakaan tenang atau tantang lawan di kelas!
           </p>
         </div>
 
         {/* 3 Cards Grid: 2 col on sm+, stacked on mobile */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-4 w-full mb-6 sm:mb-8 text-left">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 w-full mb-6 sm:mb-8 text-left">
           {PLACE_OPTIONS.map((opt) => {
             const isSelected = activePlaceId === opt.id;
 
@@ -162,7 +162,7 @@ export default function BackgroundSelectScreen() {
                 }`}
               >
                 {/* Thumbnail Image Banner */}
-                <div className="relative h-40 sm:h-44 w-full bg-stone-950 overflow-hidden">
+                <div className="relative h-40 sm:h-48 w-full bg-stone-950 overflow-hidden">
                   <img
                     src={opt.url}
                     alt={opt.title}
@@ -176,7 +176,7 @@ export default function BackgroundSelectScreen() {
                   )}
 
                   {/* Top Badges */}
-                  <div className={`absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded shadow border ${
+                  <div className={`absolute top-3 right-3 text-xs sm:text-sm font-bold px-2.5 py-1 rounded shadow border ${
                     opt.isBoss
                       ? 'bg-red-900/90 border-red-500/60 text-red-300'
                       : 'bg-black/80 border-amber-500/50 text-amber-300'
@@ -185,7 +185,7 @@ export default function BackgroundSelectScreen() {
                   </div>
 
                   {isSelected && (
-                    <div className={`absolute top-3 left-3 text-xs font-black px-2.5 py-1 rounded shadow flex items-center gap-1 animate-pulse ${
+                    <div className={`absolute top-3 left-3 text-xs sm:text-sm font-black px-2.5 py-1 rounded shadow flex items-center gap-1 animate-pulse ${
                       opt.isBoss
                         ? 'bg-red-500 text-white'
                         : 'bg-amber-400 text-stone-950'
@@ -197,13 +197,13 @@ export default function BackgroundSelectScreen() {
 
                   {/* Image Overlay Title */}
                   <div className="absolute bottom-2.5 left-3 right-3">
-                    <h3 className={`text-base sm:text-lg font-bold leading-tight ${
+                    <h3 className={`text-lg sm:text-xl md:text-2xl font-bold leading-tight ${
                       opt.isBoss ? 'text-red-200' : 'text-amber-200'
                     }`}>
                       {opt.title}
                     </h3>
-                    <span className={`text-xs font-medium ${
-                      opt.isBoss ? 'text-red-400' : 'text-amber-400'
+                    <span className={`text-xs sm:text-sm font-bold tracking-wide ${
+                      opt.isBoss ? 'text-red-300' : 'text-amber-300'
                     }`}>
                       {opt.subtitle}
                     </span>
@@ -211,12 +211,12 @@ export default function BackgroundSelectScreen() {
                 </div>
 
                 {/* Description Body */}
-                <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between">
-                  <p className="font-dialogue text-sm sm:text-base text-stone-300 leading-relaxed">
+                <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
+                  <p className="font-dialogue text-base sm:text-lg md:text-xl text-stone-100 leading-snug tracking-wide">
                     {opt.desc}
                   </p>
                   {opt.isBoss && (
-                    <div className="mt-2 text-[11px] text-red-400 font-dialogue border border-red-900/60 rounded px-2 py-1 bg-red-950/40">
+                    <div className="mt-3 text-xs sm:text-sm text-red-300 font-dialogue border border-red-900/80 rounded-lg px-2.5 py-1.5 bg-red-950/70 font-bold">
                       ⚡ Mode Khusus — Soal otomatis • 15 Wave Boss • Unlimited Math Battle
                     </div>
                   )}
