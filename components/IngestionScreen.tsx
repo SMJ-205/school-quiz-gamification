@@ -195,9 +195,9 @@ Cahaya matahari membutuhkan waktu sekitar berapa menit untuk sampai ke Bumi?
         </div>
 
         {/* Name Input Box */}
-        <div className="pixel-dialogue-box mb-4 p-3 sm:p-4">
+        <div className="crt-arcade-frame mb-4 p-3 sm:p-4">
           <label className="block text-amber-300 text-base sm:text-lg font-bold tracking-wider mb-1.5">
-            👤 NAMA PELAJAR / PETUALANG
+            NAMA PETUALANG
           </label>
           <input
             className="w-full bg-black/60 border-2 border-amber-500/40 focus:border-amber-400 text-white font-dialogue text-xl sm:text-2xl px-3 py-2 rounded outline-none transition-all placeholder:text-stone-500"
@@ -210,10 +210,10 @@ Cahaya matahari membutuhkan waktu sekitar berapa menit untuk sampai ke Bumi?
         </div>
 
         {/* Dropzone File Upload */}
-        <div className="pixel-dialogue-box mb-4 p-3 sm:p-4">
+        <div className="crt-arcade-frame mb-4 p-3 sm:p-4">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
             <p className="text-amber-300 text-base sm:text-lg font-bold tracking-wider">
-              📂 UNGGAH MATERI KUIS (.md)
+              UNGGAH MATERI KUIS (.md)
             </p>
             <button
               onClick={handleLoadSample}
