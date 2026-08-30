@@ -123,6 +123,7 @@ export default function BackgroundSelectScreen() {
           ? 'bg-red-950/80'
           : 'bg-black/75'
       }`} />
+      <div className="crt-scanlines-overlay" />
 
       {/* Main CRT Frame Container */}
       <div className="relative z-10 w-full max-w-4xl crt-arcade-frame bg-[#140E0A] p-4 sm:p-7 md:p-8 flex flex-col items-center text-center border-4 border-[#7D4E2D] shadow-2xl rounded-2xl my-auto">

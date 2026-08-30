@@ -42,11 +42,13 @@ export default function CharacterCustomizer() {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center p-3 sm:p-6 md:p-8 select-none relative"
+      className="min-h-screen flex flex-col items-center justify-center p-3 sm:p-6 md:p-8 select-none relative overflow-hidden"
       style={{
         background: 'radial-gradient(ellipse at 50% 30%, #2D1A0E 0%, #170E08 60%, #0A0604 100%)',
       }}
     >
+      {/* CRT Scanlines Overlay */}
+      <div className="crt-scanlines-overlay" />
       {/* Floating Sound Toggle */}
       <div className="absolute top-4 right-4 z-30">
         <button
