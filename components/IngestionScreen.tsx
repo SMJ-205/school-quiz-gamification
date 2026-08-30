@@ -195,12 +195,12 @@ Cahaya matahari membutuhkan waktu sekitar berapa menit untuk sampai ke Bumi?
         </div>
 
         {/* Name Input Box */}
-        <div className="crt-arcade-frame mb-4 p-3 sm:p-4">
-          <label className="block text-amber-300 text-base sm:text-lg font-bold tracking-wider mb-1.5">
+        <div className="crt-arcade-frame mb-4 p-4 sm:p-5 text-center">
+          <label className="block text-amber-300 text-base sm:text-lg font-bold tracking-wider mb-2 text-center">
             NAMA PETUALANG
           </label>
           <input
-            className="w-full bg-black/60 border-2 border-amber-500/40 focus:border-amber-400 text-white font-dialogue text-xl sm:text-2xl px-3 py-2 rounded outline-none transition-all placeholder:text-stone-500"
+            className="w-full bg-black/60 border-2 border-amber-500/40 focus:border-amber-400 text-white font-dialogue text-xl sm:text-2xl px-4 py-2.5 rounded text-center outline-none transition-all placeholder:text-stone-500"
             type="text"
             placeholder="Ketik namamu di sini..."
             value={studentName}
@@ -210,40 +210,41 @@ Cahaya matahari membutuhkan waktu sekitar berapa menit untuk sampai ke Bumi?
         </div>
 
         {/* Dropzone File Upload */}
-        <div className="crt-arcade-frame mb-4 p-3 sm:p-4">
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-            <p className="text-amber-300 text-base sm:text-lg font-bold tracking-wider">
+        <div className="crt-arcade-frame mb-4 p-4 sm:p-5 text-center">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-3">
+            <p className="text-amber-300 text-base sm:text-lg font-bold tracking-wider text-center sm:text-left">
               UNGGAH MATERI KUIS (.md)
             </p>
             <button
               onClick={handleLoadSample}
-              className="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/50 px-2.5 py-1 rounded transition-colors cursor-pointer"
+              className="btn-pixel !bg-amber-500 hover:!bg-amber-400 !border-amber-300 text-stone-950 font-bold text-xs sm:text-sm px-4 py-2 shadow-lg cursor-pointer flex items-center justify-center gap-1.5 transform hover:scale-105 transition-all"
             >
-              ▶ Coba Kuis Contoh
+              <span>▶</span>
+              <span>COBA KUIS CONTOH</span>
             </button>
           </div>
 
           <div
             key={shakeKey}
             {...getRootProps()}
-            className={`border-3 border-dashed rounded-lg p-4 sm:p-6 text-center cursor-pointer transition-all ${
+            className={`border-3 border-dashed rounded-xl p-6 sm:p-8 pt-7 sm:pt-9 text-center cursor-pointer transition-all ${
               isDragActive
                 ? 'border-amber-400 bg-amber-500/10 scale-[1.01]'
-                : 'border-stone-600 hover:border-amber-400/80 bg-black/40 hover:bg-black/60'
+                : 'border-amber-600/60 hover:border-amber-400 bg-black/50 hover:bg-black/70'
             }`}
           >
             <input {...getInputProps()} />
-            <div className="text-3xl sm:text-4xl mb-1.5">
+            <div className="text-4xl sm:text-5xl mb-3 pt-2">
               {loading ? '⏳' : isDragActive ? '📥' : '📜'}
             </div>
-            <p className="text-stone-200 text-sm sm:text-base font-bold mb-0.5">
+            <p className="text-stone-100 text-base sm:text-lg font-bold mb-1">
               {loading
                 ? 'Membaca Kitab Pengetahuan...'
                 : isDragActive
                   ? 'Lepaskan berkas di sini!'
                   : 'Seret & jatuhkan berkas .md di sini'}
             </p>
-            <p className="text-stone-400 font-dialogue text-base sm:text-lg">
+            <p className="text-amber-200/70 font-dialogue text-lg sm:text-xl">
               atau klik untuk memilih dari komputer
             </p>
           </div>
