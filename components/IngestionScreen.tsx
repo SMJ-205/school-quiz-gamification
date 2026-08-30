@@ -156,22 +156,42 @@ Cahaya matahari membutuhkan waktu sekitar berapa menit untuk sampai ke Bumi?
         <div className="absolute bottom-12 right-12 text-7xl opacity-40">🏛️</div>
       </div>
 
-      <div className="relative z-10 w-full max-w-xl">
+      <div className="relative z-10 w-full max-w-2xl">
 
-        {/* CRT Style Header Card */}
-        <div className="crt-arcade-frame p-4 sm:p-6 mb-5 text-center">
-          <div className="flex items-center justify-center gap-2 sm:gap-3 mb-2">
-            <span className="text-2xl sm:text-3xl">📖</span>
-            <div className="retro-pill-badge">ACADEMY ARCHIVES</div>
-            <span className="text-2xl sm:text-3xl">✨</span>
+        {/* CRT Style Header Poster Banner */}
+        <div className="crt-arcade-frame p-2.5 sm:p-3 mb-5 text-center overflow-hidden relative group">
+          {/* Poster Image Container */}
+          <div className="relative w-full h-52 sm:h-64 md:h-72 rounded-xl overflow-hidden border-2 border-amber-500/50 shadow-2xl">
+            <img
+              src="/backgrounds/main_menu_poster.jpg"
+              alt="The Growth of Knowledge — Characters Poster"
+              className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700"
+            />
+            {/* Scrim Overlays for Header High Contrast & Text Legibility */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/30 to-black/85" />
+
+            {/* Attached Header Content Overlayed on Poster */}
+            <div className="absolute inset-0 p-3 sm:p-4 flex flex-col justify-between items-center text-center z-10">
+              {/* Top Badge */}
+              <div className="flex items-center justify-center gap-2 sm:gap-3 mt-1">
+                <span className="text-xl sm:text-2xl drop-shadow">📖</span>
+                <div className="retro-pill-badge !bg-amber-950/90 !border-amber-400 text-amber-300 shadow-md">
+                  ACADEMY ARCHIVES
+                </div>
+                <span className="text-xl sm:text-2xl drop-shadow">✨</span>
+              </div>
+
+              {/* Bottom Title & Subtitle Attached on Poster */}
+              <div className="mb-1 max-w-lg">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wider text-amber-300 drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)] leading-tight">
+                  THE GROWTH OF KNOWLEDGE
+                </h1>
+                <p className="font-dialogue text-base sm:text-lg md:text-xl text-amber-100 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] tracking-wide mt-1">
+                  Petualangan Kuis &amp; Eksplorasi Arsip Pengetahuan
+                </p>
+              </div>
+            </div>
           </div>
-
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wider text-amber-300 drop-shadow-[0_2px_8px_rgba(255,179,0,0.5)] mt-2 mb-1 leading-tight">
-            THE GROWTH OF KNOWLEDGE
-          </h1>
-          <p className="font-dialogue text-lg sm:text-xl text-amber-100/70 tracking-wide">
-            Petualangan Kuis &amp; Eksplorasi Arsip Pengetahuan
-          </p>
         </div>
 
         {/* Name Input Box */}
