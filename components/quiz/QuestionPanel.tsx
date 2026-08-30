@@ -19,7 +19,7 @@ import GuardianOwlModal from './GuardianOwlModal';
 const OPTION_KEYS = ['A', 'B', 'C', 'D'];
 
 export default function QuestionPanel() {
-  const { questions, currentQuestionIndex, submitAnswer, nextQuestion } = useGameStore();
+  const { questions, currentQuestionIndex, submitAnswer, nextQuestion, selectedBackground } = useGameStore();
   const question = questions[currentQuestionIndex];
 
   const [selected, setSelected]       = useState<number | null>(null);
@@ -27,6 +27,11 @@ export default function QuestionPanel() {
   const [currentHint, setCurrentHint] = useState<string>('');
   const [showOwl, setShowOwl]         = useState(false);
   const [revealed, setRevealed]       = useState(false);
+
+  // Teacher selection (Bu Guru for Perpustakaan Pagi / sunlit library)
+  const isFemaleTeacher = selectedBackground === '/backgrounds/library_sunlit.jpg';
+  const teacherImg      = isFemaleTeacher ? '/sprites/teacher_female_idle.png' : '/sprites/teacher_idle.png';
+  const teacherAlt      = isFemaleTeacher ? 'Bu Guru' : 'Pak Guru';
 
   // Typewriting & Natural Talking Mouth State
   const [displayedText, setDisplayedText] = useState<string>('');
@@ -36,13 +41,17 @@ export default function QuestionPanel() {
 
   const fullQuestionText = question?.question || '';
 
-  // Preload both teacher sprites once on mount
+  // Preload teacher sprites once on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const img1 = new window.Image();
       img1.src = '/sprites/teacher_idle.png';
       const img2 = new window.Image();
       img2.src = '/sprites/teacher_talking.png';
+      const img3 = new window.Image();
+      img3.src = '/sprites/teacher_female_idle.png';
+      const img4 = new window.Image();
+      img4.src = '/sprites/teacher_female_talking.png';
     }
   }, []);
 
@@ -167,8 +176,8 @@ export default function QuestionPanel() {
             <div className="relative w-16 h-24 sm:w-19 sm:h-28 md:w-21 md:h-30 flex items-end justify-center">
               {/* Always show idle PNG — mouth animation is handled by CSS overlay */}
               <img
-                src="/sprites/teacher_idle.png"
-                alt="Pak Guru"
+                src={teacherImg}
+                alt={teacherAlt}
                 className="w-full h-full object-contain object-bottom select-none pointer-events-none"
                 style={{
                   imageRendering: 'pixelated',
@@ -182,24 +191,19 @@ export default function QuestionPanel() {
                 }}
               />
               {/*
-                CSS Mouth Overlay — confirmed via pixel analysis of teacher_idle.png.
-                White teeth pixels at sprite X=85..128 (center X=106), Y=252..257.
-                Sprite 320×699, displayed object-contain object-bottom.
-                Image height fills container → scale = display_h / 699.
-                Horizontal: image_left = (container_w - display_w) / 2  (centered)
-                Mouth center in container:
-                  left  ≈ 38.5%  (X=106/320=33.1% of sprite → ~38.5% of container)
-                  bottom ≈ 63.5% (Y=255 from top, = 444px from bottom, 63.5% of 699h)
+                CSS Mouth Overlay:
+                - Pak Guru (teacher_idle.png): left 38.5%, bottom 63.5%
+                - Bu Guru (teacher_female_idle.png): left 49.9%, bottom 60.9%
               */}
               <div
                 aria-hidden="true"
                 style={{
                   position: 'absolute',
-                  left: '38.5%',
-                  bottom: '63.5%',
+                  left: isFemaleTeacher ? '49.9%' : '38.5%',
+                  bottom: isFemaleTeacher ? '60.9%' : '63.5%',
                   transform: 'translate(-50%, 50%)',
-                  width: mouthOpen ? '15%' : '13%',
-                  height: mouthOpen ? '5%' : '2%',
+                  width: mouthOpen ? (isFemaleTeacher ? '14%' : '15%') : (isFemaleTeacher ? '11%' : '13%'),
+                  height: mouthOpen ? (isFemaleTeacher ? '4.5%' : '5%') : (isFemaleTeacher ? '1.8%' : '2%'),
                   borderRadius: '50%',
                   backgroundColor: mouthOpen ? 'rgba(25,6,6,0.95)' : 'rgba(50,20,12,0.82)',
                   boxShadow: mouthOpen ? 'inset 0 1px 2px rgba(255,220,210,0.3)' : 'none',
