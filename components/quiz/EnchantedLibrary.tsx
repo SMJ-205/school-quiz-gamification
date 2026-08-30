@@ -85,7 +85,7 @@ export default function EnchantedLibrary() {
                   animate
                 />
                 <div className="bg-black/80 border border-amber-500/50 px-2.5 py-1 rounded-lg text-amber-300 font-dialogue text-base sm:text-lg shadow-lg mb-1">
-                  👤 {studentName || 'Petualang'}
+                  {studentName || 'Petualang'}
                 </div>
               </div>
 

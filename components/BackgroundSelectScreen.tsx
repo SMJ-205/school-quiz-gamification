@@ -26,7 +26,7 @@ const PLACE_OPTIONS: PlaceOption[] = [
   {
     id: 'sunlit',
     title: 'Perpustakaan Taman Pagi',
-    subtitle: '👩‍🏫 Belajar Bersama Bu Guru',
+    subtitle: 'Suasana Asri & Hangat',
     desc: 'Ruang baca asri bermandikan sinar matahari pagi dengan pemandangan tanaman hijau. Pelajari materi kuis bersama Bu Guru yang ramah dan bijak.',
     url: '/backgrounds/library_sunlit.jpg',
     tag: 'BU GURU 🌿',
@@ -35,7 +35,7 @@ const PLACE_OPTIONS: PlaceOption[] = [
   {
     id: 'midnight',
     title: 'Perpustakaan Klasik',
-    subtitle: '👨‍🏫 Belajar Bersama Pak Guru',
+    subtitle: 'Suasana Megah & Antik',
     desc: 'Ruang perpustakaan megah dengan jajaran rak buku kayu antik. Asah pemahamanmu bersama Pak Guru yang berpengalaman.',
     url: '/backgrounds/library_bg.jpg',
     tag: 'PAK GURU 🏛️',

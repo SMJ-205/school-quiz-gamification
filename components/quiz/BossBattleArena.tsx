@@ -699,7 +699,7 @@ export default function BossBattleArena() {
             <div className="flex flex-col items-center gap-1.5 shrink-0">
               <PixelSprite character={character} pixelSize={0.33} animate />
               <div className="bg-black/80 border border-amber-500/50 text-amber-300 font-pixel text-xs sm:text-sm px-2 py-0.5 rounded shadow">
-                👤 {studentName || 'Petualang'}
+                {studentName || 'Petualang'}
               </div>
             </div>
 
@@ -898,7 +898,7 @@ export default function BossBattleArena() {
             <div className="flex flex-col items-center gap-2 shrink-0">
               <PixelSprite character={character} pixelSize={0.34} animate />
               <div className="bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 font-pixel text-sm px-2 py-0.5 rounded shadow">
-                🏆 {studentName || 'Petualang'}
+                {studentName || 'Petualang'}
               </div>
             </div>
 
@@ -1080,7 +1080,7 @@ export default function BossBattleArena() {
       <div className="relative z-10 flex-1 flex flex-col justify-center items-center p-3 sm:p-5 my-auto w-full">
 
         {/* Question & Options Center Container with distinct vertical gap */}
-        <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10 my-auto">
+        <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center gap-5 sm:gap-8 md:gap-10 my-auto mb-8 sm:mb-4">
           
           {/* Question Box */}
           {question && (
@@ -1139,7 +1139,7 @@ export default function BossBattleArena() {
         </div>
 
         {/* Bottom Stage Row: Player on Left, Sombo on Right (synchronized size!) */}
-        <div className="w-full max-w-4xl flex items-end justify-between gap-4 mt-auto pt-2">
+        <div className="w-full max-w-4xl flex items-end justify-between gap-4 mt-auto pt-8 sm:pt-4 pb-3 sm:pb-2">
 
           {/* Player character + HP hearts */}
           <div className="flex flex-col items-center gap-1">
