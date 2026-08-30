@@ -15,7 +15,7 @@ import PixelSprite from '../PixelSprite';
 import { sfxArchiveUnlock } from '@/lib/audioEngine';
 
 export default function EnchantedLibrary() {
-  const { currentQuestionIndex, correctAnswersCount, questions, character, studentName, selectedBackground, setScreen } = useGameStore();
+  const { currentQuestionIndex, correctAnswersCount, questions, character, studentName, selectedBackground, setScreen, resetGame } = useGameStore();
   const [archiveOpened, setArchiveOpened] = useState(false);
   const [prevCorrect, setPrevCorrect] = useState(correctAnswersCount);
   const [showExitModal, setShowExitModal] = useState(false);
@@ -160,7 +160,7 @@ export default function EnchantedLibrary() {
               <button
                 onClick={() => {
                   setShowExitModal(false);
-                  setScreen('background_select');
+                  resetGame();
                 }}
                 className="btn-pixel !bg-red-900 hover:!bg-red-800 !border-red-600 text-red-200 px-5 py-2.5 text-xs sm:text-sm font-bold w-full sm:w-auto cursor-pointer"
               >
