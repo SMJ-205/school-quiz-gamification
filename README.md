@@ -21,6 +21,7 @@
 | 👨‍👩‍👧 **Laporan Evaluasi Orang Tua** | Rangkuman evaluasi belajar & analisis kesalahan jawab untuk bimbingan di rumah |
 | 📸 **Ekspor Laporan & Sertifikat** | Unduh laporan evaluasi dalam bentuk gambar PNG/WhatsApp serta sertifikat digital kelulusan berkualitas tinggi (PNG & PDF) |
 | 🎵 **Engine Audio BGM & SFX Arcade** | Musik BGM 32-detik *fast-beat arcade synth loop* (dual-channel lead + sub-bass, *100% seamless loop*) + efek suara *8-bit Arcade Power-Hit SFX* |
+| 🏆 **Achievement Report** | Laporan pencapaian kelulusan pertarungan Math Battle lengkap dengan gambar *Defeated Sombo*, ringkasan sesi normal & unlimited (tanpa statistik kesalahan), dapat diunduh sebagai **PNG & PDF** |
 | 📒 **Integrasi NotebookLM** | Buat kuis otomatis dari dokumen/materi pelajaran via Google NotebookLM |
 
 ---

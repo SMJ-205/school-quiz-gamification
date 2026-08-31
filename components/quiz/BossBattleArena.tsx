@@ -16,6 +16,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import PixelSprite from '../PixelSprite';
+import AchievementReportModal from './AchievementReportModal';
 import { sfxCorrect, sfxWrong, sfxTextBlip, unlockAudioEngine, startQuizBGM, stopQuizBGM, isBgmMuted, toggleBgmMute, isSfxMuted, toggleSfxMute } from '@/lib/audioEngine';
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
@@ -215,8 +216,12 @@ export default function BossBattleArena() {
     setPhase('intro');
   }, []);
 
-  // Endless state
-  const [endlessN, setEndlessN]     = useState(1);
+  // Endless & Achievement Report state
+  const [endlessN, setEndlessN]                           = useState(1);
+  const [endlessMaxCombo, setEndlessMaxCombo]             = useState(0);
+  const [normalQCount, setNormalQCount]                   = useState(0);
+  const [normalMaxCombo, setNormalMaxCombo]               = useState(0);
+  const [showAchievementReport, setShowAchievementReport] = useState(false);
 
   // Audio Mute States
   const [bgmMutedState, setBgmMutedState] = useState(isBgmMuted());
@@ -574,7 +579,11 @@ export default function BossBattleArena() {
     addFloat('TIMEOUT! -1 ❤️', false);
     triggerRage();
     if (nextHearts <= 0) {
-      setTimeout(() => setPhase('gameover'), 500);
+      if (phase === 'endless') {
+        setTimeout(() => setShowAchievementReport(true), 500);
+      } else {
+        setTimeout(() => setPhase('gameover'), 500);
+      }
       return;
     }
     setTimeout(() => afterAnswer(), 800);
@@ -593,7 +602,7 @@ export default function BossBattleArena() {
       sfxCorrect();
       const speedMult = 1.0 + (qTimeLimit.current - elapsed) / qTimeLimit.current;
       const comboMult = 1.0 + Math.min(combo, 10) * 0.1;
-      const dmg = Math.round(130 * speedMult * comboMult * question.difficultyFactor);
+      const dmg = Math.round(110 * speedMult * comboMult * question.difficultyFactor);
       const isCritical = speedMult > 1.6;
 
       const newBossHp = Math.max(0, bossHp - dmg);
@@ -602,6 +611,12 @@ export default function BossBattleArena() {
       const newCombo = combo + 1;
       setCombo(newCombo);
       setMaxCombo(m => Math.max(m, newCombo));
+      if (phase === 'endless') {
+        setEndlessMaxCombo(m => Math.max(m, newCombo));
+      } else {
+        setNormalMaxCombo(m => Math.max(m, newCombo));
+        setNormalQCount(questionNumber);
+      }
       setTotalScore(s => s + dmg);
 
       if (isCritical) {
@@ -620,6 +635,8 @@ export default function BossBattleArena() {
 
       // Defeat transition if boss HP reaches 0
       if (phase === 'battle' && newBossHp <= 0) {
+        setNormalQCount(questionNumber);
+        setNormalMaxCombo(m => Math.max(m, newCombo));
         setTimeout(() => {
           setShowFlash(true);
           setTimeout(() => setShowFlash(false), 600);
@@ -666,7 +683,11 @@ export default function BossBattleArena() {
       addFloat('SALAH! -1 ❤️', false);
       triggerRage();
       if (nextHearts <= 0) {
-        setTimeout(() => setPhase('gameover'), 800);
+        if (phase === 'endless') {
+          setTimeout(() => setShowAchievementReport(true), 500);
+        } else {
+          setTimeout(() => setPhase('gameover'), 500);
+        }
         return;
       }
       setTimeout(() => afterAnswer(), 700);
@@ -984,10 +1005,18 @@ export default function BossBattleArena() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
                 onClick={() => setShowAnalysisModal(true)}
-                className="btn-pixel !bg-amber-800 hover:!bg-amber-700 !border-amber-500 text-amber-100 px-6 py-3 text-sm sm:text-base font-bold shadow-xl flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
+                className="btn-pixel !bg-amber-800 hover:!bg-amber-700 !border-amber-500 text-amber-100 px-5 py-3 text-sm sm:text-base font-bold shadow-xl flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
               >
                 <span>📊</span>
                 <span>ANALISIS KESALAHAN ({mistakes.length})</span>
+              </button>
+
+              <button
+                onClick={() => setShowAchievementReport(true)}
+                className="btn-pixel !bg-amber-600 hover:!bg-amber-500 !border-amber-400 text-stone-950 px-5 py-3 text-sm sm:text-base font-bold shadow-xl flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
+              >
+                <span>🏆</span>
+                <span>ACHIEVEMENT REPORT</span>
               </button>
 
               <button
@@ -996,7 +1025,7 @@ export default function BossBattleArena() {
                   setTimeout(() => setShowFlash(false), 500);
                   setTimeout(() => startEndless(), 250);
                 }}
-                className="btn-pixel !bg-purple-900 hover:!bg-purple-800 !border-purple-500 text-purple-200 px-6 py-3 text-sm sm:text-base font-bold shadow-xl flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
+                className="btn-pixel !bg-purple-900 hover:!bg-purple-800 !border-purple-500 text-purple-200 px-5 py-3 text-sm sm:text-base font-bold shadow-xl flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
               >
                 <span>⚡</span>
                 <span>UNLIMITED MATH BATTLE</span>
@@ -1007,6 +1036,22 @@ export default function BossBattleArena() {
 
         {/* Modal Overlay inside early return */}
         {renderAnalysisModal()}
+        {showAchievementReport && (
+          <AchievementReportModal
+            studentName={studentName}
+            normalQCount={normalQCount || questionNumber}
+            normalMaxCombo={normalMaxCombo || maxCombo}
+            endlessQCount={endlessN}
+            endlessMaxCombo={endlessMaxCombo}
+            finalScore={totalScore}
+            onClose={() => setShowAchievementReport(false)}
+            onReturnHome={() => {
+              setShowAchievementReport(false);
+              resetGameState();
+              setScreen('background_select');
+            }}
+          />
+        )}
       </div>
     );
   }
@@ -1264,6 +1309,24 @@ export default function BossBattleArena() {
 
       {/* ── ANALISIS KESALAHAN MODAL ─────────────────────────────────────────── */}
       {renderAnalysisModal()}
+
+      {/* ── ACHIEVEMENT REPORT MODAL ────────────────────────────────────────── */}
+      {showAchievementReport && (
+        <AchievementReportModal
+          studentName={studentName}
+          normalQCount={normalQCount || questionNumber}
+          normalMaxCombo={normalMaxCombo || maxCombo}
+          endlessQCount={endlessN}
+          endlessMaxCombo={endlessMaxCombo}
+          finalScore={totalScore}
+          onClose={() => setShowAchievementReport(false)}
+          onReturnHome={() => {
+            setShowAchievementReport(false);
+            resetGameState();
+            setScreen('background_select');
+          }}
+        />
+      )}
 
     </div>
   );
