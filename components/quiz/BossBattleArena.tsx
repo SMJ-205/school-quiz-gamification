@@ -1205,12 +1205,12 @@ export default function BossBattleArena() {
             )}
           </div>
 
-          {/* Sombo sprite + Proportional Health Bar directly under Sombo */}
-          <div className="flex flex-col items-center gap-1.5 shrink-0">
+          {/* Sombo sprite + Proportional Health Bar / Name Badge directly under Sombo */}
+          <div className="flex flex-col items-center gap-3 sm:gap-4 shrink-0">
             <div className="h-40 sm:h-52 flex items-end justify-center">
               <img
                 src={isEndless ? '/sprites/boss_upskilled.png' : '/sprites/boss_challenging.png'}
-                alt={isEndless ? 'Sombo Overdrive' : 'Sombo'}
+                alt={isEndless ? 'Super Sombo' : 'Sombo'}
                 className="h-full w-auto object-contain"
                 style={{
                   imageRendering: 'pixelated',
@@ -1236,8 +1236,8 @@ export default function BossBattleArena() {
               </div>
             )}
             {isEndless && (
-              <div className="bg-red-950/90 border border-red-500/50 text-red-300 font-pixel font-bold text-xs px-2.5 py-0.5 rounded shadow">
-                SOMBO
+              <div className="bg-red-950/90 border border-red-500/50 text-red-300 font-pixel font-bold text-xs sm:text-sm px-3 py-1 rounded shadow-md mt-2 sm:mt-3">
+                SUPER SOMBO
               </div>
             )}
           </div>
