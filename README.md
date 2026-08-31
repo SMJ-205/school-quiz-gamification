@@ -13,7 +13,7 @@
 | ⚔️ **Sombo Dynamic Boss Battle** | Pertarungan QuickMath lawan Arithmo-Boss Sombo di *Ruang Kelas Unggulan* tanpa batasan wave kaku dengan **soal murni 2-digit** (10..99). Target ~20-25 pertanyaan (menoleransi kesalahan). Dilengkapi mekanik **Sombo Passive Auto Recover** (+200 HP tiap 10s) dan **Tier 4 Tersulit** (soal 15+)! |
 | ❤️ **Sistem 3 Nyawa Tepat (3 Hearts)** | Pemain memiliki tepat 3 kesempatan hati. Setiap jawaban salah atau waktu habis akan menguras 1 hati; rekor streak 5x mengembalikan 1 hati |
 | 📊 **Analisis Kesalahan & Evaluasi Belajar** | Laporan evaluasi interaktif pada layar Kalah, Sombo Kalah, & Unlimited Math yang mengelompokkan rincian kesalahan per tipe soal (`Simpan`, `Pinjam`, `Hitung Dasar`, `Timeout`) serta memberikan saran bimbingan pedagogis terarah |
-| ⚡ **Unlimited Math Battle Mode** | Mode pertarungan tanpa batas soal setelah Sombo dikalahkan untuk mencetak rekor *High Score* tertinggi |
+| ⚡ **Unlimited Math Battle Mode** | Mode pertarungan tanpa batas soal setelah Sombo dikalahkan untuk mencetak rekor *High Score* tertinggi dengan tampilan **Upskilled Sombo** (versi Sombo pintar bergelembung ide matematika)! |
 | 📜 **Upload Materi Markdown** | Unggah file `.md` berisi materi pelajaran — kuis akan dibuat otomatis untuk sesi kelas Pak Guru |
 | 🎓 **Kustomisasi Petualang** | Pilih avatar petualang (Murid Laki-laki / Murid Perempuan) & tentukan nama pemain |
 | 🧑‍🏫 **Dialog & Animasi Pak Guru / Sombo** | Pertanyaan interaktif *typewriting* dalam balon komik stabil dengan animasi gerak mulut natural (*talking cadence*) & *outer cell-shading* |

@@ -593,7 +593,7 @@ export default function BossBattleArena() {
       sfxCorrect();
       const speedMult = 1.0 + (qTimeLimit.current - elapsed) / qTimeLimit.current;
       const comboMult = 1.0 + Math.min(combo, 10) * 0.1;
-      const dmg = Math.round(160 * speedMult * comboMult * question.difficultyFactor);
+      const dmg = Math.round(130 * speedMult * comboMult * question.difficultyFactor);
       const isCritical = speedMult > 1.6;
 
       const newBossHp = Math.max(0, bossHp - dmg);
@@ -1209,8 +1209,8 @@ export default function BossBattleArena() {
           <div className="flex flex-col items-center gap-1.5 shrink-0">
             <div className="h-36 sm:h-48 flex items-end justify-center">
               <img
-                src="/sprites/boss_challenging.png"
-                alt="Sombo"
+                src={isEndless ? '/sprites/boss_upskilled.png' : '/sprites/boss_challenging.png'}
+                alt={isEndless ? 'Sombo Overdrive' : 'Sombo'}
                 className="h-full w-auto object-contain"
                 style={{
                   imageRendering: 'pixelated',
