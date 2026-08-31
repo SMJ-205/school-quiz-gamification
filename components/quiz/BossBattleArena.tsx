@@ -1019,18 +1019,10 @@ export default function BossBattleArena() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
                 onClick={() => setShowAnalysisModal(true)}
-                className="btn-pixel !bg-amber-800 hover:!bg-amber-700 !border-amber-500 text-amber-100 px-5 py-3 text-sm sm:text-base font-bold shadow-xl flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
+                className="btn-pixel !bg-amber-800 hover:!bg-amber-700 !border-amber-500 text-amber-100 px-6 py-3 text-sm sm:text-base font-bold shadow-xl flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
               >
                 <span>📊</span>
                 <span>ANALISIS KESALAHAN ({mistakes.length})</span>
-              </button>
-
-              <button
-                onClick={() => setShowAchievementReport(true)}
-                className="btn-pixel !bg-amber-600 hover:!bg-amber-500 !border-amber-400 text-stone-950 px-5 py-3 text-sm sm:text-base font-bold shadow-xl flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
-              >
-                <span>🏆</span>
-                <span>ACHIEVEMENT REPORT</span>
               </button>
 
               <button
@@ -1039,7 +1031,7 @@ export default function BossBattleArena() {
                   setTimeout(() => setShowFlash(false), 500);
                   setTimeout(() => startEndless(), 250);
                 }}
-                className="btn-pixel !bg-purple-900 hover:!bg-purple-800 !border-purple-500 text-purple-200 px-5 py-3 text-sm sm:text-base font-bold shadow-xl flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
+                className="btn-pixel !bg-purple-900 hover:!bg-purple-800 !border-purple-500 text-purple-200 px-6 py-3 text-sm sm:text-base font-bold shadow-xl flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
               >
                 <span>⚡</span>
                 <span>UNLIMITED MATH BATTLE</span>
@@ -1050,22 +1042,6 @@ export default function BossBattleArena() {
 
         {/* Modal Overlay inside early return */}
         {renderAnalysisModal()}
-        {showAchievementReport && (
-          <AchievementReportModal
-            studentName={studentName}
-            normalQCount={normalQCount || questionNumber}
-            normalMaxCombo={normalMaxCombo || maxCombo}
-            endlessQCount={endlessCorrectCount}
-            endlessScore={endlessScore}
-            endlessMaxCombo={endlessMaxCombo}
-            onClose={() => setShowAchievementReport(false)}
-            onReturnHome={() => {
-              setShowAchievementReport(false);
-              resetGameState();
-              setScreen('background_select');
-            }}
-          />
-        )}
       </div>
     );
   }
@@ -1312,13 +1288,23 @@ export default function BossBattleArena() {
           <span>{isEndless ? 'UNLIMITED MATH' : `PERTARUNGAN SOMBO — SOAL #${questionNumber}`}</span>
         </div>
         <div className="text-stone-400 font-medium">Combo: <span className="text-amber-400 font-bold">{combo}x</span></div>
-        <button
-          onClick={() => setScreen('background_select')}
-          className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 text-stone-300 px-3 py-1 text-xs inline-flex items-center gap-1.5 cursor-pointer"
-        >
-          <span>◀</span>
-          <span>PILIH TEMPAT BELAJAR</span>
-        </button>
+        {isEndless ? (
+          <button
+            onClick={() => setShowAchievementReport(true)}
+            className="btn-pixel !bg-amber-600 hover:!bg-amber-500 !border-amber-400 text-stone-950 px-3 py-1 text-xs inline-flex items-center gap-1.5 cursor-pointer font-bold shadow"
+          >
+            <span>🏆</span>
+            <span>HASIL ACHIEVEMENT</span>
+          </button>
+        ) : (
+          <button
+            onClick={() => setScreen('background_select')}
+            className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 text-stone-300 px-3 py-1 text-xs inline-flex items-center gap-1.5 cursor-pointer"
+          >
+            <span>◀</span>
+            <span>PILIH TEMPAT BELAJAR</span>
+          </button>
+        )}
       </div>
 
       {/* ── ANALISIS KESALAHAN MODAL ─────────────────────────────────────────── */}
