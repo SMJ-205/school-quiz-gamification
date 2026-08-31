@@ -1207,7 +1207,7 @@ export default function BossBattleArena() {
 
           {/* Sombo sprite + Proportional Health Bar directly under Sombo */}
           <div className="flex flex-col items-center gap-1.5 shrink-0">
-            <div className="h-36 sm:h-48 flex items-end justify-center">
+            <div className="h-40 sm:h-52 flex items-end justify-center">
               <img
                 src={isEndless ? '/sprites/boss_upskilled.png' : '/sprites/boss_challenging.png'}
                 alt={isEndless ? 'Sombo Overdrive' : 'Sombo'}
@@ -1215,7 +1215,7 @@ export default function BossBattleArena() {
                 style={{
                   imageRendering: 'pixelated',
                   filter: WHITE_CELL_SHADING,
-                  transform: 'scaleX(-1)',
+                  transform: isEndless ? 'scale(1.15)' : 'scaleX(-1)',
                 }}
               />
             </div>
