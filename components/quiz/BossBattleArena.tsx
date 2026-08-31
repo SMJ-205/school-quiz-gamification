@@ -213,11 +213,20 @@ export default function BossBattleArena() {
     setMaxCombo(0);
     setTotalScore(0);
     setMistakes([]);
+    setNormalQCount(0);
+    setNormalMaxCombo(0);
+    setEndlessN(1);
+    setEndlessCorrectCount(0);
+    setEndlessScore(0);
+    setEndlessMaxCombo(0);
+    setShowAchievementReport(false);
     setPhase('intro');
   }, []);
 
   // Endless & Achievement Report state
   const [endlessN, setEndlessN]                           = useState(1);
+  const [endlessCorrectCount, setEndlessCorrectCount]     = useState(0);
+  const [endlessScore, setEndlessScore]                   = useState(0);
   const [endlessMaxCombo, setEndlessMaxCombo]             = useState(0);
   const [normalQCount, setNormalQCount]                   = useState(0);
   const [normalMaxCombo, setNormalMaxCombo]               = useState(0);
@@ -612,6 +621,8 @@ export default function BossBattleArena() {
       setCombo(newCombo);
       setMaxCombo(m => Math.max(m, newCombo));
       if (phase === 'endless') {
+        setEndlessCorrectCount(c => c + 1);
+        setEndlessScore(s => s + dmg);
         setEndlessMaxCombo(m => Math.max(m, newCombo));
       } else {
         setNormalMaxCombo(m => Math.max(m, newCombo));
@@ -710,6 +721,9 @@ export default function BossBattleArena() {
 
   function startEndless() {
     setEndlessN(1);
+    setEndlessCorrectCount(0);
+    setEndlessScore(0);
+    setEndlessMaxCombo(0);
     setPhase('endless');
     setCombo(0);
     loadEndlessQuestion(1);
@@ -1041,9 +1055,9 @@ export default function BossBattleArena() {
             studentName={studentName}
             normalQCount={normalQCount || questionNumber}
             normalMaxCombo={normalMaxCombo || maxCombo}
-            endlessQCount={endlessN}
+            endlessQCount={endlessCorrectCount}
+            endlessScore={endlessScore}
             endlessMaxCombo={endlessMaxCombo}
-            finalScore={totalScore}
             onClose={() => setShowAchievementReport(false)}
             onReturnHome={() => {
               setShowAchievementReport(false);
@@ -1316,9 +1330,9 @@ export default function BossBattleArena() {
           studentName={studentName}
           normalQCount={normalQCount || questionNumber}
           normalMaxCombo={normalMaxCombo || maxCombo}
-          endlessQCount={endlessN}
+          endlessQCount={endlessCorrectCount}
+          endlessScore={endlessScore}
           endlessMaxCombo={endlessMaxCombo}
-          finalScore={totalScore}
           onClose={() => setShowAchievementReport(false)}
           onReturnHome={() => {
             setShowAchievementReport(false);

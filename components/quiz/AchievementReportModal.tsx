@@ -20,8 +20,8 @@ interface AchievementReportProps {
   normalQCount: number;
   normalMaxCombo: number;
   endlessQCount: number;
+  endlessScore: number;
   endlessMaxCombo: number;
-  finalScore: number;
   onClose: () => void;
   onReturnHome: () => void;
 }
@@ -39,8 +39,8 @@ export default function AchievementReportModal({
   normalQCount,
   normalMaxCombo,
   endlessQCount,
+  endlessScore,
   endlessMaxCombo,
-  finalScore,
   onClose,
   onReturnHome,
 }: AchievementReportProps) {
@@ -133,9 +133,9 @@ export default function AchievementReportModal({
             </div>
           </div>
 
-          {/* Main Headline */}
+          {/* Main Headline (No trumpet emoji before text) */}
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-amber-300 leading-tight mb-4 drop-shadow-[0_2px_8px_rgba(255,179,0,0.5)] px-2">
-            🎉 <span className="text-white">{nameToDisplay}</span> telah berhasil mengalahkan Sombo dalam Math Battle!
+            <span className="text-white">{nameToDisplay}</span> telah berhasil mengalahkan Sombo dalam Math Battle!
           </h2>
 
           {/* Result Summaries Grid */}
@@ -180,7 +180,7 @@ export default function AchievementReportModal({
                 <div className="text-purple-300 font-bold text-right">{endlessQCount} Soal</div>
 
                 <div className="text-stone-400">High Score Overdrive:</div>
-                <div className="text-amber-300 font-bold text-right">{finalScore.toLocaleString()} Poin</div>
+                <div className="text-amber-300 font-bold text-right">{endlessScore.toLocaleString()} Poin</div>
 
                 <div className="text-stone-400">Max Overdrive Streak:</div>
                 <div className="text-purple-300 font-bold text-right">{endlessMaxCombo}x Combo</div>
