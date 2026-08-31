@@ -217,7 +217,7 @@ export default function BackgroundSelectScreen() {
                   </p>
                   {opt.isBoss && (
                     <div className="mt-3 text-xs sm:text-sm text-red-300 font-dialogue border border-red-900/80 rounded-lg px-2.5 py-1.5 bg-red-950/70 font-bold">
-                      ⚡ Mode Khusus — Soal otomatis • 15 Wave Boss • Unlimited Math Battle
+                      ⚡ Mode Khusus — Soal otomatis • Dynamic Math Battle • Unlimited Math
                     </div>
                   )}
                 </div>

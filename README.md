@@ -40,20 +40,21 @@ Saat pertama membuka aplikasi, pelajar dapat:
 ### 2. 🏛️ Pilihan Tempat Belajar (Mode Kuis)
 Pemain dapat memilih antara dua tempat belajar interaktif:
 1. **Perpustakaan Ajaib (Kuis Pak Guru)**: Sesi kuis materi pelajaran sekolah dari file Markdown.
-2. **Ruang Kelas Unggulan (Sombo Boss Battle)**: Pertarungan hitung cepat *QuickMath* 15 Wave melawan Sombo si jenius matematika.
+2. **Ruang Kelas Unggulan (Sombo Boss Battle)**: Pertarungan hitung cepat *QuickMath* dinamis melawan Sombo si jenius matematika.
 
 ---
 
 ### 3. ⚔️ Sesi Pertarungan Boss Sombo & Unlimited Math Battle
 Saat bertarung melawan Sombo:
 - Sombo berhadapan langsung dengan pemain dilengkapi animasi gerak mulut dan indikator HP Boss.
-- Pertarungan terdiri dari **15 Waves** bertahap hingga tingkat kesulitan tertinggi:
-  - **Wave 1 – 4**: Hitungan penjumlahan dasar (limit 6.0s)
-  - **Wave 5 – 8**: Kombinasi penjumlahan & pengurangan (limit 5.0s)
-  - **Wave 9 – 15**: Penjumlahan Simpan (`Carrying`) & Pengurangan Pinjam (`Borrowing`) dengan limit ketat (3.2s – 3.8s)
+- Pertarungan QuickMath dinamis 4 Tier bertahap hingga tingkat kesulitan tertinggi (soal murni 2-digit 10..99):
+  - **Tier 1 (Soal #1 – 4)**: Hitungan penjumlahan dasar (limit 6.5s)
+  - **Tier 2 (Soal #5 – 9)**: Kombinasi penjumlahan & pengurangan (limit 5.5s)
+  - **Tier 3 (Soal #10 – 14)**: Penjumlahan Simpan (`Carrying`) & Pengurangan Pinjam (`Borrowing`) (limit 4.5s)
+  - **Tier 4 Tersulit (Soal #15+)**: Soal simpan & pinjam 2-digit tersulit (limit 3.2s – 3.6s)
 - **3 Nyawa Hati (3 Hearts)**: Pemain hanya memiliki 3 kali toleransi kesalahan.
 - **Musik Arcade Dual-Channel 32-Detik**: Musik latar *chiptune* 32 detik bervariasi dengan *seamless looping* + *8-bit Arcade Power-Hit SFX* saat menjawab benar.
-- Mengalahkan Sombo di Wave 15 membuka mode **Unlimited Math Battle** untuk mencetak rekor *High Score*.
+- Mengalahkan Sombo membuka mode **Unlimited Math Battle** melawan **Super Sombo** untuk mencetak rekor *High Score*.
 
 ---
 
