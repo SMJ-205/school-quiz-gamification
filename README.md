@@ -2,7 +2,7 @@
 
 > **Petualangan Kuis & Eksplorasi Arsip Pengetahuan** — Sebuah platform gamifikasi kuis berbasis RPG 8-bit retro yang mengubah materi belajar Markdown dan tantangan hitung cepat matematika menjadi pengalaman petualangan interaktif yang menyenangkan.
 
-![Home Screen](public/screenshots/screen_home.png)
+![Home Screen](./public/screenshots/screen_home.png)
 
 ---
 
@@ -33,7 +33,7 @@ Saat pertama membuka aplikasi, pelajar dapat:
 2. Pilih avatar **Murid Laki-laki** atau **Murid Perempuan**
 3. **Mengunggah file Markdown** (`.md`) atau menekan **"Coba Kuis Contoh"** / **"Buat Kuis via NotebookLM"**
 
-![Home Screen](public/screenshots/screen_home.png)
+![Home Screen](./public/screenshots/screen_home.png)
 
 ---
 
