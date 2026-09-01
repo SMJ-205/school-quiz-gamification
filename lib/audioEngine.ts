@@ -17,6 +17,8 @@ function getBgmAudio(): HTMLAudioElement | null {
   if (typeof window === 'undefined') return null;
 
   if (!window.__QUIZ_BGM_AUDIO__) {
+    // Music: "Momo Island" by Piki (https://freetouse.com/music/piki/momo-island)
+    // License: Free To Use Music (https://freetouse.com/license)
     const audio = new Audio('/audio/bgm_momo_island.mp3');
     audio.loop = true;
     audio.volume = BGM_VOLUME;

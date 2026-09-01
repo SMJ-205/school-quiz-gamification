@@ -159,6 +159,19 @@ school-quiz-gamification/
 
 ---
 
+## 🎵 Atribusi Musik & Kredit (Music Credits)
+
+Musik latar belakang (*Background Music*) yang digunakan pada proyek ini:
+
+- **Track**: **Momo Island**
+- **Artis**: **Piki**
+- **Sumber Musik**: [Free To Use - Piki (Momo Island)](https://freetouse.com/music/piki/momo-island)
+- **Ketentuan Lisensi**: [Free To Use Music License](https://freetouse.com/license)
+
+*Terima kasih kepada Piki & FreeToUse yang menyediakan musik bebas royalti berkualitas tinggi untuk proyek pendidikan ini.*
+
+---
+
 ## 📄 Lisensi
 
 MIT License — Bebas digunakan untuk keperluan pendidikan dan penelitian.
