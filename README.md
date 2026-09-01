@@ -2,7 +2,7 @@
 
 > **Petualangan Kuis & Eksplorasi Arsip Pengetahuan** — Sebuah platform gamifikasi kuis berbasis RPG 8-bit retro yang mengubah materi belajar Markdown, pertarungan hitung cepat matematika, dan eksplorasi pola logika induktif menjadi pengalaman petualangan interaktif yang menyenangkan.
 
-![Pilihan Tempat Belajar](./public/screenshots/screen_map_select.png)
+![Main Menu](./public/screenshots/screen_home.png)
 
 ---
 
