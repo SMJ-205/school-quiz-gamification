@@ -4,8 +4,12 @@
  * Features:
  * - Strict grade-based difficulty scaling (Kelas 1 to Kelas 6 SD)
  * - Zero-duplicate guarantee per session via question fingerprint signature tracking
- * - 9+ procedural visual matrix patterns & randomized option shuffling
- * - Ultra-wide procedural variations for arithmetic, geometric, & lab science formulas
+ * - 5 Authentic TPA Visual Puzzle Modes:
+ *   1. clock_hands     : Jarum & Garis Sinar (Problem 5 TPA)
+ *   2. capsule_symbols : Kapsul & Simbol O/X (Problem 4 TPA)
+ *   3. domino_dots     : Kelompok Bintik Domino
+ *   4. shapes_row      : Urutan Bentuk Geometri (Segitiga, Lingkaran, Kotak, Bintang, Belah Ketupat)
+ *   5. quadrant_matrix : 2x2 Grid Hitam-Putih (5 sub-variasi)
  */
 
 import { VisualMatrixData, QuadrantBox } from '@/components/quiz/VisualMatrixDisplay';
@@ -239,7 +243,6 @@ function generateGeometric(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
     // Level 3: Triangular Numbers or Square Numbers
     const isTriangular = Math.random() > 0.5;
     if (isTriangular) {
-      // Triangular numbers n(n+1)/2 (1, 3, 6, 10, 15, 21, 28, 36)
       const startN = randomInt(1, 4);
       const seq = [
         (startN * (startN + 1)) / 2,
@@ -315,16 +318,237 @@ function generateGeometric(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
   }
 }
 
-// ─── 3. Pola Gambar Visual (Quadrant Box Matrix 3x3 Procedurally Varied) ───
+// ─── 3. Pola Gambar Visual (5 Authentic TPA Puzzle Modes) ───────────────────
 
 function createVisualBox(tl: boolean, tr: boolean, bl: boolean, br: boolean, isQuestion = false): QuadrantBox {
   return { tl, tr, bl, br, isQuestion };
 }
 
 function areBoxesEqual(a: QuadrantBox, b: QuadrantBox): boolean {
+  if (a.angles !== undefined || b.angles !== undefined) {
+    return JSON.stringify(a.angles) === JSON.stringify(b.angles);
+  }
+  if (a.symbols !== undefined || b.symbols !== undefined) {
+    return (
+      a.capsuleTopDot === b.capsuleTopDot &&
+      a.capsuleBottomDot === b.capsuleBottomDot &&
+      JSON.stringify(a.symbols) === JSON.stringify(b.symbols)
+    );
+  }
+  if (a.dotCount !== undefined || b.dotCount !== undefined) {
+    return a.dotCount === b.dotCount;
+  }
+  if (a.shapeType !== undefined || b.shapeType !== undefined) {
+    return a.shapeType === b.shapeType;
+  }
   return a.tl === b.tl && a.tr === b.tr && a.bl === b.bl && a.br === b.br;
 }
 
+// 3.1. Mode: Clock Hands & Line Rays (Problem 5 TPA Reference)
+function generateClockHandsQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+  const angleSteps = [0, 45, 90, 135, 180, 225, 270, 315];
+  const stepIncrement = pickRandom([45, 90, 135]);
+  const startAngle = pickRandom(angleSteps);
+
+  const boxes: QuadrantBox[] = [];
+  for (let i = 0; i < 8; i++) {
+    const angle = (startAngle + i * stepIncrement) % 360;
+    boxes.push({ angles: [angle] });
+  }
+  boxes.push({ angles: [], isQuestion: true });
+
+  const correctAngle = (startAngle + 8 * stepIncrement) % 360;
+  const correctBox: QuadrantBox = { angles: [correctAngle] };
+
+  const distractors: QuadrantBox[] = [
+    { angles: [(correctAngle + 45) % 360] },
+    { angles: [(correctAngle + 90) % 360] },
+    { angles: [(correctAngle + 180) % 360] },
+  ];
+
+  const optionBoxes = shuffleArray([correctBox, ...distractors]);
+  const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+  return {
+    id: `vis_clock_${Date.now()}_${Math.random()}`,
+    category: 'visual',
+    categoryLabel: `Deret Jarum & Garis Sinar 45° (Level ${difficulty})`,
+    difficultyLevel: difficulty,
+    question: `Analisis rotasi jarum/garis arah sinar (${stepIncrement}°) pada matriks gambar 3x3 berikut:`,
+    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    correctIndex,
+    hint: `🔬 *Analisis Guru Lab:* Jarum garis berputar +${stepIncrement}° searah jarum jam pada setiap langkah. Kotak ke-9 berada di posisi sudut ${correctAngle}°.`,
+    visualMatrixData: {
+      type: 'clock_hands',
+      gridCols: 3,
+      boxes,
+      optionBoxes,
+    },
+  };
+}
+
+// 3.2. Mode: Capsule & Corner O/X Symbols (Problem 4 TPA Reference)
+function generateCapsuleQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+  const positions: ('tl' | 'tr' | 'br' | 'bl')[] = ['tl', 'tr', 'br', 'bl'];
+  const startIdx = randomInt(0, 3);
+
+  const boxes: QuadrantBox[] = [];
+  for (let i = 0; i < 8; i++) {
+    const oPos = positions[(startIdx + i) % 4];
+    const xPos = positions[(startIdx + i + 2) % 4];
+    boxes.push({
+      capsuleTopDot: i % 2 === 0,
+      capsuleBottomDot: i % 2 !== 0,
+      symbols: [
+        { pos: oPos, type: 'circle' },
+        { pos: xPos, type: 'cross' },
+      ],
+    });
+  }
+  boxes.push({ isQuestion: true });
+
+  const correctOPos = positions[(startIdx + 8) % 4];
+  const correctXPos = positions[(startIdx + 8 + 2) % 4];
+  const correctBox: QuadrantBox = {
+    capsuleTopDot: 8 % 2 === 0,
+    capsuleBottomDot: 8 % 2 !== 0,
+    symbols: [
+      { pos: correctOPos, type: 'circle' },
+      { pos: correctXPos, type: 'cross' },
+    ],
+  };
+
+  const distractors: QuadrantBox[] = [
+    {
+      capsuleTopDot: !(8 % 2 === 0),
+      capsuleBottomDot: 8 % 2 === 0,
+      symbols: [{ pos: correctOPos, type: 'circle' }, { pos: correctXPos, type: 'cross' }],
+    },
+    {
+      capsuleTopDot: 8 % 2 === 0,
+      capsuleBottomDot: 8 % 2 !== 0,
+      symbols: [{ pos: positions[(startIdx + 1) % 4], type: 'circle' }, { pos: correctXPos, type: 'cross' }],
+    },
+    {
+      capsuleTopDot: 8 % 2 === 0,
+      capsuleBottomDot: 8 % 2 !== 0,
+      symbols: [{ pos: correctOPos, type: 'circle' }, { pos: positions[(startIdx + 1) % 4], type: 'cross' }],
+    },
+  ];
+
+  const optionBoxes = shuffleArray([correctBox, ...distractors]);
+  const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+  return {
+    id: `vis_capsule_${Date.now()}_${Math.random()}`,
+    category: 'visual',
+    categoryLabel: `Pola Kapsul & Simbol O/X (Level ${difficulty})`,
+    difficultyLevel: difficulty,
+    question: `Analisis pergerakan titik pusat kapsul dan rotasi simbol lingkar (O) serta silang (X):`,
+    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    correctIndex,
+    hint: `🔬 *Analisis Guru Lab:* Titik pusat kapsul bergantian hitam-putih, sedangkan simbol lingkar (O) dan silang (X) berputar pada sudut berseberangan.`,
+    visualMatrixData: {
+      type: 'capsule_symbols',
+      gridCols: 3,
+      boxes,
+      optionBoxes,
+    },
+  };
+}
+
+// 3.3. Mode: Domino Dots Grouping (Problem TPA Reference 2)
+function generateDominoQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+  const step = pickRandom([1, 2]);
+  const startDots = randomInt(1, 2);
+
+  const boxes: QuadrantBox[] = [];
+  for (let i = 0; i < 8; i++) {
+    const dots = ((startDots + i * step - 1) % 6) + 1;
+    boxes.push({ dotCount: dots });
+  }
+  boxes.push({ isQuestion: true });
+
+  const correctDots = ((startDots + 8 * step - 1) % 6) + 1;
+  const correctBox: QuadrantBox = { dotCount: correctDots };
+
+  const distractors: QuadrantBox[] = [
+    { dotCount: (correctDots % 6) + 1 },
+    { dotCount: ((correctDots + 1) % 6) + 1 },
+    { dotCount: Math.max(1, correctDots - 1) },
+  ];
+
+  const optionBoxes = shuffleArray([correctBox, ...distractors]);
+  const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+  return {
+    id: `vis_domino_${Date.now()}_${Math.random()}`,
+    category: 'visual',
+    categoryLabel: `Deret Kelompok Bintik Domino (Level ${difficulty})`,
+    difficultyLevel: difficulty,
+    question: `Perhatikan pola pertambahan kelompok bintik hitam pada wadah domino 2D:`,
+    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    correctIndex,
+    hint: `🔬 *Analisis Guru Lab:* Jumlah bintik bertambah +${step} di setiap tahap. Kotak ke-9 berisi ${correctDots} bintik hitam.`,
+    visualMatrixData: {
+      type: 'domino_dots',
+      gridCols: 3,
+      boxes,
+      optionBoxes,
+    },
+  };
+}
+
+// 3.4. Mode: Geometric Shapes Sequence (Problem TPA Reference 2)
+function generateShapesRowQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+  const shapes: QuadrantBox['shapeType'][] = [
+    'circle_filled',
+    'triangle_filled',
+    'square_filled',
+    'star',
+    'diamond',
+    'circle_outline',
+    'square_outline',
+  ];
+  const startIdx = randomInt(0, shapes.length - 1);
+
+  const boxes: QuadrantBox[] = [];
+  for (let i = 0; i < 8; i++) {
+    boxes.push({ shapeType: shapes[(startIdx + i) % shapes.length] });
+  }
+  boxes.push({ isQuestion: true });
+
+  const correctShape = shapes[(startIdx + 8) % shapes.length];
+  const correctBox: QuadrantBox = { shapeType: correctShape };
+
+  const distractors: QuadrantBox[] = [
+    { shapeType: shapes[(startIdx + 1) % shapes.length] },
+    { shapeType: shapes[(startIdx + 3) % shapes.length] },
+    { shapeType: shapes[(startIdx + 5) % shapes.length] },
+  ];
+
+  const optionBoxes = shuffleArray([correctBox, ...distractors]);
+  const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+  return {
+    id: `vis_shape_${Date.now()}_${Math.random()}`,
+    category: 'visual',
+    categoryLabel: `Deret Bentuk Geometri (Level ${difficulty})`,
+    difficultyLevel: difficulty,
+    question: `Analisis perubahan urutan bentuk geometri (Lingkaran, Segitiga, Kotak, Bintang, Belah Ketupat):`,
+    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    correctIndex,
+    hint: `🔬 *Analisis Guru Lab:* Bentuk geometri berganti secara berurutan. Kotak ke-9 membentuk gambar ${correctShape?.replace('_', ' ').toUpperCase()}.`,
+    visualMatrixData: {
+      type: 'shapes_row',
+      gridCols: 3,
+      boxes,
+      optionBoxes,
+    },
+  };
+}
+
+// 3.5. Mode: 2x2 Quadrant Grid Matrix
 function buildVisualMatrixQuestion(
   categoryLabel: string,
   questionText: string,
@@ -333,7 +557,6 @@ function buildVisualMatrixQuestion(
   correctBox: QuadrantBox,
   difficulty: 1 | 2 | 3 | 4
 ): PatternQuestion {
-  // Generate 3 distinct wrong distractors
   const distractors: QuadrantBox[] = [];
 
   let attempts = 0;
@@ -355,9 +578,9 @@ function buildVisualMatrixQuestion(
   }
 
   const fallbackOptions: QuadrantBox[] = [
-    createVisualBox(!correctBox.tl, correctBox.tr, correctBox.bl, correctBox.br),
-    createVisualBox(correctBox.tl, !correctBox.tr, correctBox.bl, correctBox.br),
-    createVisualBox(correctBox.tl, correctBox.tr, !correctBox.bl, correctBox.br),
+    createVisualBox(!correctBox.tl, !!correctBox.tr, !!correctBox.bl, !!correctBox.br),
+    createVisualBox(!!correctBox.tl, !correctBox.tr, !!correctBox.bl, !!correctBox.br),
+    createVisualBox(!!correctBox.tl, !!correctBox.tr, !correctBox.bl, !!correctBox.br),
     createVisualBox(!correctBox.tl, !correctBox.tr, !correctBox.bl, !correctBox.br),
   ];
 
@@ -390,11 +613,17 @@ function buildVisualMatrixQuestion(
 }
 
 function generateVisualMatrixQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
-  // 9 Distinct Procedural Visual Pattern Variations
-  const patternType = pickRandom([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  const mode = pickRandom(['clock_hands', 'capsule_symbols', 'domino_dots', 'shapes_row', 'quadrant_grid']);
 
-  if (patternType === 1 || (difficulty <= 2 && patternType > 4)) {
-    // 1. Clockwise Single Quadrant Rotation (Starting from random position)
+  if (mode === 'clock_hands') return generateClockHandsQuestion(difficulty);
+  if (mode === 'capsule_symbols') return generateCapsuleQuestion(difficulty);
+  if (mode === 'domino_dots') return generateDominoQuestion(difficulty);
+  if (mode === 'shapes_row') return generateShapesRowQuestion(difficulty);
+
+  // 5 Sub-variations for quadrant_grid
+  const patternType = pickRandom([1, 2, 3, 4, 5]);
+
+  if (patternType === 1) {
     const quadOrder: (keyof QuadrantBox)[] = ['tl', 'tr', 'br', 'bl'];
     const startIdx = randomInt(0, 3);
 
@@ -427,7 +656,6 @@ function generateVisualMatrixQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestio
       difficulty
     );
   } else if (patternType === 2) {
-    // 2. Counter-Clockwise Single Quadrant Rotation
     const quadOrder: (keyof QuadrantBox)[] = ['tl', 'bl', 'br', 'tr'];
     const startIdx = randomInt(0, 3);
 
@@ -460,12 +688,11 @@ function generateVisualMatrixQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestio
       difficulty
     );
   } else if (patternType === 3) {
-    // 3. Diagonal Alternating Quadrants (TL+BR vs TR+BL)
     const isStartMainDiag = Math.random() > 0.5;
 
     const boxes: QuadrantBox[] = [];
     for (let i = 0; i < 8; i++) {
-      const isMain = (i % 2 === 0) ? isStartMainDiag : !isStartMainDiag;
+      const isMain = i % 2 === 0 ? isStartMainDiag : !isStartMainDiag;
       boxes.push({
         tl: isMain,
         tr: !isMain,
@@ -475,7 +702,7 @@ function generateVisualMatrixQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestio
     }
     boxes.push({ tl: false, tr: false, bl: false, br: false, isQuestion: true });
 
-    const isCorrectMain = (8 % 2 === 0) ? isStartMainDiag : !isStartMainDiag;
+    const isCorrectMain = 8 % 2 === 0 ? isStartMainDiag : !isStartMainDiag;
     const correctBox: QuadrantBox = {
       tl: isCorrectMain,
       tr: !isCorrectMain,
@@ -492,7 +719,6 @@ function generateVisualMatrixQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestio
       difficulty
     );
   } else if (patternType === 4) {
-    // 4. Accumulation Progressive Pattern (1 -> 2 -> 3 -> 4)
     const accumOrder: QuadrantBox[] = [
       createVisualBox(true, false, false, false),
       createVisualBox(true, true, false, false),
@@ -518,30 +744,7 @@ function generateVisualMatrixQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestio
       correctBox,
       difficulty
     );
-  } else if (patternType === 5) {
-    // 5. Horizontal Mirror Reflection (Left-Right Inversion)
-    const isStartLeft = Math.random() > 0.5;
-
-    const boxes: QuadrantBox[] = [];
-    for (let i = 0; i < 8; i++) {
-      const isLeft = (i % 2 === 0) ? isStartLeft : !isStartLeft;
-      boxes.push(createVisualBox(isLeft, !isLeft, isLeft, !isLeft));
-    }
-    boxes.push(createVisualBox(false, false, false, false, true));
-
-    const isCorrectLeft = (8 % 2 === 0) ? isStartLeft : !isStartLeft;
-    const correctBox = createVisualBox(isCorrectLeft, !isCorrectLeft, isCorrectLeft, !isCorrectLeft);
-
-    return buildVisualMatrixQuestion(
-      `Deret Gambar Refleksi Cermin (Level ${difficulty})`,
-      `Analisis pencerminan horizontal posisi hitam kiri-kanan pada kotak berikut:`,
-      `🔬 *Analisis Guru Lab:* Pola ini mencerminkan area hitam ke kiri dan kanan secara bergantian. Kotak ke-9 berada di sisi ${isCorrectLeft ? 'KIRI' : 'KANAN'}.`,
-      boxes,
-      correctBox,
-      difficulty
-    );
   } else {
-    // 6. Matrix Row Logic Combination (Level 3-4 SD 5-6 Peak)
     const boxes: QuadrantBox[] = [
       createVisualBox(true, false, false, false),  // R1C1 (TL)
       createVisualBox(false, true, false, false),  // R1C2 (TR)
@@ -554,7 +757,7 @@ function generateVisualMatrixQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestio
       createVisualBox(false, false, false, false, true), // R3C3 (?)
     ];
 
-    const correctBox = createVisualBox(true, true, true, true); // All 4 shaded!
+    const correctBox = createVisualBox(true, true, true, true);
 
     return buildVisualMatrixQuestion(
       `Deret Pola Matriks 3x3 (Level ${difficulty} - SD 6)`,
@@ -614,7 +817,6 @@ function generateLabScience(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
       };
     }
   } else {
-    // Level 3-4: Bacterial doubling or Half-Life Reduction
     const isHalfLife = Math.random() > 0.6;
     if (isHalfLife) {
       const startMass = pickRandom([160, 320, 480, 640, 800]);
@@ -694,7 +896,7 @@ function dispatchPatternQuestion(
 // Helper to compute fingerprint signature of any question
 export function getQuestionSignature(q: PatternQuestion): string {
   if (q.visualMatrixData?.boxes) {
-    const boxSig = q.visualMatrixData.boxes.map((b) => `${b.tl?1:0}${b.tr?1:0}${b.bl?1:0}${b.br?1:0}`).join('');
+    const boxSig = JSON.stringify(q.visualMatrixData.boxes);
     return `vis_${boxSig}`;
   }
   return `${q.category}_${q.question}`;
