@@ -143,8 +143,8 @@ export default function BackgroundSelectScreen() {
             </p>
           </div>
 
-          {/* 4 Cards Grid: 2 col on sm, 4 col on lg+, stacked on mobile with blank space buffer */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 w-full px-3 sm:px-6 md:px-8 mb-6 sm:mb-8 text-left">
+          {/* 4 Cards Grid: 2 col on sm, 4 col on lg+, stacked on mobile with generous blank space buffer */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 w-full px-5 sm:px-10 lg:px-14 xl:px-16 mb-6 sm:mb-8 text-left">
             {PLACE_OPTIONS.map((opt) => {
               const isSelected = activePlaceId === opt.id;
 
