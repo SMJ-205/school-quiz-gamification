@@ -161,14 +161,21 @@ school-quiz-gamification/
 
 ## 🎵 Atribusi Musik & Kredit (Music Credits)
 
-Musik latar belakang (*Background Music*) yang digunakan pada proyek ini:
+Musik latar belakang (*Background Music*) yang digunakan pada proyek ini berlisensi bebas royalti:
 
-- **Track**: **Momo Island**
-- **Artis**: **Piki**
-- **Sumber Musik**: [Free To Use - Piki (Momo Island)](https://freetouse.com/music/piki/momo-island)
-- **Ketentuan Lisensi**: [Free To Use Music License](https://freetouse.com/license)
+1. **Laboratorium IPA (Detektif Pola Session)**
+   - **Track**: **Creativity**
+   - **Artis**: **Aylex**
+   - **Sumber Musik**: [Free To Use - Aylex (Creativity)](https://freetouse.com/music/aylex/creativity)
+   - **Ketentuan Lisensi**: [Free To Use Music License](https://freetouse.com/license)
 
-*Terima kasih kepada Piki & FreeToUse yang menyediakan musik bebas royalti berkualitas tinggi untuk proyek pendidikan ini.*
+2. **Perpustakaan Ajaib (Quiz Session)**
+   - **Track**: **Momo Island**
+   - **Artis**: **Piki**
+   - **Sumber Musik**: [Free To Use - Piki (Momo Island)](https://freetouse.com/music/piki/momo-island)
+   - **Ketentuan Lisensi**: [Free To Use Music License](https://freetouse.com/license)
+
+*Terima kasih kepada Aylex, Piki, & FreeToUse yang menyediakan musik bebas royalti berkualitas tinggi untuk proyek pendidikan ini.*
 
 ---
 

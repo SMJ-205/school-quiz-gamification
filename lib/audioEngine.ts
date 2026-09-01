@@ -3,6 +3,7 @@
 declare global {
   interface Window {
     __QUIZ_BGM_AUDIO__?: HTMLAudioElement | null;
+    __QUIZ_LAB_BGM_AUDIO__?: HTMLAudioElement | null;
     __QUIZ_AUDIO_CTX__?: AudioContext | null;
     __QUIZ_BGM_MUTED__?: boolean;
     __QUIZ_SFX_MUTED__?: boolean;
@@ -12,6 +13,7 @@ declare global {
 }
 
 export const BGM_VOLUME = 0.22; // Comfortable, clearly audible background music on mobile & desktop (22%)
+export const BGM_VOLUME_LAB = 0.16; // Balanced volume for Lab IPA session (16%) so it never overpowers SFX
 
 function getBgmAudio(): HTMLAudioElement | null {
   if (typeof window === 'undefined') return null;
@@ -31,6 +33,26 @@ function getBgmAudio(): HTMLAudioElement | null {
   }
 
   return window.__QUIZ_BGM_AUDIO__;
+}
+
+function getLabBgmAudio(): HTMLAudioElement | null {
+  if (typeof window === 'undefined') return null;
+
+  if (!window.__QUIZ_LAB_BGM_AUDIO__) {
+    // Music: "Creativity" by Aylex (https://freetouse.com/music/aylex/creativity)
+    // License: Free To Use Music (https://freetouse.com/license)
+    const audio = new Audio('/audio/Aylex - Creativity (freetouse.com).mp3');
+    audio.loop = true;
+    audio.volume = BGM_VOLUME_LAB;
+    audio.preload = 'auto';
+    audio.setAttribute('playsinline', 'true');
+    (audio as unknown as { playsInline?: boolean }).playsInline = true;
+    window.__QUIZ_LAB_BGM_AUDIO__ = audio;
+  } else {
+    window.__QUIZ_LAB_BGM_AUDIO__.volume = isBgmMuted() ? 0 : BGM_VOLUME_LAB;
+  }
+
+  return window.__QUIZ_LAB_BGM_AUDIO__;
 }
 
 function getCtx(): AudioContext | null {
@@ -368,6 +390,13 @@ export function stopAllBgmMedia(): void {
     audio.pause();
     try { audio.currentTime = 0; } catch {}
   }
+
+  const labAudio = getLabBgmAudio();
+  if (labAudio) {
+    labAudio.pause();
+    try { labAudio.currentTime = 0; } catch {}
+  }
+
   stopSynthBgm();
 
   if (typeof document !== 'undefined') {
@@ -399,6 +428,24 @@ export function startQuizBGM(trackId?: string): void {
     if (!audio) return;
     audio.muted = false;
     audio.volume = BGM_VOLUME;
+    if (audio.paused && !isStartingBgm) {
+      isStartingBgm = true;
+      playPromise = audio.play();
+      playPromise
+        .then(() => {
+          isStartingBgm = false;
+          playPromise = null;
+        })
+        .catch(() => {
+          isStartingBgm = false;
+          playPromise = null;
+        });
+    }
+  } else if (activeTrackId === 'aylex_creativity' || activeTrackId === 'lab_creativity') {
+    const audio = getLabBgmAudio();
+    if (!audio) return;
+    audio.muted = false;
+    audio.volume = BGM_VOLUME_LAB;
     if (audio.paused && !isStartingBgm) {
       isStartingBgm = true;
       playPromise = audio.play();
