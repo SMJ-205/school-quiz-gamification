@@ -3,13 +3,10 @@
  * Procedural Question Generator for "Detektif Pola" (Pattern & Sequence Predictor)
  * Features:
  * - Strict grade-based difficulty scaling (Kelas 1 to Kelas 6 SD)
- * - Zero-duplicate guarantee per session via question fingerprint signature tracking
- * - 5 Authentic TPA Visual Puzzle Modes:
- *   1. clock_hands     : Jarum & Garis Sinar (Problem 5 TPA)
- *   2. capsule_symbols : Kapsul & Simbol O/X (Problem 4 TPA)
- *   3. domino_dots     : Kelompok Bintik Domino
- *   4. shapes_row      : Urutan Bentuk Geometri (Segitiga, Lingkaran, Kotak, Bintang, Belah Ketupat)
- *   5. quadrant_matrix : 2x2 Grid Hitam-Putih (5 sub-variasi)
+ * - Zero-duplicate option guarantee for all question types
+ * - Zero-duplicate question history tracking per session
+ * - Pedagogically clear, intuitive visual patterns for Kelas 1 SD (Latin Square & Row Repetition)
+ * - 5 Authentic TPA Visual Puzzle Modes for upper grades
  */
 
 import { VisualMatrixData, QuadrantBox } from '@/components/quiz/VisualMatrixDisplay';
@@ -46,283 +43,37 @@ function randomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// ─── STRICT GRADE-BASED DIFFICULTY CALCULATOR (Kelas 1 - 6 SD) ─────────────
+// ─── STRICT UNIQUE TEXT OPTIONS GUARANTEE ───────────────────────────────────
 
-export function getDifficultyForGradeAndNumber(qNum: number, grade: number = 6): 1 | 2 | 3 | 4 {
-  if (grade <= 1) return 1; // Kelas 1 SD: STRICTLY Level 1 ONLY (Termudah)
-  if (grade === 2) return qNum <= 5 ? 1 : 2; // Kelas 2 SD: Level 1-2
-  if (grade === 3) return 2; // Kelas 3 SD: Level 2
-  if (grade === 4) return qNum <= 4 ? 2 : 3; // Kelas 4 SD: Level 2-3
-  if (grade === 5) return 3; // Kelas 5 SD: Level 3
-  // Kelas 6 SD Peak
-  if (qNum <= 3) return 3;
-  return 4; // Level 4 (Max SD 6 Peak)
-}
+function buildUniqueTextOptions(
+  answer: number,
+  distractorCandidates: number[]
+): { options: string[]; correctIndex: number } {
+  const uniqueNums: number[] = [answer];
 
-// ─── 1. Aritmatika & Bertingkat (Ultra-Randomized) ─────────────────────────
-
-function generateArithmetic(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
-  if (difficulty === 1) {
-    // Level 1: Constant Addition/Subtraction (+1..+10 or -1..-5)
-    const isSub = Math.random() > 0.5;
-    if (isSub) {
-      const step = pickRandom([1, 2, 3, 4, 5]);
-      const start = randomInt(step * 5 + 2, 50);
-      const seq = [start, start - step, start - step * 2, start - step * 3];
-      const answer = start - step * 4;
-
-      const distractors = [answer + step + 1, answer - 1, answer + 2];
-      const allOpts = shuffleArray([answer.toString(), ...distractors.map((d) => d.toString())]);
-      const correctIdx = allOpts.indexOf(answer.toString());
-
-      return {
-        id: `arit_l1_sub_${Date.now()}_${Math.random()}`,
-        category: 'aritmatika',
-        categoryLabel: 'Aritmatika Pengurangan (Level 1)',
-        difficultyLevel: 1,
-        question: `Detektif cilik, tentukan angka berikutnya yang berkurang -${step} ini:\n${seq.join(', ')}, ?`,
-        options: allOpts,
-        correctIndex: correctIdx,
-        hint: `🔬 *Analisis Guru Lab:* Setiap langkah selalu berkurang -${step}. Jadi ${seq[seq.length - 1]} - ${step} = ${answer}.`,
-      };
-    } else {
-      const step = pickRandom([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-      const start = randomInt(1, 40);
-      const seq = [start, start + step, start + step * 2, start + step * 3];
-      const answer = start + step * 4;
-
-      const distractors = [answer + step, answer - 1, answer + 2];
-      const allOpts = shuffleArray([answer.toString(), ...distractors.map((d) => d.toString())]);
-      const correctIdx = allOpts.indexOf(answer.toString());
-
-      return {
-        id: `arit_l1_add_${Date.now()}_${Math.random()}`,
-        category: 'aritmatika',
-        categoryLabel: 'Aritmatika Penjumlahan (Level 1)',
-        difficultyLevel: 1,
-        question: `Detektif cilik, tentukan angka berikutnya dari pola bertambah +${step} ini:\n${seq.join(', ')}, ?`,
-        options: allOpts,
-        correctIndex: correctIdx,
-        hint: `🔬 *Analisis Guru Lab:* Setiap langkah selalu bertambah +${step}. Jadi ${seq[seq.length - 1]} + ${step} = ${answer}.`,
-      };
+  for (const d of distractorCandidates) {
+    if (uniqueNums.length >= 4) break;
+    if (!uniqueNums.includes(d) && !isNaN(d)) {
+      uniqueNums.push(d);
     }
-  } else if (difficulty === 2) {
-    // Level 2: Increasing Step (+1,+2,+3,+4 or +2,+4,+6,+8 or +1,+3,+5,+7 or +3,+6,+9,+12)
-    const variant = pickRandom(['inc_1', 'inc_2', 'odd', 'mult_3']);
-    const start = randomInt(1, 20);
-
-    let seq: number[] = [];
-    let answer = 0;
-    let hintStr = '';
-
-    if (variant === 'inc_1') {
-      const initialStep = randomInt(1, 3);
-      seq = [start, start + initialStep, start + initialStep * 2 + 1, start + initialStep * 3 + 3];
-      answer = start + initialStep * 4 + 6;
-      hintStr = `Selisihnya terus bertambah (+1 tiap tahap). Langkah berikutnya bertambah +${initialStep + 3}.`;
-    } else if (variant === 'inc_2') {
-      seq = [start, start + 2, start + 6, start + 12]; // steps: +2, +4, +6
-      answer = start + 20; // step: +8
-      hintStr = `Tambahan angka melompat genap: +2, +4, +6, lalu +8.`;
-    } else if (variant === 'odd') {
-      seq = [start, start + 1, start + 4, start + 9]; // steps: +1, +3, +5
-      answer = start + 16; // step: +7
-      hintStr = `Tambahan angka bertambah ganjil: +1, +3, +5, lalu +7.`;
-    } else {
-      seq = [start, start + 3, start + 9, start + 18]; // steps: +3, +6, +9
-      answer = start + 30; // step: +12
-      hintStr = `Beda kelipatan 3: +3, +6, +9, lalu +12.`;
-    }
-
-    const distractors = [answer + 2, answer - 2, answer + 4];
-    const allOpts = shuffleArray([answer.toString(), ...distractors.map((d) => d.toString())]);
-    const correctIdx = allOpts.indexOf(answer.toString());
-
-    return {
-      id: `arit_l2_${Date.now()}_${Math.random()}`,
-      category: 'aritmatika',
-      categoryLabel: 'Aritmatika Bertingkat (Level 2)',
-      difficultyLevel: 2,
-      question: `Temukan angka selanjutnya dari pola bertingkat ini:\n${seq.join(', ')}, ?`,
-      options: allOpts,
-      correctIndex: correctIdx,
-      hint: `🔬 *Analisis Guru Lab:* ${hintStr} Jadi ${seq[seq.length - 1]} ➔ ${answer}.`,
-    };
-  } else if (difficulty === 3) {
-    // Level 3: Alternating +/- (+A, -B, +A, -B) or Multiply-Then-Subtract
-    const addVal = randomInt(4, 12);
-    const subVal = randomInt(1, 4);
-    const start = randomInt(10, 40);
-    const seq = [start, start + addVal, start + addVal - subVal, start + addVal * 2 - subVal];
-    const answer = start + addVal * 2 - subVal * 2; // next step: -subVal
-
-    const distractors = [answer + addVal, answer + 1, answer - addVal];
-    const allOpts = shuffleArray([answer.toString(), ...distractors.map((d) => d.toString())]);
-    const correctIdx = allOpts.indexOf(answer.toString());
-
-    return {
-      id: `arit_l3_${Date.now()}_${Math.random()}`,
-      category: 'aritmatika',
-      categoryLabel: 'Pola Alternatif (Level 3)',
-      difficultyLevel: 3,
-      question: `Deteksi angka selanjutnya pada deret berayun ini:\n${seq.join(', ')}, ?`,
-      options: allOpts,
-      correctIndex: correctIdx,
-      hint: `🔬 *Analisis Guru Lab:* Pola ini selang-seling antara +${addVal} lalu -${subVal}. Giliran berikutnya adalah berkurang -${subVal} (${seq[seq.length - 1]} - ${subVal} = ${answer}).`,
-    };
-  } else {
-    // Level 4 (Max SD Kelas 6): Fibonacci Sederhana
-    const a = randomInt(1, 8);
-    const b = randomInt(1, 10);
-    const seq = [a, b, a + b, a + 2 * b, 2 * a + 3 * b];
-    const answer = 3 * a + 5 * b;
-
-    const distractors = [answer + a, answer - b, answer + 4];
-    const allOpts = shuffleArray([answer.toString(), ...distractors.map((d) => d.toString())]);
-    const correctIdx = allOpts.indexOf(answer.toString());
-
-    return {
-      id: `arit_l4_${Date.now()}_${Math.random()}`,
-      category: 'aritmatika',
-      categoryLabel: 'Deret Fibonacci (Level 4 - SD 6)',
-      difficultyLevel: 4,
-      question: `Penyelidikan Tingkat Lanjut — Selesaikan deret Fibonacci ini:\n${seq.join(', ')}, ?`,
-      options: allOpts,
-      correctIndex: correctIdx,
-      hint: `🔬 *Analisis Guru Lab:* Setiap angka adalah hasil penjumlahan 2 angka di depannya! (${seq[seq.length - 2]} + ${seq[seq.length - 1]} = ${answer}).`,
-    };
   }
-}
 
-// ─── 2. Geometris & Kuadrat (Ultra-Randomized) ─────────────────────────────
-
-function generateGeometric(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
-  if (difficulty === 1) {
-    // Level 1: Simple Even/Odd Numbers or Multiples of 2,3,4,5
-    const step = pickRandom([2, 3, 4, 5]);
-    const start = randomInt(1, 8) * step;
-    const seq = [start, start + step, start + step * 2, start + step * 3];
-    const answer = start + step * 4;
-
-    const distractors = [answer + 1, answer - 1, answer + 2];
-    const allOpts = shuffleArray([answer.toString(), ...distractors.map((d) => d.toString())]);
-    const correctIdx = allOpts.indexOf(answer.toString());
-
-    return {
-      id: `geo_l1_${Date.now()}_${Math.random()}`,
-      category: 'geometris',
-      categoryLabel: `Pola Loncat ${step} (Level 1)`,
-      difficultyLevel: 1,
-      question: `Tentukan angka berikutnya dari pola loncat ${step} ini:\n${seq.join(', ')}, ?`,
-      options: allOpts,
-      correctIndex: correctIdx,
-      hint: `🔬 *Analisis Guru Lab:* Angka selalu melompat +${step}. ${seq[seq.length - 1]} + ${step} = ${answer}.`,
-    };
-  } else if (difficulty === 2) {
-    // Level 2: Multiplication x2, x3, x4
-    const mult = pickRandom([2, 3, 4]);
-    const start = randomInt(1, 5);
-    const seq = [start, start * mult, start * mult * mult, start * mult * mult * mult];
-    const answer = start * mult * mult * mult * mult;
-
-    const distractors = [answer + mult, answer - start, answer + start * mult];
-    const allOpts = shuffleArray([answer.toString(), ...distractors.map((d) => d.toString())]);
-    const correctIdx = allOpts.indexOf(answer.toString());
-
-    return {
-      id: `geo_l2_${Date.now()}_${Math.random()}`,
-      category: 'geometris',
-      categoryLabel: `Perkalian Kelipatan ${mult} (Level 2)`,
-      difficultyLevel: 2,
-      question: `Tentukan angka berikutnya dari pola kelipatan ×${mult} ini:\n${seq.join(', ')}, ?`,
-      options: allOpts,
-      correctIndex: correctIdx,
-      hint: `🔬 *Analisis Guru Lab:* Setiap angka dikali ${mult} (×${mult})! ${seq[seq.length - 1]} × ${mult} = ${answer}.`,
-    };
-  } else if (difficulty === 3) {
-    // Level 3: Triangular Numbers or Square Numbers
-    const isTriangular = Math.random() > 0.5;
-    if (isTriangular) {
-      const startN = randomInt(1, 4);
-      const seq = [
-        (startN * (startN + 1)) / 2,
-        ((startN + 1) * (startN + 2)) / 2,
-        ((startN + 2) * (startN + 3)) / 2,
-        ((startN + 3) * (startN + 4)) / 2,
-      ];
-      const answer = ((startN + 4) * (startN + 5)) / 2;
-
-      const distractors = [answer + 3, answer - 2, answer + 5];
-      const allOpts = shuffleArray([answer.toString(), ...distractors.map((d) => d.toString())]);
-      const correctIdx = allOpts.indexOf(answer.toString());
-
-      return {
-        id: `geo_l3_tri_${Date.now()}_${Math.random()}`,
-        category: 'geometris',
-        categoryLabel: 'Deret Angka Segitiga (Level 3)',
-        difficultyLevel: 3,
-        question: `Temukan angka selanjutnya dari pola deret segitiga (+2, +3, +4, +5...) ini:\n${seq.join(', ')}, ?`,
-        options: allOpts,
-        correctIndex: correctIdx,
-        hint: `🔬 *Analisis Guru Lab:* Penambahan bertambah +1 tiap tahap. Angka berikutnya bertambah +${startN + 5}, jadi ${seq[seq.length - 1]} ➔ ${answer}.`,
-      };
-    } else {
-      // Square Numbers (n^2)
-      const startN = randomInt(1, 5);
-      const seq = [startN ** 2, (startN + 1) ** 2, (startN + 2) ** 2, (startN + 3) ** 2];
-      const answer = (startN + 4) ** 2;
-
-      const distractors = [answer + 5, answer - 4, answer + 8];
-      const allOpts = shuffleArray([answer.toString(), ...distractors.map((d) => d.toString())]);
-      const correctIdx = allOpts.indexOf(answer.toString());
-
-      return {
-        id: `geo_l3_sq_${Date.now()}_${Math.random()}`,
-        category: 'geometris',
-        categoryLabel: 'Pangkat Dua Kuadrat (Level 3)',
-        difficultyLevel: 3,
-        question: `Temukan pola kuadrat angka berikutnya:\n${seq.join(', ')}, ?`,
-        options: allOpts,
-        correctIndex: correctIdx,
-        hint: `🔬 *Analisis Guru Lab:* Ini adalah deret angka kuadrat (${startN}², ${startN + 1}², ${startN + 2}²...). Angka berikutnya adalah ${startN + 4}² = ${answer}.`,
-      };
+  // Fallbacks if candidate calculations produced duplicates
+  const offsets = [1, -1, 2, -2, 3, -3, 4, -4, 5, -5];
+  for (const off of offsets) {
+    if (uniqueNums.length >= 4) break;
+    const cand = answer + off;
+    if (!uniqueNums.includes(cand)) {
+      uniqueNums.push(cand);
     }
-  } else {
-    // Level 4 (Max SD 6): Square Numbers with Offset (+k or -k)
-    const offset = pickRandom([1, -1, 2, -2, 3]);
-    const startN = randomInt(1, 4);
-    const seq = [
-      startN ** 2 + offset,
-      (startN + 1) ** 2 + offset,
-      (startN + 2) ** 2 + offset,
-      (startN + 3) ** 2 + offset,
-    ];
-    const answer = (startN + 4) ** 2 + offset;
-
-    const distractors = [answer + 3, answer - 3, answer + 7];
-    const allOpts = shuffleArray([answer.toString(), ...distractors.map((d) => d.toString())]);
-    const correctIdx = allOpts.indexOf(answer.toString());
-
-    const signStr = offset > 0 ? `+ ${offset}` : `- ${Math.abs(offset)}`;
-
-    return {
-      id: `geo_l4_${Date.now()}_${Math.random()}`,
-      category: 'geometris',
-      categoryLabel: 'Pola Kuadrat Offset (Level 4 - SD 6)',
-      difficultyLevel: 4,
-      question: `Soal Penalaran Lanjutan — Lengkapi deret kuadrat (${signStr}) ini:\n${seq.join(', ')}, ?`,
-      options: allOpts,
-      correctIndex: correctIdx,
-      hint: `🔬 *Analisis Guru Lab:* Pola ini adalah (n² ${signStr})! Langkah berikutnya adalah ${startN + 4}² ${signStr} = ${answer}.`,
-    };
   }
+
+  const allOpts = shuffleArray(uniqueNums.map((n) => n.toString()));
+  const correctIndex = allOpts.indexOf(answer.toString());
+  return { options: allOpts, correctIndex };
 }
 
-// ─── 3. Pola Gambar Visual (5 Authentic TPA Puzzle Modes) ───────────────────
-
-function createVisualBox(tl: boolean, tr: boolean, bl: boolean, br: boolean, isQuestion = false): QuadrantBox {
-  return { tl, tr, bl, br, isQuestion };
-}
+// ─── STRICT UNIQUE VISUAL OPTION BOXES GUARANTEE ───────────────────────────
 
 function areBoxesEqual(a: QuadrantBox, b: QuadrantBox): boolean {
   if (a.angles !== undefined || b.angles !== undefined) {
@@ -344,6 +95,485 @@ function areBoxesEqual(a: QuadrantBox, b: QuadrantBox): boolean {
   return a.tl === b.tl && a.tr === b.tr && a.bl === b.bl && a.br === b.br;
 }
 
+function buildUniqueOptionBoxes(correctBox: QuadrantBox, candidates: QuadrantBox[]): QuadrantBox[] {
+  const uniqueList: QuadrantBox[] = [correctBox];
+
+  for (const cand of candidates) {
+    if (uniqueList.length >= 4) break;
+    if (!uniqueList.some((b) => areBoxesEqual(b, cand))) {
+      uniqueList.push(cand);
+    }
+  }
+
+  // Fallback mutator if candidates weren't sufficient to yield 4 distinct options
+  let attempts = 0;
+  while (uniqueList.length < 4 && attempts < 50) {
+    attempts++;
+    let fallback: QuadrantBox;
+
+    if (correctBox.shapeType !== undefined) {
+      const allShapes: QuadrantBox['shapeType'][] = [
+        'square_filled',
+        'circle_filled',
+        'triangle_filled',
+        'star',
+        'diamond',
+        'circle_outline',
+        'square_outline',
+        'triangle_outline',
+      ];
+      const unusedShape = allShapes.find((s) => !uniqueList.some((b) => b.shapeType === s));
+      fallback = { shapeType: unusedShape || 'star' };
+    } else if (correctBox.angles !== undefined) {
+      const allAngles = [0, 45, 90, 135, 180, 225, 270, 315];
+      const unusedAngle = allAngles.find((a) => !uniqueList.some((b) => b.angles?.[0] === a));
+      fallback = { angles: [unusedAngle ?? 90] };
+    } else if (correctBox.dotCount !== undefined) {
+      const unusedDot = [1, 2, 3, 4, 5, 6].find((d) => !uniqueList.some((b) => b.dotCount === d));
+      fallback = { dotCount: unusedDot ?? 1 };
+    } else {
+      fallback = {
+        tl: Math.random() > 0.5,
+        tr: Math.random() > 0.5,
+        bl: Math.random() > 0.5,
+        br: Math.random() > 0.5,
+      };
+    }
+
+    if (!uniqueList.some((b) => areBoxesEqual(b, fallback))) {
+      uniqueList.push(fallback);
+    }
+  }
+
+  return shuffleArray(uniqueList);
+}
+
+// ─── STRICT GRADE-BASED DIFFICULTY CALCULATOR (Kelas 1 - 6 SD) ─────────────
+
+export function getDifficultyForGradeAndNumber(qNum: number, grade: number = 6): 1 | 2 | 3 | 4 {
+  if (grade <= 1) return 1; // Kelas 1 SD: STRICTLY Level 1 ONLY (Termudah)
+  if (grade === 2) return qNum <= 5 ? 1 : 2; // Kelas 2 SD: Level 1-2
+  if (grade === 3) return 2; // Kelas 3 SD: Level 2
+  if (grade === 4) return qNum <= 4 ? 2 : 3; // Kelas 4 SD: Level 2-3
+  if (grade === 5) return 3; // Kelas 5 SD: Level 3
+  // Kelas 6 SD Peak
+  if (qNum <= 3) return 3;
+  return 4; // Level 4 (Max SD 6 Peak)
+}
+
+// ─── 1. Aritmatika & Bertingkat ─────────────────────────────────────────────
+
+function generateArithmetic(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+  if (difficulty === 1) {
+    // Level 1 (Kelas 1 SD): Super Easy Constant Addition (+1, +2, +3, +4, +5) or Subtraction (-1, -2)
+    const isSub = Math.random() > 0.5;
+    if (isSub) {
+      const step = pickRandom([1, 2]);
+      const start = randomInt(10, 20);
+      const seq = [start, start - step, start - step * 2, start - step * 3];
+      const answer = start - step * 4;
+      const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + step + 1, answer - 1, answer + 2]);
+
+      return {
+        id: `arit_l1_sub_${Date.now()}_${Math.random()}`,
+        category: 'aritmatika',
+        categoryLabel: 'Aritmatika Pengurangan (Level 1 - SD 1)',
+        difficultyLevel: 1,
+        question: `Detektif cilik, tentukan angka berikutnya yang berkurang -${step} ini:\n${seq.join(', ')}, ?`,
+        options,
+        correctIndex,
+        hint: `🔬 *Analisis Guru Lab:* Setiap langkah selalu berkurang -${step}. Jadi ${seq[seq.length - 1]} - ${step} = ${answer}.`,
+      };
+    } else {
+      const step = pickRandom([1, 2, 3, 4, 5]);
+      const start = randomInt(1, 15);
+      const seq = [start, start + step, start + step * 2, start + step * 3];
+      const answer = start + step * 4;
+      const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + step, answer - 1, answer + 2]);
+
+      return {
+        id: `arit_l1_add_${Date.now()}_${Math.random()}`,
+        category: 'aritmatika',
+        categoryLabel: 'Aritmatika Penjumlahan (Level 1 - SD 1)',
+        difficultyLevel: 1,
+        question: `Detektif cilik, tentukan angka berikutnya dari pola bertambah +${step} ini:\n${seq.join(', ')}, ?`,
+        options,
+        correctIndex,
+        hint: `🔬 *Analisis Guru Lab:* Setiap langkah selalu bertambah +${step}. Jadi ${seq[seq.length - 1]} + ${step} = ${answer}.`,
+      };
+    }
+  } else if (difficulty === 2) {
+    const variant = pickRandom(['inc_1', 'inc_2', 'odd', 'mult_3']);
+    const start = randomInt(1, 20);
+
+    let seq: number[] = [];
+    let answer = 0;
+    let hintStr = '';
+
+    if (variant === 'inc_1') {
+      const initialStep = randomInt(1, 3);
+      seq = [start, start + initialStep, start + initialStep * 2 + 1, start + initialStep * 3 + 3];
+      answer = start + initialStep * 4 + 6;
+      hintStr = `Selisihnya terus bertambah (+1 tiap tahap). Langkah berikutnya bertambah +${initialStep + 3}.`;
+    } else if (variant === 'inc_2') {
+      seq = [start, start + 2, start + 6, start + 12];
+      answer = start + 20;
+      hintStr = `Tambahan angka melompat genap: +2, +4, +6, lalu +8.`;
+    } else if (variant === 'odd') {
+      seq = [start, start + 1, start + 4, start + 9];
+      answer = start + 16;
+      hintStr = `Tambahan angka bertambah ganjil: +1, +3, +5, lalu +7.`;
+    } else {
+      seq = [start, start + 3, start + 9, start + 18];
+      answer = start + 30;
+      hintStr = `Beda kelipatan 3: +3, +6, +9, lalu +12.`;
+    }
+
+    const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + 2, answer - 2, answer + 4]);
+
+    return {
+      id: `arit_l2_${Date.now()}_${Math.random()}`,
+      category: 'aritmatika',
+      categoryLabel: 'Aritmatika Bertingkat (Level 2)',
+      difficultyLevel: 2,
+      question: `Temukan angka selanjutnya dari pola bertingkat ini:\n${seq.join(', ')}, ?`,
+      options,
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* ${hintStr} Jadi ${seq[seq.length - 1]} ➔ ${answer}.`,
+    };
+  } else if (difficulty === 3) {
+    const addVal = randomInt(4, 12);
+    const subVal = randomInt(1, 4);
+    const start = randomInt(10, 40);
+    const seq = [start, start + addVal, start + addVal - subVal, start + addVal * 2 - subVal];
+    const answer = start + addVal * 2 - subVal * 2;
+
+    const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + addVal, answer + 1, answer - addVal]);
+
+    return {
+      id: `arit_l3_${Date.now()}_${Math.random()}`,
+      category: 'aritmatika',
+      categoryLabel: 'Pola Alternatif (Level 3)',
+      difficultyLevel: 3,
+      question: `Deteksi angka selanjutnya pada deret berayun ini:\n${seq.join(', ')}, ?`,
+      options,
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* Pola ini selang-seling antara +${addVal} lalu -${subVal}. Giliran berikutnya adalah berkurang -${subVal} (${seq[seq.length - 1]} - ${subVal} = ${answer}).`,
+    };
+  } else {
+    const a = randomInt(1, 8);
+    const b = randomInt(1, 10);
+    const seq = [a, b, a + b, a + 2 * b, 2 * a + 3 * b];
+    const answer = 3 * a + 5 * b;
+
+    const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + a, answer - b, answer + 4]);
+
+    return {
+      id: `arit_l4_${Date.now()}_${Math.random()}`,
+      category: 'aritmatika',
+      categoryLabel: 'Deret Fibonacci (Level 4 - SD 6)',
+      difficultyLevel: 4,
+      question: `Penyelidikan Tingkat Lanjut — Selesaikan deret Fibonacci ini:\n${seq.join(', ')}, ?`,
+      options,
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* Setiap angka adalah hasil penjumlahan 2 angka di depannya! (${seq[seq.length - 2]} + ${seq[seq.length - 1]} = ${answer}).`,
+    };
+  }
+}
+
+// ─── 2. Geometris & Kuadrat ─────────────────────────────────────────────────
+
+function generateGeometric(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+  if (difficulty === 1) {
+    const step = pickRandom([2, 3, 4, 5]);
+    const start = randomInt(1, 8) * step;
+    const seq = [start, start + step, start + step * 2, start + step * 3];
+    const answer = start + step * 4;
+
+    const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + 1, answer - 1, answer + 2]);
+
+    return {
+      id: `geo_l1_${Date.now()}_${Math.random()}`,
+      category: 'geometris',
+      categoryLabel: `Pola Loncat ${step} (Level 1 - SD 1)`,
+      difficultyLevel: 1,
+      question: `Tentukan angka berikutnya dari pola loncat ${step} ini:\n${seq.join(', ')}, ?`,
+      options,
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* Angka selalu melompat +${step}. ${seq[seq.length - 1]} + ${step} = ${answer}.`,
+    };
+  } else if (difficulty === 2) {
+    const mult = pickRandom([2, 3, 4]);
+    const start = randomInt(1, 5);
+    const seq = [start, start * mult, start * mult * mult, start * mult * mult * mult];
+    const answer = start * mult * mult * mult * mult;
+
+    const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + mult, answer - start, answer + start * mult]);
+
+    return {
+      id: `geo_l2_${Date.now()}_${Math.random()}`,
+      category: 'geometris',
+      categoryLabel: `Perkalian Kelipatan ${mult} (Level 2)`,
+      difficultyLevel: 2,
+      question: `Tentukan angka berikutnya dari pola kelipatan ×${mult} ini:\n${seq.join(', ')}, ?`,
+      options,
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* Setiap angka dikali ${mult} (×${mult})! ${seq[seq.length - 1]} × ${mult} = ${answer}.`,
+    };
+  } else if (difficulty === 3) {
+    const isTriangular = Math.random() > 0.5;
+    if (isTriangular) {
+      const startN = randomInt(1, 4);
+      const seq = [
+        (startN * (startN + 1)) / 2,
+        ((startN + 1) * (startN + 2)) / 2,
+        ((startN + 2) * (startN + 3)) / 2,
+        ((startN + 3) * (startN + 4)) / 2,
+      ];
+      const answer = ((startN + 4) * (startN + 5)) / 2;
+
+      const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + 3, answer - 2, answer + 5]);
+
+      return {
+        id: `geo_l3_tri_${Date.now()}_${Math.random()}`,
+        category: 'geometris',
+        categoryLabel: 'Deret Angka Segitiga (Level 3)',
+        difficultyLevel: 3,
+        question: `Temukan angka selanjutnya dari pola deret segitiga (+2, +3, +4, +5...) ini:\n${seq.join(', ')}, ?`,
+        options,
+        correctIndex,
+        hint: `🔬 *Analisis Guru Lab:* Penambahan bertambah +1 tiap tahap. Angka berikutnya bertambah +${startN + 5}, jadi ${seq[seq.length - 1]} ➔ ${answer}.`,
+      };
+    } else {
+      const startN = randomInt(1, 5);
+      const seq = [startN ** 2, (startN + 1) ** 2, (startN + 2) ** 2, (startN + 3) ** 2];
+      const answer = (startN + 4) ** 2;
+
+      const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + 5, answer - 4, answer + 8]);
+
+      return {
+        id: `geo_l3_sq_${Date.now()}_${Math.random()}`,
+        category: 'geometris',
+        categoryLabel: 'Pangkat Dua Kuadrat (Level 3)',
+        difficultyLevel: 3,
+        question: `Temukan pola kuadrat angka berikutnya:\n${seq.join(', ')}, ?`,
+        options,
+        correctIndex,
+        hint: `🔬 *Analisis Guru Lab:* Ini adalah deret angka kuadrat (${startN}², ${startN + 1}², ${startN + 2}²...). Angka berikutnya adalah ${startN + 4}² = ${answer}.`,
+      };
+    }
+  } else {
+    const offset = pickRandom([1, -1, 2, -2, 3]);
+    const startN = randomInt(1, 4);
+    const seq = [
+      startN ** 2 + offset,
+      (startN + 1) ** 2 + offset,
+      (startN + 2) ** 2 + offset,
+      (startN + 3) ** 2 + offset,
+    ];
+    const answer = (startN + 4) ** 2 + offset;
+
+    const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + 3, answer - 3, answer + 7]);
+
+    const signStr = offset > 0 ? `+ ${offset}` : `- ${Math.abs(offset)}`;
+
+    return {
+      id: `geo_l4_${Date.now()}_${Math.random()}`,
+      category: 'geometris',
+      categoryLabel: 'Pola Kuadrat Offset (Level 4 - SD 6)',
+      difficultyLevel: 4,
+      question: `Soal Penalaran Lanjutan — Lengkapi deret kuadrat (${signStr}) ini:\n${seq.join(', ')}, ?`,
+      options,
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* Pola ini adalah (n² ${signStr})! Langkah berikutnya adalah ${startN + 4}² ${signStr} = ${answer}.`,
+    };
+  }
+}
+
+// ─── 3. Pola Gambar Visual (Grade 1 Intuitive + TPA Modes) ────────────────
+
+function createVisualBox(tl: boolean, tr: boolean, bl: boolean, br: boolean, isQuestion = false): QuadrantBox {
+  return { tl, tr, bl, br, isQuestion };
+}
+
+// 3.0. SPECIAL KELAS 1 SD VISUAL PUZZLES (Intuitive, Clear, & Pedagogical)
+function generateGrade1VisualQuestion(): PatternQuestion {
+  const variant = pickRandom(['row_repeat', 'latin_square', 'simple_rotate', 'simple_ray']);
+
+  if (variant === 'row_repeat') {
+    // Row 1: Shape A, A, A
+    // Row 2: Shape B, B, B
+    // Row 3: Shape C, Shape C, ? (Answer: Shape C)
+    const shapesPool: QuadrantBox['shapeType'][] = ['square_filled', 'circle_filled', 'triangle_filled', 'star', 'diamond'];
+    const selected3 = shuffleArray(shapesPool).slice(0, 3);
+    const shapeA = selected3[0];
+    const shapeB = selected3[1];
+    const shapeC = selected3[2];
+
+    const boxes: QuadrantBox[] = [
+      { shapeType: shapeA }, { shapeType: shapeA }, { shapeType: shapeA },
+      { shapeType: shapeB }, { shapeType: shapeB }, { shapeType: shapeB },
+      { shapeType: shapeC }, { shapeType: shapeC }, { isQuestion: true },
+    ];
+
+    const correctBox: QuadrantBox = { shapeType: shapeC };
+    const candidateDistractors: QuadrantBox[] = [
+      { shapeType: shapeA },
+      { shapeType: shapeB },
+      { shapeType: shapesPool.find((s) => s !== shapeA && s !== shapeB && s !== shapeC) || 'circle_outline' },
+    ];
+
+    const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
+    const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+    return {
+      id: `vis_g1_row_${Date.now()}_${Math.random()}`,
+      category: 'visual',
+      categoryLabel: 'Pola Perulangan Baris Gambar (Level 1 - SD 1)',
+      difficultyLevel: 1,
+      question: `Detektif cilik, perhatikan gambar di setiap baris! Gambar apakah yang melengkapi baris ke-3?`,
+      options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* Setiap baris berisi 3 gambar yang sama persis! Baris ke-3 berisi bentuk ${shapeC?.replace('_', ' ').toUpperCase()}.`,
+      visualMatrixData: {
+        type: 'shapes_row',
+        gridCols: 3,
+        boxes,
+        optionBoxes,
+      },
+    };
+  } else if (variant === 'latin_square') {
+    // Latin Square 3-Shape Permutation across rows
+    // Row 1: A, B, C
+    // Row 2: B, C, A
+    // Row 3: C, A, ? (Answer: B)
+    const shapesPool: QuadrantBox['shapeType'][] = ['square_filled', 'circle_filled', 'triangle_filled', 'star', 'diamond'];
+    const selected3 = shuffleArray(shapesPool).slice(0, 3);
+    const [shapeA, shapeB, shapeC] = selected3;
+
+    const boxes: QuadrantBox[] = [
+      { shapeType: shapeA }, { shapeType: shapeB }, { shapeType: shapeC },
+      { shapeType: shapeB }, { shapeType: shapeC }, { shapeType: shapeA },
+      { shapeType: shapeC }, { shapeType: shapeA }, { isQuestion: true },
+    ];
+
+    const correctBox: QuadrantBox = { shapeType: shapeB };
+    const candidateDistractors: QuadrantBox[] = [
+      { shapeType: shapeA },
+      { shapeType: shapeC },
+      { shapeType: shapesPool.find((s) => !selected3.includes(s)) || 'square_outline' },
+    ];
+
+    const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
+    const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+    return {
+      id: `vis_g1_latin_${Date.now()}_${Math.random()}`,
+      category: 'visual',
+      categoryLabel: 'Pola Kelompok 3 Bentuk (Level 1 - SD 1)',
+      difficultyLevel: 1,
+      question: `Setiap baris memiliki 3 bentuk gambar. Gambar manakah yang kurang pada baris ke-3?`,
+      options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* Setiap baris harus memiliki ${shapeA?.replace('_',' ')}, ${shapeB?.replace('_',' ')}, dan ${shapeC?.replace('_',' ')}. Pada baris ke-3 yang belum ada adalah ${shapeB?.replace('_',' ')}.`,
+      visualMatrixData: {
+        type: 'shapes_row',
+        gridCols: 3,
+        boxes,
+        optionBoxes,
+      },
+    };
+  } else if (variant === 'simple_ray') {
+    // 90° Clockwise Ray (0° Up, 90° Right, 180° Down, 270° Left)
+    const angles = [0, 90, 180, 270];
+    const startIdx = randomInt(0, 3);
+
+    const boxes: QuadrantBox[] = [];
+    for (let i = 0; i < 8; i++) {
+      boxes.push({ angles: [angles[(startIdx + i) % 4]] });
+    }
+    boxes.push({ angles: [], isQuestion: true });
+
+    const correctAngle = angles[(startIdx + 8) % 4];
+    const correctBox: QuadrantBox = { angles: [correctAngle] };
+    const candidateDistractors: QuadrantBox[] = [
+      { angles: [(correctAngle + 90) % 360] },
+      { angles: [(correctAngle + 180) % 360] },
+      { angles: [(correctAngle + 270) % 360] },
+    ];
+
+    const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
+    const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+    return {
+      id: `vis_g1_ray_${Date.now()}_${Math.random()}`,
+      category: 'visual',
+      categoryLabel: 'Rotasi Garis Sinar 90° (Level 1 - SD 1)',
+      difficultyLevel: 1,
+      question: `Perhatikan garis jarum berputar 90° searah jarum jam. Ke manakah arah jarum pada kotak ke-9?`,
+      options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* Jarum berputar 90° searah jarum jam (Atas ➔ Kanan ➔ Bawah ➔ Kiri).`,
+      visualMatrixData: {
+        type: 'clock_hands',
+        gridCols: 3,
+        boxes,
+        optionBoxes,
+      },
+    };
+  } else {
+    // Simple 1-quadrant clockwise rotation
+    const quadOrder: (keyof QuadrantBox)[] = ['tl', 'tr', 'br', 'bl'];
+    const startIdx = randomInt(0, 3);
+
+    const boxes: QuadrantBox[] = [];
+    for (let i = 0; i < 8; i++) {
+      const activeQuad = quadOrder[(startIdx + i) % 4];
+      boxes.push({
+        tl: activeQuad === 'tl',
+        tr: activeQuad === 'tr',
+        br: activeQuad === 'br',
+        bl: activeQuad === 'bl',
+      });
+    }
+    boxes.push({ tl: false, tr: false, bl: false, br: false, isQuestion: true });
+
+    const correctQuad = quadOrder[(startIdx + 8) % 4];
+    const correctBox: QuadrantBox = {
+      tl: correctQuad === 'tl',
+      tr: correctQuad === 'tr',
+      br: correctQuad === 'br',
+      bl: correctQuad === 'bl',
+    };
+
+    const candidateDistractors: QuadrantBox[] = [
+      { tl: correctQuad !== 'tl', tr: correctQuad === 'tl', bl: false, br: false },
+      { tl: false, tr: false, bl: correctQuad !== 'bl', br: true },
+      { tl: true, tr: true, bl: false, br: false },
+    ];
+
+    const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
+    const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+    return {
+      id: `vis_g1_quad_${Date.now()}_${Math.random()}`,
+      category: 'visual',
+      categoryLabel: 'Rotasi Kotak Hitam (Level 1 - SD 1)',
+      difficultyLevel: 1,
+      question: `Perhatikan pergerakan kotak hitam yang berputar searah jarum jam!`,
+      options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* Kotak hitam berpindah posisi searah jarum jam pada setiap langkah.`,
+      visualMatrixData: {
+        type: 'quadrant_matrix',
+        gridCols: 3,
+        boxes,
+        optionBoxes,
+      },
+    };
+  }
+}
+
 // 3.1. Mode: Clock Hands & Line Rays (Problem 5 TPA Reference)
 function generateClockHandsQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
   const angleSteps = [0, 45, 90, 135, 180, 225, 270, 315];
@@ -360,13 +590,14 @@ function generateClockHandsQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion 
   const correctAngle = (startAngle + 8 * stepIncrement) % 360;
   const correctBox: QuadrantBox = { angles: [correctAngle] };
 
-  const distractors: QuadrantBox[] = [
+  const candidateDistractors: QuadrantBox[] = [
     { angles: [(correctAngle + 45) % 360] },
     { angles: [(correctAngle + 90) % 360] },
     { angles: [(correctAngle + 180) % 360] },
+    { angles: [(correctAngle + 270) % 360] },
   ];
 
-  const optionBoxes = shuffleArray([correctBox, ...distractors]);
+  const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
   const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
 
   return {
@@ -418,7 +649,7 @@ function generateCapsuleQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
     ],
   };
 
-  const distractors: QuadrantBox[] = [
+  const candidateDistractors: QuadrantBox[] = [
     {
       capsuleTopDot: !(8 % 2 === 0),
       capsuleBottomDot: 8 % 2 === 0,
@@ -436,7 +667,7 @@ function generateCapsuleQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
     },
   ];
 
-  const optionBoxes = shuffleArray([correctBox, ...distractors]);
+  const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
   const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
 
   return {
@@ -457,7 +688,7 @@ function generateCapsuleQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
   };
 }
 
-// 3.3. Mode: Domino Dots Grouping (Problem TPA Reference 2)
+// 3.3. Mode: Domino Dots Grouping
 function generateDominoQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
   const step = pickRandom([1, 2]);
   const startDots = randomInt(1, 2);
@@ -472,13 +703,13 @@ function generateDominoQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
   const correctDots = ((startDots + 8 * step - 1) % 6) + 1;
   const correctBox: QuadrantBox = { dotCount: correctDots };
 
-  const distractors: QuadrantBox[] = [
+  const candidateDistractors: QuadrantBox[] = [
     { dotCount: (correctDots % 6) + 1 },
     { dotCount: ((correctDots + 1) % 6) + 1 },
     { dotCount: Math.max(1, correctDots - 1) },
   ];
 
-  const optionBoxes = shuffleArray([correctBox, ...distractors]);
+  const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
   const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
 
   return {
@@ -499,46 +730,50 @@ function generateDominoQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
   };
 }
 
-// 3.4. Mode: Geometric Shapes Sequence (Problem TPA Reference 2)
+// 3.4. Mode: Geometric Shapes Sequence
 function generateShapesRowQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+  if (difficulty === 1) {
+    return generateGrade1VisualQuestion();
+  }
+
+  // Upper Grades (Level 2+): Latin Square Permutation Pattern
   const shapes: QuadrantBox['shapeType'][] = [
     'circle_filled',
     'triangle_filled',
     'square_filled',
     'star',
     'diamond',
-    'circle_outline',
-    'square_outline',
   ];
-  const startIdx = randomInt(0, shapes.length - 1);
+  const selected3 = shuffleArray(shapes).slice(0, 3);
+  const [sA, sB, sC] = selected3;
 
-  const boxes: QuadrantBox[] = [];
-  for (let i = 0; i < 8; i++) {
-    boxes.push({ shapeType: shapes[(startIdx + i) % shapes.length] });
-  }
-  boxes.push({ isQuestion: true });
+  const boxes: QuadrantBox[] = [
+    { shapeType: sA }, { shapeType: sB }, { shapeType: sC },
+    { shapeType: sB }, { shapeType: sC }, { shapeType: sA },
+    { shapeType: sC }, { shapeType: sA }, { isQuestion: true },
+  ];
 
-  const correctShape = shapes[(startIdx + 8) % shapes.length];
+  const correctShape = sB;
   const correctBox: QuadrantBox = { shapeType: correctShape };
 
-  const distractors: QuadrantBox[] = [
-    { shapeType: shapes[(startIdx + 1) % shapes.length] },
-    { shapeType: shapes[(startIdx + 3) % shapes.length] },
-    { shapeType: shapes[(startIdx + 5) % shapes.length] },
+  const candidateDistractors: QuadrantBox[] = [
+    { shapeType: sA },
+    { shapeType: sC },
+    { shapeType: shapes.find((s) => !selected3.includes(s)) || 'square_outline' },
   ];
 
-  const optionBoxes = shuffleArray([correctBox, ...distractors]);
+  const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
   const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
 
   return {
     id: `vis_shape_${Date.now()}_${Math.random()}`,
     category: 'visual',
-    categoryLabel: `Deret Bentuk Geometri (Level ${difficulty})`,
+    categoryLabel: `Deret Pola Bentuk Geometri (Level ${difficulty})`,
     difficultyLevel: difficulty,
-    question: `Analisis perubahan urutan bentuk geometri (Lingkaran, Segitiga, Kotak, Bintang, Belah Ketupat):`,
+    question: `Analisis permutasi 3 bentuk geometri (Lingkaran, Segitiga, Kotak, Bintang, Belah Ketupat) pada matriks:`,
     options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
     correctIndex,
-    hint: `🔬 *Analisis Guru Lab:* Bentuk geometri berganti secara berurutan. Kotak ke-9 membentuk gambar ${correctShape?.replace('_', ' ').toUpperCase()}.`,
+    hint: `🔬 *Analisis Guru Lab:* Setiap baris memiliki 3 bentuk yang sama. Kotak ke-9 diisi oleh ${correctShape?.replace('_', ' ').toUpperCase()}.`,
     visualMatrixData: {
       type: 'shapes_row',
       gridCols: 3,
@@ -557,42 +792,15 @@ function buildVisualMatrixQuestion(
   correctBox: QuadrantBox,
   difficulty: 1 | 2 | 3 | 4
 ): PatternQuestion {
-  const distractors: QuadrantBox[] = [];
-
-  let attempts = 0;
-  while (distractors.length < 3 && attempts < 50) {
-    attempts++;
-    const wrongBox: QuadrantBox = {
-      tl: Math.random() > 0.5,
-      tr: Math.random() > 0.5,
-      bl: Math.random() > 0.5,
-      br: Math.random() > 0.5,
-    };
-
-    const isSameAsCorrect = areBoxesEqual(wrongBox, correctBox);
-    const isAlreadyDistractor = distractors.some((d) => areBoxesEqual(d, wrongBox));
-
-    if (!isSameAsCorrect && !isAlreadyDistractor) {
-      distractors.push(wrongBox);
-    }
-  }
-
-  const fallbackOptions: QuadrantBox[] = [
+  const candidateDistractors: QuadrantBox[] = [
     createVisualBox(!correctBox.tl, !!correctBox.tr, !!correctBox.bl, !!correctBox.br),
     createVisualBox(!!correctBox.tl, !correctBox.tr, !!correctBox.bl, !!correctBox.br),
     createVisualBox(!!correctBox.tl, !!correctBox.tr, !correctBox.bl, !!correctBox.br),
     createVisualBox(!correctBox.tl, !correctBox.tr, !correctBox.bl, !correctBox.br),
   ];
 
-  for (const f of fallbackOptions) {
-    if (distractors.length >= 3) break;
-    if (!areBoxesEqual(f, correctBox) && !distractors.some((d) => areBoxesEqual(d, f))) {
-      distractors.push(f);
-    }
-  }
-
-  const allOptionBoxes = shuffleArray([correctBox, ...distractors.slice(0, 3)]);
-  const correctIdx = allOptionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+  const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
+  const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
 
   return {
     id: `vis_mat_${Date.now()}_${Math.random()}`,
@@ -601,18 +809,22 @@ function buildVisualMatrixQuestion(
     difficultyLevel: difficulty,
     question: questionText,
     options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
-    correctIndex: correctIdx,
+    correctIndex,
     hint: hintText,
     visualMatrixData: {
       type: 'quadrant_matrix',
       gridCols: 3,
       boxes,
-      optionBoxes: allOptionBoxes,
+      optionBoxes,
     },
   };
 }
 
 function generateVisualMatrixQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+  if (difficulty === 1) {
+    return generateGrade1VisualQuestion();
+  }
+
   const mode = pickRandom(['clock_hands', 'capsule_symbols', 'domino_dots', 'shapes_row', 'quadrant_grid']);
 
   if (mode === 'clock_hands') return generateClockHandsQuestion(difficulty);
@@ -770,7 +982,7 @@ function generateVisualMatrixQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestio
   }
 }
 
-// ─── 4. Sains & Lab Experiments (Ultra-Randomized) ─────────────────────────
+// ─── 4. Sains & Lab Experiments ─────────────────────────────────────────────
 
 function generateLabScience(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
   if (difficulty <= 2) {
@@ -781,9 +993,11 @@ function generateLabScience(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
       const seq = [`${startTemp}°C`, `${startTemp + step}°C`, `${startTemp + step * 2}°C`];
       const answer = `${startTemp + step * 3}°C`;
 
-      const distractors = [`${startTemp + step * 4}°C`, `${startTemp + step * 2 + 1}°C`, `${startTemp + step * 3 + 3}°C`].filter((d) => d !== answer);
-      const allOpts = shuffleArray([answer, ...distractors.slice(0, 3)]);
-      const correctIdx = allOpts.indexOf(answer);
+      const { options, correctIndex } = buildUniqueTextOptions(
+        startTemp + step * 3,
+        [startTemp + step * 4, startTemp + step * 2 + 1, startTemp + step * 3 + 3]
+      );
+      const allOpts = options.map((o) => (o.endsWith('°C') ? o : `${o}°C`));
 
       return {
         id: `lab_l1_temp_${Date.now()}_${Math.random()}`,
@@ -792,7 +1006,7 @@ function generateLabScience(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
         difficultyLevel: difficulty,
         question: `Suhu pemanasan larutan di lab naik teratur +${step}°C setiap menit:\n${seq.join(' ➔ ')} ➔ ?`,
         options: allOpts,
-        correctIndex: correctIdx,
+        correctIndex,
         hint: `🔬 *Analisis Guru Lab:* Tambahkan +${step}°C ke suhu terakhir: ${seq[seq.length - 1]} + ${step}°C = ${answer}.`,
       };
     } else {
@@ -801,9 +1015,11 @@ function generateLabScience(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
       const seq = [`${startVol} ml`, `${startVol + step} ml`, `${startVol + step * 2} ml`];
       const answer = `${startVol + step * 3} ml`;
 
-      const distractors = [`${startVol + step * 4} ml`, `${startVol + step * 2 + 5} ml`, `${startVol + step * 3 + 10} ml`].filter((d) => d !== answer);
-      const allOpts = shuffleArray([answer, ...distractors.slice(0, 3)]);
-      const correctIdx = allOpts.indexOf(answer);
+      const { options, correctIndex } = buildUniqueTextOptions(
+        startVol + step * 3,
+        [startVol + step * 4, startVol + step * 2 + 5, startVol + step * 3 + 10]
+      );
+      const allOpts = options.map((o) => (o.endsWith('ml') ? o : `${o} ml`));
 
       return {
         id: `lab_l1_vol_${Date.now()}_${Math.random()}`,
@@ -812,7 +1028,7 @@ function generateLabScience(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
         difficultyLevel: difficulty,
         question: `Volume penambahan cairan sampel lab bertambah +${step} ml setiap tahap:\n${seq.join(' ➔ ')} ➔ ?`,
         options: allOpts,
-        correctIndex: correctIdx,
+        correctIndex,
         hint: `🔬 *Analisis Guru Lab:* Tambahkan +${step} ml ke volume terakhir: ${seq[seq.length - 1]} + ${step} ml = ${answer}.`,
       };
     }
@@ -823,9 +1039,11 @@ function generateLabScience(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
       const seq = [`${startMass} g`, `${startMass / 2} g`, `${startMass / 4} g`];
       const answer = `${startMass / 8} g`;
 
-      const distractors = [`${startMass / 6} g`, `${startMass / 10} g`, `${startMass / 16} g`].filter((d) => d !== answer);
-      const allOpts = shuffleArray([answer, ...distractors.slice(0, 3)]);
-      const correctIdx = allOpts.indexOf(answer);
+      const { options, correctIndex } = buildUniqueTextOptions(
+        startMass / 8,
+        [startMass / 6, startMass / 10, startMass / 16]
+      );
+      const allOpts = options.map((o) => (o.endsWith('g') ? o : `${o} g`));
 
       return {
         id: `lab_l4_halflife_${Date.now()}_${Math.random()}`,
@@ -834,7 +1052,7 @@ function generateLabScience(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
         difficultyLevel: difficulty,
         question: `Eksperimen Kimia — Peluruhan massa zat menyusut setengahnya (÷2) setiap periode:\n${seq.join(' ➔ ')} ➔ ?`,
         options: allOpts,
-        correctIndex: correctIdx,
+        correctIndex,
         hint: `🔬 *Analisis Guru Lab:* Massa zat berkurang setengahnya (dibagi 2). Maka ${seq[seq.length - 1]} ÷ 2 = ${answer}.`,
       };
     } else {
@@ -843,9 +1061,11 @@ function generateLabScience(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
       const seq = [`${startCells} Sel`, `${startCells * mult} Sel`, `${startCells * mult * mult} Sel`, `${startCells * mult * mult * mult} Sel`];
       const answer = `${startCells * mult * mult * mult * mult} Sel`;
 
-      const distractors = [`${startCells * mult * 3} Sel`, `${startCells * mult * mult * 2} Sel`, `${startCells * mult * mult * mult * 2} Sel`].filter((d) => d !== answer);
-      const allOpts = shuffleArray([answer, ...distractors.slice(0, 3)]);
-      const correctIdx = allOpts.indexOf(answer);
+      const { options, correctIndex } = buildUniqueTextOptions(
+        startCells * mult ** 4,
+        [startCells * mult * 3, startCells * mult ** 2 * 2, startCells * mult ** 3 * 2]
+      );
+      const allOpts = options.map((o) => (o.endsWith('Sel') ? o : `${o} Sel`));
 
       return {
         id: `lab_l4_bacteria_${Date.now()}_${Math.random()}`,
@@ -854,14 +1074,14 @@ function generateLabScience(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
         difficultyLevel: difficulty,
         question: `Eksperimen Biologi — Bakteri membelah diri ×${mult} kali lipat setiap jam:\n${seq.join(' ➔ ')} ➔ ?`,
         options: allOpts,
-        correctIndex: correctIdx,
+        correctIndex,
         hint: `🔬 *Analisis Guru Lab:* Setiap tahap dikali ${mult} (×${mult}). Maka ${seq[seq.length - 1]} × ${mult} = ${answer}.`,
       };
     }
   }
 }
 
-// ─── MASTER PROGRESSIVE ENDLESS QUESTION DISPATCHER (GRADE TAILORED & UNIFIED) ─
+// ─── MASTER PROGRESSIVE ENDLESS QUESTION DISPATCHER ─────────────────────────
 
 function dispatchPatternQuestion(
   questionNumber: number,
