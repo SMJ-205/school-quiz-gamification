@@ -20,6 +20,7 @@ interface PlaceOption {
   tag: string;
   badgeColor: string;
   isBoss?: boolean;
+  isInfinite?: boolean;
 }
 
 const PLACE_OPTIONS: PlaceOption[] = [
@@ -42,6 +43,16 @@ const PLACE_OPTIONS: PlaceOption[] = [
     badgeColor: 'bg-indigo-950 text-indigo-200 border-indigo-500',
   },
   {
+    id: 'lab_ipa',
+    title: 'Laboratorium IPA',
+    subtitle: '♾️ Detektif Pola (Infinite)',
+    desc: 'Asah logika induktif & spasialmu memprediksi pola aritmatika, geometris, dan rotasi visual 2D otomatis tanpa batas bersama Guru Lab!',
+    url: '/backgrounds/lab_ipa.jpg',
+    tag: 'GURU LAB 🔬',
+    badgeColor: 'bg-emerald-950 text-emerald-200 border-emerald-500',
+    isInfinite: true,
+  },
+  {
     id: 'classroom',
     title: 'Ruang Kelas Unggulan',
     subtitle: '⚡ Boss Battle — Hitung Cepat',
@@ -62,25 +73,10 @@ export default function BackgroundSelectScreen() {
     setScreen,
   } = useGameStore();
 
-  function handleSelectPlace(opt: PlaceOption) {
-    unlockAudioEngine();
-    sfxGearEquip();
-    if (!opt.isBoss) {
-      setSelectedBackground(opt.url);
-    }
-  }
-
-  const selectedOpt = PLACE_OPTIONS.find(
-    (o) => o.isBoss ? false : selectedBackground === o.url
-  );
-  const isBossSelected = PLACE_OPTIONS.find((o) => o.isBoss)?.url === undefined
-    ? false
-    : false; // track boss selection separately
-
-  // Track which option is "active" — boss has its own selection state
   const [activePlaceId, setActivePlaceId] = React.useState<string>(
     selectedBackground === '/backgrounds/library_sunlit.jpg' ? 'sunlit'
     : selectedBackground === '/backgrounds/library_bg.jpg' ? 'midnight'
+    : selectedBackground === '/backgrounds/lab_ipa.jpg' ? 'lab_ipa'
     : 'sunlit'
   );
 
@@ -98,6 +94,8 @@ export default function BackgroundSelectScreen() {
     sfxPageTurn();
     if (activePlaceId === 'classroom') {
       setScreen('boss_battle');
+    } else if (activePlaceId === 'lab_ipa') {
+      setScreen('lab_infinite');
     } else {
       setScreen('quiz_library');
     }
@@ -120,7 +118,9 @@ export default function BackgroundSelectScreen() {
       />
       <div className={`absolute inset-0 pointer-events-none transition-all duration-700 ${
         activePlaceId === 'classroom'
-          ? 'bg-red-950/80'
+          ? 'bg-red-950/85'
+          : activePlaceId === 'lab_ipa'
+          ? 'bg-cyan-950/85'
           : 'bg-black/75'
       }`} />
       <div className="crt-scanlines-overlay" />
@@ -138,12 +138,12 @@ export default function BackgroundSelectScreen() {
             TEMPAT BELAJAR
           </h1>
           <p className="font-dialogue text-lg sm:text-2xl text-stone-200 max-w-xl mx-auto mt-1 leading-snug">
-            Tentukan tempat belajarmu — perpustakaan tenang atau tantang lawan di kelas!
+            Tentukan tempat belajarmu — perpustakaan tenang, lab sains, atau tantang lawan di kelas!
           </p>
         </div>
 
-        {/* 3 Cards Grid: 2 col on sm+, stacked on mobile */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 w-full mb-6 sm:mb-8 text-left">
+        {/* 4 Cards Grid: 2 col on sm, 4 col on lg+, stacked on mobile */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 w-full mb-6 sm:mb-8 text-left">
           {PLACE_OPTIONS.map((opt) => {
             const isSelected = activePlaceId === opt.id;
 
@@ -155,9 +155,13 @@ export default function BackgroundSelectScreen() {
                   isSelected
                     ? opt.isBoss
                       ? 'border-red-500 shadow-[0_0_32px_rgba(220,38,38,0.55)] scale-[1.02] bg-[#1A0808]'
+                      : opt.isInfinite
+                      ? 'border-cyan-400 shadow-[0_0_32px_rgba(6,182,212,0.65)] scale-[1.02] bg-[#061826]'
                       : 'border-amber-400 shadow-[0_0_28px_rgba(255,179,0,0.45)] scale-[1.02] bg-[#1F130B]'
                     : opt.isBoss
                     ? 'border-red-900/70 bg-stone-950/70 hover:border-red-500/60 opacity-80 hover:opacity-100'
+                    : opt.isInfinite
+                    ? 'border-cyan-900/70 bg-stone-950/70 hover:border-cyan-400/60 opacity-80 hover:opacity-100'
                     : 'border-stone-700 bg-stone-950/70 hover:border-amber-500/60 opacity-80 hover:opacity-100'
                 }`}
               >
@@ -175,10 +179,17 @@ export default function BackgroundSelectScreen() {
                     <div className="absolute inset-0 bg-red-900/20 pointer-events-none" />
                   )}
 
+                  {/* Lab science blue overlay effect */}
+                  {opt.isInfinite && (
+                    <div className="absolute inset-0 bg-cyan-950/30 pointer-events-none" />
+                  )}
+
                   {/* Top Badges */}
                   <div className={`absolute top-3 right-3 text-xs sm:text-sm font-bold px-2.5 py-1 rounded shadow border ${
                     opt.isBoss
                       ? 'bg-red-900/90 border-red-500/60 text-red-300'
+                      : opt.isInfinite
+                      ? 'bg-cyan-950/90 border-cyan-400/60 text-cyan-300'
                       : 'bg-black/80 border-amber-500/50 text-amber-300'
                   }`}>
                     {opt.tag}
@@ -188,6 +199,8 @@ export default function BackgroundSelectScreen() {
                     <div className={`absolute top-3 left-3 text-xs sm:text-sm font-black px-2.5 py-1 rounded shadow flex items-center gap-1 animate-pulse ${
                       opt.isBoss
                         ? 'bg-red-500 text-white'
+                        : opt.isInfinite
+                        ? 'bg-cyan-400 text-stone-950'
                         : 'bg-amber-400 text-stone-950'
                     }`}>
                       <span>✓</span>
@@ -198,12 +211,12 @@ export default function BackgroundSelectScreen() {
                   {/* Image Overlay Title */}
                   <div className="absolute bottom-2.5 left-3 right-3">
                     <h3 className={`text-lg sm:text-xl md:text-2xl font-bold leading-tight ${
-                      opt.isBoss ? 'text-red-200' : 'text-amber-200'
+                      opt.isBoss ? 'text-red-200' : opt.isInfinite ? 'text-cyan-200' : 'text-amber-200'
                     }`}>
                       {opt.title}
                     </h3>
                     <span className={`text-xs sm:text-sm font-bold tracking-wide ${
-                      opt.isBoss ? 'text-red-300' : 'text-amber-300'
+                      opt.isBoss ? 'text-red-300' : opt.isInfinite ? 'text-cyan-300' : 'text-amber-300'
                     }`}>
                       {opt.subtitle}
                     </span>
@@ -218,6 +231,11 @@ export default function BackgroundSelectScreen() {
                   {opt.isBoss && (
                     <div className="mt-3 text-xs sm:text-sm text-red-300 font-dialogue border border-red-900/80 rounded-lg px-2.5 py-1.5 bg-red-950/70 font-bold">
                       ⚡ Mode Khusus — Soal otomatis • Dynamic Math Battle • Unlimited Math
+                    </div>
+                  )}
+                  {opt.isInfinite && (
+                    <div className="mt-3 text-xs sm:text-sm text-cyan-300 font-dialogue border border-cyan-900/80 rounded-lg px-2.5 py-1.5 bg-cyan-950/70 font-bold">
+                      ♾️ Mode Infinite — Deret Gambar 3x3 • Gradasi Kesulitan • SD Kelas 1-6
                     </div>
                   )}
                 </div>
@@ -246,6 +264,8 @@ export default function BackgroundSelectScreen() {
             className={`w-full sm:w-auto px-7 py-3 text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl cursor-pointer btn-pixel ${
               activePlaceId === 'classroom'
                 ? '!bg-red-800 hover:!bg-red-700 !border-red-500 text-white'
+                : activePlaceId === 'lab_ipa'
+                ? '!bg-cyan-700 hover:!bg-cyan-600 !border-cyan-400 text-white shadow-[0_0_24px_rgba(6,182,212,0.5)]'
                 : 'btn-pixel-gold'
             }`}
           >
@@ -253,6 +273,12 @@ export default function BackgroundSelectScreen() {
               <>
                 <span>⚔️</span>
                 <span>TANTANG BOSS</span>
+                <span>▶</span>
+              </>
+            ) : activePlaceId === 'lab_ipa' ? (
+              <>
+                <span>🔬</span>
+                <span>MASUKI LAB (INFINITE)</span>
                 <span>▶</span>
               </>
             ) : (

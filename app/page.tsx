@@ -7,6 +7,7 @@ import CharacterCustomizer from '@/components/CharacterCustomizer';
 import BackgroundSelectScreen from '@/components/BackgroundSelectScreen';
 import EnchantedLibrary from '@/components/quiz/EnchantedLibrary';
 import BossBattleArena from '@/components/quiz/BossBattleArena';
+import LabInfiniteArena from '@/components/quiz/LabInfiniteArena';
 import AntigravityCanvas from '@/components/AntigravityCanvas';
 import CertificateCanvas from '@/components/CertificateCanvas';
 import { startQuizBGM, stopQuizBGM } from '@/lib/audioEngine';
@@ -16,7 +17,7 @@ export default function Home() {
 
   // Single global BGM controller for screen switching (prevents track overlap)
   useEffect(() => {
-    if (currentScreen === 'quiz_library') {
+    if (currentScreen === 'quiz_library' || currentScreen === 'lab_infinite') {
       startQuizBGM('momo_island');
     } else if (currentScreen === 'boss_battle') {
       startQuizBGM('fast_boss_beat');
@@ -31,6 +32,7 @@ export default function Home() {
     case 'background_select':  return <BackgroundSelectScreen />;
     case 'quiz_library':       return <EnchantedLibrary />;
     case 'boss_battle':        return <BossBattleArena />;
+    case 'lab_infinite':       return <LabInfiniteArena />;
     case 'antigravity':        return <AntigravityCanvas />;
     case 'certificate':        return <CertificateCanvas />;
     default:                   return <IngestionScreen />;

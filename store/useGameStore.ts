@@ -29,6 +29,7 @@ export type GameScreen =
   | 'background_select'
   | 'quiz_library'
   | 'boss_battle'
+  | 'lab_infinite'
   | 'antigravity'
   | 'certificate';
 
