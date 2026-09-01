@@ -522,21 +522,21 @@ export default function LabInfiniteArena() {
 
       {/* ── Grade Selection Modal (Konfirmasi Tingkat Kelas SD) ────────────────────────── */}
       {showGradeModal && (
-        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 select-none animate-fadeIn">
-          <div className="relative w-full max-w-xl crt-arcade-frame bg-[#081320] border-4 border-cyan-400 rounded-2xl p-5 sm:p-7 shadow-[0_0_40px_rgba(6,182,212,0.5)] text-stone-100 font-pixel text-center flex flex-col items-center">
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 md:p-8 select-none animate-fadeIn overflow-y-auto">
+          <div className="relative w-full max-w-3xl sm:max-w-4xl lg:max-w-5xl crt-arcade-frame bg-[#081320] border-4 border-cyan-400 rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_0_50px_rgba(6,182,212,0.55)] text-stone-100 font-pixel text-center flex flex-col items-center my-auto">
             
             {/* Header Badge */}
-            <div className="inline-flex items-center gap-1.5 bg-cyan-950 border-2 border-cyan-400 text-cyan-300 font-bold text-xs sm:text-sm px-3.5 py-1 rounded-full mb-3 shadow uppercase tracking-widest">
+            <div className="inline-flex items-center gap-2 bg-cyan-950/90 border-2 border-cyan-400 text-cyan-300 font-bold text-xs sm:text-sm md:text-base px-4 py-1.5 rounded-full mb-5 shadow-[0_0_15px_rgba(6,182,212,0.4)] uppercase tracking-widest">
               <span>🔬</span>
               <span>KONFIRMASI TINGKAT KELAS SD</span>
             </div>
 
             {/* Guru Lab Character & Intro Dialogue */}
-            <div className="flex items-center gap-3 bg-cyan-950/70 border border-cyan-500/50 rounded-xl p-3 mb-5 text-left w-full">
-              <div className="flex-1 font-dialogue text-sm sm:text-base text-cyan-200 leading-snug">
+            <div className="flex items-center gap-4 sm:gap-6 bg-cyan-950/80 border-2 border-cyan-500/60 rounded-2xl p-4 sm:p-5 mb-6 sm:mb-8 text-left w-full shadow-lg">
+              <div className="flex-1 font-dialogue text-base sm:text-lg md:text-xl text-cyan-100 leading-snug">
                 <span className="text-cyan-300 font-bold">Guru Lab:</span> “Selamat datang di Laboratorium IPA! Sebelum kita mulai bereksperimen, kamu sedang menempuh pendidikan di Kelas berapa?”
               </div>
-              <div className="shrink-0 relative w-14 h-20 flex items-end justify-center">
+              <div className="shrink-0 relative w-16 h-24 sm:w-20 sm:h-28 flex items-end justify-center">
                 <img
                   src="/sprites/teacher_lab_idle.png"
                   alt="Guru Lab"
@@ -556,7 +556,7 @@ export default function LabInfiniteArena() {
             </div>
 
             {/* 6 Grade Buttons Grid (Kelas 1 - 6 SD) */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 w-full mb-6 text-left font-dialogue">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 md:gap-5 w-full mb-8 text-left font-dialogue">
               {[
                 { grade: 1, title: 'Kelas 1 SD', desc: 'Pola Penjumlahan (+1..+5) • Rotasi 2D' },
                 { grade: 2, title: 'Kelas 2 SD', desc: 'Pola Loncat (+2,+5,+10) • Deret Gambar' },
@@ -568,27 +568,28 @@ export default function LabInfiniteArena() {
                 <button
                   key={g.grade}
                   onClick={() => handleConfirmGrade(g.grade)}
-                  className="btn-pixel !bg-slate-900 hover:!bg-cyan-900 !border-cyan-500/80 hover:!border-cyan-300 text-slate-100 p-3 rounded-xl flex flex-col justify-between transition-all hover:scale-[1.03] cursor-pointer group shadow-md"
+                  className="btn-pixel !bg-slate-900/90 hover:!bg-cyan-950 !border-cyan-500/80 hover:!border-cyan-300 text-slate-100 p-4 sm:p-5 rounded-2xl flex flex-col justify-between transition-all hover:scale-[1.03] hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] cursor-pointer group shadow-lg min-h-[90px] sm:min-h-[105px]"
                 >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="font-bold text-cyan-300 group-hover:text-cyan-100 text-sm sm:text-base">
+                  <div className="flex items-center justify-between w-full mb-1.5">
+                    <span className="font-bold text-cyan-300 group-hover:text-cyan-100 text-base sm:text-lg md:text-xl">
                       {g.title}
                     </span>
-                    <span className="text-xs text-cyan-400">▶</span>
+                    <span className="text-sm text-cyan-400 group-hover:translate-x-1 transition-transform">▶</span>
                   </div>
-                  <span className="text-[10px] sm:text-xs text-slate-400 group-hover:text-cyan-200 leading-tight">
+                  <span className="text-xs sm:text-sm text-slate-300 group-hover:text-cyan-200 leading-snug">
                     {g.desc}
                   </span>
                 </button>
               ))}
             </div>
 
-            {/* Cancel / Exit Action */}
+            {/* Cancel / Exit Action Button */}
             <button
               onClick={() => setScreen('background_select')}
-              className="text-slate-400 hover:text-slate-200 text-xs font-dialogue cursor-pointer py-1"
+              className="btn-pixel !bg-slate-800 hover:!bg-slate-700 !border-slate-500 hover:!border-cyan-400 text-slate-200 hover:text-white px-6 sm:px-8 py-3 text-xs sm:text-sm md:text-base font-bold flex items-center justify-center gap-2.5 cursor-pointer transition-all hover:scale-105 shadow-xl font-dialogue uppercase tracking-wider rounded-xl"
             >
-              ◀ Kembali ke Tempat Belajar
+              <span>◀</span>
+              <span>KEMBALI KE TEMPAT BELAJAR</span>
             </button>
           </div>
         </div>
