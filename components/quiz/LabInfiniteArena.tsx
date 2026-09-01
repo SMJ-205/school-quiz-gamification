@@ -95,6 +95,9 @@ export default function LabInfiniteArena() {
   const [revealed, setRevealed] = useState<boolean>(false);
   const [showOwl, setShowOwl] = useState<boolean>(false);
 
+  // Session Fingerprint History Tracking (Zero Duplicate Guarantee)
+  const usedQuestionKeysRef = useRef<Set<string>>(new Set());
+
   // Modals
   const [showReportModal, setShowReportModal] = useState<boolean>(false);
   const [showExitModal, setShowExitModal] = useState<boolean>(false);
@@ -102,10 +105,11 @@ export default function LabInfiniteArena() {
   // Confirm Grade Selection and start tailored session
   function handleConfirmGrade(grade: number) {
     sfxPageTurn();
+    usedQuestionKeysRef.current.clear();
     setSelectedGrade(grade);
     setShowGradeModal(false);
     setQuestionCount(1);
-    const firstQ = generateNextPatternQuestion(1, undefined, grade);
+    const firstQ = generateNextPatternQuestion(1, undefined, grade, usedQuestionKeysRef.current);
     setCurrentQuestion(firstQ);
   }
 
@@ -219,7 +223,8 @@ export default function LabInfiniteArena() {
     const nextQ = generateNextPatternQuestion(
       nextCount,
       currentQuestion?.category,
-      selectedGrade ?? 1
+      selectedGrade ?? 1,
+      usedQuestionKeysRef.current
     );
     setCurrentQuestion(nextQ);
   }
@@ -230,6 +235,7 @@ export default function LabInfiniteArena() {
   }
 
   function handleRestartSession() {
+    usedQuestionKeysRef.current.clear();
     setQuestionCount(1);
     setCorrectCount(0);
     setScore(0);
