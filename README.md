@@ -175,7 +175,13 @@ Musik latar belakang (*Background Music*) yang digunakan pada proyek ini berlise
    - **Sumber Musik**: [Free To Use - Piki (Momo Island)](https://freetouse.com/music/piki/momo-island)
    - **Ketentuan Lisensi**: [Free To Use Music License](https://freetouse.com/license)
 
-*Terima kasih kepada Aylex, Piki, & FreeToUse yang menyediakan musik bebas royalti berkualitas tinggi untuk proyek pendidikan ini.*
+3. **Ruang Kelas Unggulan (Sombo Boss Battle Session)**
+   - **Track**: **Boss Encounter (ボスとのそうぐう)**
+   - **Artis**: **retro-bgm-chan**
+   - **Sumber Musik**: [Pixabay - Boss Encounter (retro-bgm-chan)](https://pixabay.com/music/video-games-boss-encounter-%E3%83%9C%E3%82%B9%E3%81%A8%E3%81%9D%E3%81%86%E3%81%90%E3%81%86-534623/)
+   - **Ketentuan Lisensi**: [Pixabay License Summary](https://pixabay.com/service/license-summary/)
+
+*Terima kasih kepada Aylex, Piki, retro-bgm-chan, Pixabay, & FreeToUse yang menyediakan musik bebas royalti berkualitas tinggi untuk proyek pendidikan ini.*
 
 ---
 

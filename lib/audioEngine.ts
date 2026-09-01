@@ -4,6 +4,7 @@ declare global {
   interface Window {
     __QUIZ_BGM_AUDIO__?: HTMLAudioElement | null;
     __QUIZ_LAB_BGM_AUDIO__?: HTMLAudioElement | null;
+    __QUIZ_BOSS_BGM_AUDIO__?: HTMLAudioElement | null;
     __QUIZ_AUDIO_CTX__?: AudioContext | null;
     __QUIZ_BGM_MUTED__?: boolean;
     __QUIZ_SFX_MUTED__?: boolean;
@@ -14,6 +15,7 @@ declare global {
 
 export const BGM_VOLUME = 0.22; // Comfortable, clearly audible background music on mobile & desktop (22%)
 export const BGM_VOLUME_LAB = 0.16; // Balanced volume for Lab IPA session (16%) so it never overpowers SFX
+export const BGM_VOLUME_BOSS = 0.16; // Balanced, comfortable volume for Sombo Boss Encounter (16%) so it never overpowers SFX
 
 function getBgmAudio(): HTMLAudioElement | null {
   if (typeof window === 'undefined') return null;
@@ -55,6 +57,26 @@ function getLabBgmAudio(): HTMLAudioElement | null {
   return window.__QUIZ_LAB_BGM_AUDIO__;
 }
 
+function getBossBgmAudio(): HTMLAudioElement | null {
+  if (typeof window === 'undefined') return null;
+
+  if (!window.__QUIZ_BOSS_BGM_AUDIO__) {
+    // Music: "Boss Encounter" (ボスとのそうぐう) by retro-bgm-chan
+    // License: Pixabay License (https://pixabay.com/music/video-games-boss-encounter-%E3%83%9C%E3%82%B9%E3%81%A8%E3%81%9D%E3%81%86%E3%81%90%E3%81%86-534623/)
+    const audio = new Audio('/audio/retro-bgm-chan-boss-encounter-534623.mp3');
+    audio.loop = true;
+    audio.volume = BGM_VOLUME_BOSS;
+    audio.preload = 'auto';
+    audio.setAttribute('playsinline', 'true');
+    (audio as unknown as { playsInline?: boolean }).playsInline = true;
+    window.__QUIZ_BOSS_BGM_AUDIO__ = audio;
+  } else {
+    window.__QUIZ_BOSS_BGM_AUDIO__.volume = isBgmMuted() ? 0 : BGM_VOLUME_BOSS;
+  }
+
+  return window.__QUIZ_BOSS_BGM_AUDIO__;
+}
+
 function getCtx(): AudioContext | null {
   if (typeof window === 'undefined') return null;
   if (!window.__QUIZ_AUDIO_CTX__) {
@@ -93,13 +115,29 @@ export function unlockAudioEngine(): void {
     } catch {}
   }
 
-  // 2. Unlock & Resume BGM HTML5 Audio if designated to run (strictly for momo_island track)
-  const bgm = getBgmAudio();
-  if (bgm) {
-    if (window.__QUIZ_BGM_RUNNING__ && activeTrackId === 'momo_island' && !isBgmMuted() && bgm.paused) {
-      bgm.muted = false;
-      bgm.volume = BGM_VOLUME;
-      bgm.play().catch(() => {});
+  // 2. Unlock & Resume BGM HTML5 Audio if designated to run
+  if (window.__QUIZ_BGM_RUNNING__ && !isBgmMuted()) {
+    if (activeTrackId === 'momo_island') {
+      const bgm = getBgmAudio();
+      if (bgm && bgm.paused) {
+        bgm.muted = false;
+        bgm.volume = BGM_VOLUME;
+        bgm.play().catch(() => {});
+      }
+    } else if (activeTrackId === 'aylex_creativity' || activeTrackId === 'lab_creativity') {
+      const labBgm = getLabBgmAudio();
+      if (labBgm && labBgm.paused) {
+        labBgm.muted = false;
+        labBgm.volume = BGM_VOLUME_LAB;
+        labBgm.play().catch(() => {});
+      }
+    } else if (activeTrackId === 'fast_boss_beat' || activeTrackId === 'high_beat_lofi' || activeTrackId === 'boss_encounter') {
+      const bossBgm = getBossBgmAudio();
+      if (bossBgm && bossBgm.paused) {
+        bossBgm.muted = false;
+        bossBgm.volume = BGM_VOLUME_BOSS;
+        bossBgm.play().catch(() => {});
+      }
     }
   }
 
@@ -145,6 +183,36 @@ export function setBgmMuted(val: boolean): boolean {
       audio.volume = BGM_VOLUME;
       if (typeof window !== 'undefined' && window.__QUIZ_BGM_RUNNING__ && activeTrackId === 'momo_island') {
         audio.play().catch(() => {});
+      }
+    }
+  }
+
+  const labAudio = getLabBgmAudio();
+  if (labAudio) {
+    if (val) {
+      labAudio.pause();
+      labAudio.muted = true;
+      labAudio.volume = 0;
+    } else {
+      labAudio.muted = false;
+      labAudio.volume = BGM_VOLUME_LAB;
+      if (typeof window !== 'undefined' && window.__QUIZ_BGM_RUNNING__ && (activeTrackId === 'aylex_creativity' || activeTrackId === 'lab_creativity')) {
+        labAudio.play().catch(() => {});
+      }
+    }
+  }
+
+  const bossAudio = getBossBgmAudio();
+  if (bossAudio) {
+    if (val) {
+      bossAudio.pause();
+      bossAudio.muted = true;
+      bossAudio.volume = 0;
+    } else {
+      bossAudio.muted = false;
+      bossAudio.volume = BGM_VOLUME_BOSS;
+      if (typeof window !== 'undefined' && window.__QUIZ_BGM_RUNNING__ && (activeTrackId === 'fast_boss_beat' || activeTrackId === 'high_beat_lofi' || activeTrackId === 'boss_encounter')) {
+        bossAudio.play().catch(() => {});
       }
     }
   }
@@ -397,6 +465,12 @@ export function stopAllBgmMedia(): void {
     try { labAudio.currentTime = 0; } catch {}
   }
 
+  const bossAudio = getBossBgmAudio();
+  if (bossAudio) {
+    bossAudio.pause();
+    try { bossAudio.currentTime = 0; } catch {}
+  }
+
   stopSynthBgm();
 
   if (typeof document !== 'undefined') {
@@ -459,12 +533,28 @@ export function startQuizBGM(trackId?: string): void {
           playPromise = null;
         });
     }
+  } else if (activeTrackId === 'fast_boss_beat' || activeTrackId === 'high_beat_lofi' || activeTrackId === 'boss_encounter') {
+    const audio = getBossBgmAudio();
+    if (!audio) return;
+    audio.muted = false;
+    audio.volume = BGM_VOLUME_BOSS;
+    if (audio.paused && !isStartingBgm) {
+      isStartingBgm = true;
+      playPromise = audio.play();
+      playPromise
+        .then(() => {
+          isStartingBgm = false;
+          playPromise = null;
+        })
+        .catch(() => {
+          isStartingBgm = false;
+          playPromise = null;
+        });
+    }
   } else if (activeTrackId === '8bit_quest') {
     startSynthLoop(CHIPTUNE_NOTES, 'square', 240, 0.12);
   } else if (activeTrackId === 'cozy_lofi') {
     startSynthLoop(LOFI_NOTES, 'triangle', 480, 0.15);
-  } else if (activeTrackId === 'fast_boss_beat' || activeTrackId === 'high_beat_lofi') {
-    startSynthLoop(FAST_BOSS_BEAT_NOTES, 'square', 125, 0.17);
   }
 }
 
