@@ -19,6 +19,7 @@ interface AchievementReportProps {
   studentName: string;
   normalQCount: number;
   normalMaxCombo: number;
+  normalTotalDamage?: number;
   endlessQCount: number;
   endlessScore: number;
   endlessMaxCombo: number;
@@ -38,6 +39,7 @@ export default function AchievementReportModal({
   studentName,
   normalQCount,
   normalMaxCombo,
+  normalTotalDamage = 6000,
   endlessQCount,
   endlessScore,
   endlessMaxCombo,
@@ -157,7 +159,7 @@ export default function AchievementReportModal({
                 <div className="text-amber-300 font-bold text-right">{normalQCount} Soal</div>
 
                 <div className="text-stone-400">Total Damage Dihasilkan:</div>
-                <div className="text-amber-300 font-bold text-right">6,000 HP</div>
+                <div className="text-amber-300 font-bold text-right">{(normalTotalDamage || 6000).toLocaleString('en-US')} HP</div>
 
                 <div className="text-stone-400">Max Combo Streak:</div>
                 <div className="text-amber-300 font-bold text-right">{normalMaxCombo}x Combo</div>

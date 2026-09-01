@@ -215,6 +215,7 @@ export default function BossBattleArena() {
     setMistakes([]);
     setNormalQCount(0);
     setNormalMaxCombo(0);
+    setNormalTotalDamage(0);
     setEndlessN(1);
     setEndlessCorrectCount(0);
     setEndlessScore(0);
@@ -230,6 +231,7 @@ export default function BossBattleArena() {
   const [endlessMaxCombo, setEndlessMaxCombo]             = useState(0);
   const [normalQCount, setNormalQCount]                   = useState(0);
   const [normalMaxCombo, setNormalMaxCombo]               = useState(0);
+  const [normalTotalDamage, setNormalTotalDamage]         = useState(0);
   const [showAchievementReport, setShowAchievementReport] = useState(false);
 
   // Audio Mute States
@@ -627,6 +629,7 @@ export default function BossBattleArena() {
       } else {
         setNormalMaxCombo(m => Math.max(m, newCombo));
         setNormalQCount(questionNumber);
+        setNormalTotalDamage(d => d + dmg);
       }
       setTotalScore(s => s + dmg);
 
@@ -1316,6 +1319,7 @@ export default function BossBattleArena() {
           studentName={studentName}
           normalQCount={normalQCount || questionNumber}
           normalMaxCombo={normalMaxCombo || maxCombo}
+          normalTotalDamage={normalTotalDamage}
           endlessQCount={endlessCorrectCount}
           endlessScore={endlessScore}
           endlessMaxCombo={endlessMaxCombo}
