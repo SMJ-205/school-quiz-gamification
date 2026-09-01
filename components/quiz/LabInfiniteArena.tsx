@@ -532,11 +532,12 @@ export default function LabInfiniteArena() {
             </div>
 
             {/* Guru Lab Character & Intro Dialogue */}
-            <div className="flex items-center gap-4 sm:gap-6 bg-cyan-950/80 border-2 border-cyan-500/60 rounded-2xl p-4 sm:p-5 mb-6 sm:mb-8 text-left w-full shadow-lg">
-              <div className="flex-1 font-dialogue text-base sm:text-lg md:text-xl text-cyan-100 leading-snug">
-                <span className="text-cyan-300 font-bold">Guru Lab:</span> “Selamat datang di Laboratorium IPA! Sebelum kita mulai bereksperimen, kamu sedang menempuh pendidikan di Kelas berapa?”
+            <div className="flex items-center gap-4 sm:gap-6 bg-cyan-950/80 border-2 border-cyan-500/60 rounded-2xl px-6 sm:px-8 md:px-10 py-5 sm:py-6 mb-6 sm:mb-8 text-left w-full shadow-lg">
+              <div className="flex-1 font-dialogue text-base sm:text-lg md:text-xl text-cyan-100 leading-snug pl-2 sm:pl-4">
+                <span className="text-cyan-300 font-bold mr-2.5 inline-block">Guru Lab:</span>
+                <span>“Selamat datang di Laboratorium IPA! Sebelum kita mulai bereksperimen, kamu sedang menempuh pendidikan di Kelas berapa?”</span>
               </div>
-              <div className="shrink-0 relative w-16 h-24 sm:w-20 sm:h-28 flex items-end justify-center">
+              <div className="shrink-0 relative w-16 h-24 sm:w-20 sm:h-28 flex items-end justify-center pr-2 sm:pr-4">
                 <img
                   src="/sprites/teacher_lab_idle.png"
                   alt="Guru Lab"
@@ -556,7 +557,7 @@ export default function LabInfiniteArena() {
             </div>
 
             {/* 6 Grade Buttons Grid (Kelas 1 - 6 SD) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 md:gap-5 w-full mb-8 text-left font-dialogue">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 md:gap-5 w-full text-left font-dialogue">
               {[
                 { grade: 1, title: 'Kelas 1 SD', desc: 'Pola Penjumlahan (+1..+5) • Rotasi 2D' },
                 { grade: 2, title: 'Kelas 2 SD', desc: 'Pola Loncat (+2,+5,+10) • Deret Gambar' },
@@ -583,14 +584,16 @@ export default function LabInfiniteArena() {
               ))}
             </div>
 
-            {/* Cancel / Exit Action Button */}
-            <button
-              onClick={() => setScreen('background_select')}
-              className="btn-pixel !bg-slate-800 hover:!bg-slate-700 !border-slate-500 hover:!border-cyan-400 text-slate-200 hover:text-white px-6 sm:px-8 py-3 text-xs sm:text-sm md:text-base font-bold flex items-center justify-center gap-2.5 cursor-pointer transition-all hover:scale-105 shadow-xl font-dialogue uppercase tracking-wider rounded-xl"
-            >
-              <span>◀</span>
-              <span>KEMBALI KE TEMPAT BELAJAR</span>
-            </button>
+            {/* Cancel / Exit Action Button with Clear Blank Space Separator */}
+            <div className="w-full mt-6 sm:mt-8 md:mt-10 pt-4 sm:pt-6 border-t border-cyan-900/50 flex items-center justify-center">
+              <button
+                onClick={() => setScreen('background_select')}
+                className="btn-pixel !bg-slate-800 hover:!bg-slate-700 !border-slate-500 hover:!border-cyan-400 text-slate-200 hover:text-white px-6 sm:px-8 py-3 text-xs sm:text-sm md:text-base font-bold flex items-center justify-center gap-2.5 cursor-pointer transition-all hover:scale-105 shadow-xl font-dialogue uppercase tracking-wider rounded-xl"
+              >
+                <span>◀</span>
+                <span>KEMBALI KE TEMPAT BELAJAR</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
