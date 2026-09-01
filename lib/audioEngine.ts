@@ -464,7 +464,7 @@ export function startQuizBGM(trackId?: string): void {
   } else if (activeTrackId === 'cozy_lofi') {
     startSynthLoop(LOFI_NOTES, 'triangle', 480, 0.15);
   } else if (activeTrackId === 'fast_boss_beat' || activeTrackId === 'high_beat_lofi') {
-    startSynthLoop(FAST_BOSS_BEAT_NOTES, 'square', 125, 0.20);
+    startSynthLoop(FAST_BOSS_BEAT_NOTES, 'square', 125, 0.17);
   }
 }
 
