@@ -522,28 +522,31 @@ export default function LabInfiniteArena() {
 
       {/* ── Grade Selection Modal (Konfirmasi Tingkat Kelas SD) ────────────────────────── */}
       {showGradeModal && (
-        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 md:p-10 select-none animate-fadeIn overflow-y-auto">
-          <div className="relative w-full max-w-3xl sm:max-w-4xl lg:max-w-5xl max-h-[88vh] overflow-y-auto crt-arcade-frame crt-arcade-frame-scrollable bg-[#081320] border-4 border-cyan-400 rounded-3xl p-5 sm:p-8 md:p-10 shadow-[0_0_60px_rgba(6,182,212,0.6)] text-stone-100 font-pixel text-center flex flex-col items-center my-auto custom-scrollbar">
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md overflow-y-auto p-3 sm:p-6 md:p-8 select-none animate-fadeIn flex justify-center items-start sm:items-center">
+          <div className="relative w-full max-w-3xl sm:max-w-4xl lg:max-w-5xl crt-arcade-frame bg-[#081320] border-4 border-cyan-400 rounded-3xl p-5 sm:p-8 md:p-12 text-stone-100 font-pixel text-center flex flex-col items-center my-4 sm:my-auto shadow-[0_0_60px_rgba(6,182,212,0.6)]">
             
             {/* Header Badge */}
-            <div className="inline-flex items-center gap-2 bg-cyan-950/90 border-2 border-cyan-400 text-cyan-300 font-bold text-xs sm:text-sm md:text-base px-4 py-1.5 rounded-full mb-6 sm:mb-8 shadow-[0_0_20px_rgba(6,182,212,0.45)] uppercase tracking-widest shrink-0">
+            <div className="inline-flex items-center gap-2 bg-cyan-950/90 border-2 border-cyan-400 text-cyan-300 font-bold text-xs sm:text-sm md:text-base px-5 py-2 rounded-full mb-6 shadow-[0_0_20px_rgba(6,182,212,0.45)] uppercase tracking-widest shrink-0">
               <span>🔬</span>
               <span>KONFIRMASI TINGKAT KELAS SD</span>
             </div>
 
             {/* Guru Lab Character & Intro Dialogue Box */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 bg-cyan-950/90 border-2 border-cyan-500/70 rounded-2xl p-5 sm:p-7 md:p-8 mb-6 sm:mb-8 text-left w-full shadow-xl shrink-0">
-              <div className="flex-1 font-dialogue text-base sm:text-lg md:text-xl text-cyan-100 leading-relaxed pl-2 sm:pl-4">
-                <div className="mb-2">
-                  <span className="bg-cyan-900/90 border-2 border-cyan-400 text-cyan-300 font-bold px-3.5 py-1 rounded-lg text-sm sm:text-base inline-block shadow-md">
+            <div
+              className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 bg-cyan-950/90 border-2 border-cyan-500/70 rounded-2xl text-left w-full shadow-xl shrink-0"
+              style={{ padding: '24px 32px', marginBottom: '32px' }}
+            >
+              <div className="flex-1 font-dialogue text-base sm:text-lg md:text-xl text-cyan-100 leading-relaxed" style={{ paddingLeft: '12px' }}>
+                <div style={{ marginBottom: '12px' }}>
+                  <span className="bg-cyan-900/90 border-2 border-cyan-400 text-cyan-300 font-bold px-4 py-1.5 rounded-lg text-sm sm:text-base inline-block shadow-md">
                     Guru Lab:
                   </span>
                 </div>
-                <p className="text-cyan-100 text-base sm:text-lg md:text-xl leading-relaxed">
+                <p className="text-cyan-100 text-base sm:text-lg md:text-xl leading-relaxed" style={{ marginTop: '8px', paddingLeft: '4px' }}>
                   “Selamat datang di Laboratorium IPA! Sebelum kita mulai bereksperimen, kamu sedang menempuh pendidikan di Kelas berapa?”
                 </p>
               </div>
-              <div className="shrink-0 relative w-16 h-24 sm:w-20 sm:h-28 flex items-end justify-center pr-2 sm:pr-4">
+              <div className="shrink-0 relative w-16 h-24 sm:w-20 sm:h-28 flex items-end justify-center pr-2">
                 <img
                   src="/sprites/teacher_lab_idle.png"
                   alt="Guru Lab"
@@ -562,8 +565,11 @@ export default function LabInfiniteArena() {
               </div>
             </div>
 
-            {/* 6 Grade Buttons Grid (Kelas 1 - 6 SD) with Generous Spacing */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 w-full text-left font-dialogue mb-2 shrink-0">
+            {/* 6 Grade Buttons Grid (Kelas 1 - 6 SD) with Generous Blank Space */}
+            <div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 w-full text-left font-dialogue shrink-0"
+              style={{ gap: '20px', marginTop: '8px', marginBottom: '36px' }}
+            >
               {[
                 { grade: 1, title: 'Kelas 1 SD', desc: 'Pola Penjumlahan (+1..+5) • Rotasi 2D' },
                 { grade: 2, title: 'Kelas 2 SD', desc: 'Pola Loncat (+2,+5,+10) • Deret Gambar' },
@@ -591,7 +597,10 @@ export default function LabInfiniteArena() {
             </div>
 
             {/* Cancel / Exit Action Button with Generous Blank Space & Divider Line */}
-            <div className="w-full mt-6 sm:mt-8 md:mt-10 pt-6 sm:pt-8 mb-2 border-t-2 border-cyan-900/80 flex items-center justify-center shrink-0">
+            <div
+              className="w-full flex items-center justify-center shrink-0"
+              style={{ marginTop: '36px', paddingTop: '28px', borderTop: '2px solid rgba(6, 182, 212, 0.5)' }}
+            >
               <button
                 onClick={() => setScreen('background_select')}
                 className="btn-pixel !bg-slate-800 hover:!bg-slate-700 !border-slate-500 hover:!border-cyan-400 text-slate-200 hover:text-white px-8 sm:px-10 py-3.5 sm:py-4 text-xs sm:text-sm md:text-base font-bold flex items-center justify-center gap-3 cursor-pointer transition-all hover:scale-105 shadow-2xl font-dialogue uppercase tracking-wider rounded-xl"
