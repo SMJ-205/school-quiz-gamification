@@ -405,7 +405,7 @@ body {
 }
 
 
-/* Seamless Comic Speech Beak (pentulan) pointing right to Pak Guru */
+/* Seamless Comic Speech Beak (pentulan) pointing right to Pak Guru / Guru Lab */
 .comic-bubble-wrapper::before {
   content: '';
   position: absolute;
@@ -416,6 +416,7 @@ body {
   border-top: 13px solid transparent;
   border-bottom: 13px solid transparent;
   border-left: 19px solid #FFC107;
+  border-left-color: inherit;
   filter: drop-shadow(2px 2px 0 #000);
   z-index: 10;
   pointer-events: none;

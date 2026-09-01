@@ -175,8 +175,17 @@ export default function PatternReportModal({
             <img
               src="/sprites/teacher_lab_idle.png"
               alt="Guru Lab"
-              className="w-full h-full object-contain object-bottom"
-              style={{ imageRendering: 'pixelated' }}
+              className="w-full h-full object-contain object-bottom select-none pointer-events-none"
+              style={{
+                imageRendering: 'pixelated',
+                filter: [
+                  'drop-shadow(1px 0px 0px rgba(6,182,212,0.85))',
+                  'drop-shadow(-1px 0px 0px rgba(6,182,212,0.85))',
+                  'drop-shadow(0px 1px 0px rgba(6,182,212,0.85))',
+                  'drop-shadow(0px -1px 0px rgba(6,182,212,0.85))',
+                  'drop-shadow(0px 8px 16px rgba(0,0,0,0.8))',
+                ].join(' '),
+              }}
             />
           </div>
 
