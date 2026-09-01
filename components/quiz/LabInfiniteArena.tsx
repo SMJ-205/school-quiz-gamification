@@ -72,9 +72,7 @@ export default function LabInfiniteArena() {
 
   // Infinite Session State (Starts at Question 1)
   const [questionCount, setQuestionCount] = useState<number>(1);
-  const [currentQuestion, setCurrentQuestion] = useState<PatternQuestion>(() =>
-    generateNextPatternQuestion(1, undefined, 6)
-  );
+  const [currentQuestion, setCurrentQuestion] = useState<PatternQuestion | null>(null);
   const [correctCount, setCorrectCount] = useState<number>(0);
   const [score, setScore] = useState<number>(0);
   const [currentStreak, setCurrentStreak] = useState<number>(0);
@@ -159,7 +157,7 @@ export default function LabInfiniteArena() {
       if (typingTimerRef.current) clearInterval(typingTimerRef.current);
       setMouthOpen(false);
     };
-  }, [fullQuestionText, currentQuestion.id, showGradeModal]);
+  }, [fullQuestionText, currentQuestion?.id, showGradeModal]);
 
   const handleFastForward = useCallback(() => {
     if (isTyping) {
@@ -172,7 +170,7 @@ export default function LabInfiniteArena() {
 
   // Handle Option Select
   function handleSelectOption(index: number) {
-    if (revealed) return;
+    if (!currentQuestion || revealed) return;
     if (isTyping) handleFastForward();
 
     setSelected(index);
@@ -220,8 +218,8 @@ export default function LabInfiniteArena() {
     setQuestionCount(nextCount);
     const nextQ = generateNextPatternQuestion(
       nextCount,
-      currentQuestion.category,
-      selectedGrade || 6
+      currentQuestion?.category,
+      selectedGrade ?? 1
     );
     setCurrentQuestion(nextQ);
   }
@@ -324,7 +322,7 @@ export default function LabInfiniteArena() {
               <span className="flex items-center gap-1.5">
                 <span className="text-cyan-400">SOAL #{questionCount}</span>
                 <span className="text-cyan-600">•</span>
-                <span className="text-cyan-200">{currentQuestion.categoryLabel}</span>
+                <span className="text-cyan-200">{currentQuestion?.categoryLabel || 'Detektif Pola'}</span>
               </span>
 
               <span className="flex items-center gap-3">
@@ -345,7 +343,7 @@ export default function LabInfiniteArena() {
                 >
                   <div className="w-full flex flex-col px-1 sm:px-2 min-h-[55px] sm:min-h-[75px]">
                     <div className="text-[10px] sm:text-xs font-bold text-cyan-400 tracking-wider mb-1 uppercase">
-                      🔍 {currentQuestion.categoryLabel}
+                      🔍 {currentQuestion?.categoryLabel || 'Detektif Pola'}
                     </div>
                     <p className="font-dialogue text-lg sm:text-2xl text-white tracking-wide leading-snug whitespace-pre-line break-words">
                       {displayedText}
@@ -407,7 +405,7 @@ export default function LabInfiniteArena() {
               </div>
 
               {/* Render Visual Matrix 2D Grid Puzzle if present, otherwise text options grid */}
-              {currentQuestion.visualMatrixData ? (
+              {currentQuestion?.visualMatrixData ? (
                 <VisualMatrixDisplay
                   data={currentQuestion.visualMatrixData}
                   selectedOption={selected}
@@ -418,10 +416,10 @@ export default function LabInfiniteArena() {
               ) : (
                 /* Options Grid (A, B, C, D) */
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                  {currentQuestion.options.map((opt, i) => {
+                  {(currentQuestion?.options || []).map((opt, i) => {
                     let stateClass = '';
                     if (revealed) {
-                      if (i === currentQuestion.correctIndex) stateClass = 'correct';
+                      if (i === currentQuestion?.correctIndex) stateClass = 'correct';
                       else if (i === selected && !isCorrect) stateClass = 'wrong';
                       else stateClass = 'disabled opacity-50';
                     }
@@ -439,7 +437,7 @@ export default function LabInfiniteArena() {
                         <span className="flex-1 font-dialogue leading-tight text-left text-base sm:text-2xl break-words">
                           {opt}
                         </span>
-                        {revealed && i === currentQuestion.correctIndex && (
+                        {revealed && i === currentQuestion?.correctIndex && (
                           <span className="text-emerald-400 font-bold text-base sm:text-xl ml-auto shrink-0">✓</span>
                         )}
                         {revealed && i === selected && !isCorrect && (
@@ -637,7 +635,7 @@ export default function LabInfiniteArena() {
       {/* ── Guardian Owl / Guru Lab Hint Modal ────────────────────────────────── */}
       {showOwl && (
         <GuardianOwlModal
-          hint={currentQuestion.hint}
+          hint={currentQuestion?.hint || ''}
           onClose={() => setShowOwl(false)}
         />
       )}

@@ -235,7 +235,7 @@ export default function BackgroundSelectScreen() {
                   )}
                   {opt.isInfinite && (
                     <div className="mt-3 text-xs sm:text-sm text-cyan-300 font-dialogue border border-cyan-900/80 rounded-lg px-2.5 py-1.5 bg-cyan-950/70 font-bold">
-                      ♾️ Mode Infinite — Deret Gambar 3x3 • Gradasi Kesulitan • SD Kelas 1-6
+                      ♾️ Mode Infinite — Deret Gambar 3x3 • Gradasi Kesulitan
                     </div>
                   )}
                 </div>
