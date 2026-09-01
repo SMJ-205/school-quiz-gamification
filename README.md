@@ -181,6 +181,12 @@ Musik latar belakang (*Background Music*) yang digunakan pada proyek ini berlise
    - **Sumber Musik**: [Pixabay - Boss Encounter (retro-bgm-chan)](https://pixabay.com/music/video-games-boss-encounter-%E3%83%9C%E3%82%B9%E3%81%A8%E3%81%9D%E3%81%86%E3%81%90%E3%81%86-534623/)
    - **Ketentuan Lisensi**: [Pixabay License Summary](https://pixabay.com/service/license-summary/)
 
+4. **Menu Utama & Navigasi (Cover Page, Character & Map Select)**
+   - **Track**: **Serious Mood (しりあすもーど)**
+   - **Artis**: **retro-bgm-chan**
+   - **Sumber Musik**: [Pixabay - Serious Mood (retro-bgm-chan)](https://pixabay.com/music/electro-serious-mood-%E3%81%97%E3%82%8A%E3%81%82%E3%81%99%E3%82%82%E3%83%BC%E3%81%A9-516326/)
+   - **Ketentuan Lisensi**: [Pixabay License Summary](https://pixabay.com/service/license-summary/)
+
 *Terima kasih kepada Aylex, Piki, retro-bgm-chan, Pixabay, & FreeToUse yang menyediakan musik bebas royalti berkualitas tinggi untuk proyek pendidikan ini.*
 
 ---

@@ -17,7 +17,9 @@ export default function Home() {
 
   // Single global BGM controller for screen switching (prevents track overlap)
   useEffect(() => {
-    if (currentScreen === 'quiz_library') {
+    if (currentScreen === 'ingestion' || currentScreen === 'character' || currentScreen === 'background_select') {
+      startQuizBGM('main_menu');
+    } else if (currentScreen === 'quiz_library') {
       startQuizBGM('momo_island');
     } else if (currentScreen === 'lab_infinite') {
       startQuizBGM('aylex_creativity');

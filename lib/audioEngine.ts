@@ -5,6 +5,7 @@ declare global {
     __QUIZ_BGM_AUDIO__?: HTMLAudioElement | null;
     __QUIZ_LAB_BGM_AUDIO__?: HTMLAudioElement | null;
     __QUIZ_BOSS_BGM_AUDIO__?: HTMLAudioElement | null;
+    __QUIZ_MAIN_MENU_BGM_AUDIO__?: HTMLAudioElement | null;
     __QUIZ_AUDIO_CTX__?: AudioContext | null;
     __QUIZ_BGM_MUTED__?: boolean;
     __QUIZ_SFX_MUTED__?: boolean;
@@ -16,6 +17,7 @@ declare global {
 export const BGM_VOLUME = 0.22; // Comfortable, clearly audible background music on mobile & desktop (22%)
 export const BGM_VOLUME_LAB = 0.16; // Balanced volume for Lab IPA session (16%) so it never overpowers SFX
 export const BGM_VOLUME_BOSS = 0.16; // Balanced, comfortable volume for Sombo Boss Encounter (16%) so it never overpowers SFX
+export const BGM_VOLUME_MAIN_MENU = 0.18; // Balanced, comfortable volume for Main Menu, Char & Map Select (18%)
 
 function getBgmAudio(): HTMLAudioElement | null {
   if (typeof window === 'undefined') return null;
@@ -75,6 +77,26 @@ function getBossBgmAudio(): HTMLAudioElement | null {
   }
 
   return window.__QUIZ_BOSS_BGM_AUDIO__;
+}
+
+function getMainMenuBgmAudio(): HTMLAudioElement | null {
+  if (typeof window === 'undefined') return null;
+
+  if (!window.__QUIZ_MAIN_MENU_BGM_AUDIO__) {
+    // Music: "Serious Mood" (しりあすもーど) by retro-bgm-chan
+    // Reference: https://pixabay.com/music/electro-serious-mood-%E3%81%97%E3%82%8A%E3%81%82%E3%81%99%E3%82%82%E3%83%BC%E3%81%A9-516326/
+    const audio = new Audio('/audio/retro-bgm-chan-serious-mood-516326.mp3');
+    audio.loop = true;
+    audio.volume = BGM_VOLUME_MAIN_MENU;
+    audio.preload = 'auto';
+    audio.setAttribute('playsinline', 'true');
+    (audio as unknown as { playsInline?: boolean }).playsInline = true;
+    window.__QUIZ_MAIN_MENU_BGM_AUDIO__ = audio;
+  } else {
+    window.__QUIZ_MAIN_MENU_BGM_AUDIO__.volume = isBgmMuted() ? 0 : BGM_VOLUME_MAIN_MENU;
+  }
+
+  return window.__QUIZ_MAIN_MENU_BGM_AUDIO__;
 }
 
 function getCtx(): AudioContext | null {
@@ -137,6 +159,18 @@ export function unlockAudioEngine(): void {
         bossBgm.muted = false;
         bossBgm.volume = BGM_VOLUME_BOSS;
         bossBgm.play().catch(() => {});
+      }
+    } else if (
+      activeTrackId === 'main_menu' ||
+      activeTrackId === 'character_select' ||
+      activeTrackId === 'map_select' ||
+      activeTrackId === 'serious_mood'
+    ) {
+      const mainMenuBgm = getMainMenuBgmAudio();
+      if (mainMenuBgm && mainMenuBgm.paused) {
+        mainMenuBgm.muted = false;
+        mainMenuBgm.volume = BGM_VOLUME_MAIN_MENU;
+        mainMenuBgm.play().catch(() => {});
       }
     }
   }
@@ -471,6 +505,12 @@ export function stopAllBgmMedia(): void {
     try { bossAudio.currentTime = 0; } catch {}
   }
 
+  const mainMenuAudio = getMainMenuBgmAudio();
+  if (mainMenuAudio) {
+    mainMenuAudio.pause();
+    try { mainMenuAudio.currentTime = 0; } catch {}
+  }
+
   stopSynthBgm();
 
   if (typeof document !== 'undefined') {
@@ -551,6 +591,29 @@ export function startQuizBGM(trackId?: string): void {
           playPromise = null;
         });
     }
+  } else if (
+    activeTrackId === 'main_menu' ||
+    activeTrackId === 'character_select' ||
+    activeTrackId === 'map_select' ||
+    activeTrackId === 'serious_mood'
+  ) {
+    const audio = getMainMenuBgmAudio();
+    if (!audio) return;
+    audio.muted = false;
+    audio.volume = BGM_VOLUME_MAIN_MENU;
+    if (audio.paused && !isStartingBgm) {
+      isStartingBgm = true;
+      playPromise = audio.play();
+      playPromise
+        .then(() => {
+          isStartingBgm = false;
+          playPromise = null;
+        })
+        .catch(() => {
+          isStartingBgm = false;
+          playPromise = null;
+        });
+    }
   } else if (activeTrackId === '8bit_quest') {
     startSynthLoop(CHIPTUNE_NOTES, 'square', 240, 0.12);
   } else if (activeTrackId === 'cozy_lofi') {
@@ -569,7 +632,7 @@ export function stopAllBGM(): void {
 
 // ─── SFX Tone Synthesizer (Respects sfxMuted & Scaled Volume) ───────────────
 
-export const SFX_VOLUME_SCALE = 0.52; // Lowered by 20% from 0.65 for optimal comfortable listening 
+export const SFX_VOLUME_SCALE = 0.416; // Reduced by 20% from 0.52 for smooth, comfortable listening 
 
 function playSfxTone(
   frequency: number,
