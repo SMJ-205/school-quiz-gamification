@@ -188,7 +188,7 @@ body {
   font-weight: 700;
   padding: 10px 18px;
   background: var(--amber);
-  color: #211205;
+  color: var(--white);
   border: 3px solid var(--gold-dark);
   border-radius: 4px;
   cursor: pointer;
@@ -203,6 +203,7 @@ body {
 
 .btn-pixel:hover {
   background: #FFCA28;
+  color: var(--white);
   transform: translateY(-2px);
   box-shadow:
     0 6px 0 var(--gold-dark),
@@ -216,13 +217,13 @@ body {
 
 .btn-pixel-gold {
   background: var(--amber);
-  color: #211205;
+  color: #211205 !important;
   border-color: var(--gold-dark);
   box-shadow: 0 4px 0 var(--gold-dark), 0 6px 0 var(--pixel-ink);
 }
 .btn-pixel-gold:hover {
   background: #FFCA28;
-  color: #150A02;
+  color: #150A02 !important;
 }
 
 .btn-pixel-wood {

@@ -248,7 +248,7 @@ export default function BackgroundSelectScreen() {
         <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t-2 border-amber-950/80">
           <button
             onClick={handleBack}
-            className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 text-stone-300 w-full sm:w-auto px-5 py-3 text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer"
+            className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 !text-amber-200 hover:!text-white w-full sm:w-auto px-5 py-3 text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer font-bold shadow-lg"
           >
             <span>◀</span>
             <span>GANTI KARAKTER</span>
