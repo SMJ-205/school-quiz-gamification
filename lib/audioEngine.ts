@@ -524,7 +524,50 @@ export function stopAllBgmMedia(): void {
 
 export function startQuizBGM(trackId?: string): void {
   if (typeof window === 'undefined') return;
+
+  const targetTrack = trackId || activeTrackId;
+
+  const isTargetMainMenu =
+    targetTrack === 'main_menu' ||
+    targetTrack === 'character_select' ||
+    targetTrack === 'map_select' ||
+    targetTrack === 'serious_mood';
+
+  const isCurrentMainMenu =
+    activeTrackId === 'main_menu' ||
+    activeTrackId === 'character_select' ||
+    activeTrackId === 'map_select' ||
+    activeTrackId === 'serious_mood';
+
   window.__QUIZ_BGM_RUNNING__ = true;
+
+  // If transitioning within the Main Menu / Char Select / Map Select screens,
+  // and Main Menu audio is ALREADY playing, DO NOT STOP OR RESET IT!
+  if (isTargetMainMenu && isCurrentMainMenu) {
+    const audio = getMainMenuBgmAudio();
+    activeTrackId = 'main_menu';
+    if (isBgmMuted()) return;
+    if (audio) {
+      audio.muted = false;
+      audio.volume = BGM_VOLUME_MAIN_MENU;
+      if (audio.paused && !isStartingBgm) {
+        unlockAudioEngine();
+        isStartingBgm = true;
+        playPromise = audio.play();
+        playPromise
+          .then(() => {
+            isStartingBgm = false;
+            playPromise = null;
+          })
+          .catch(() => {
+            isStartingBgm = false;
+            playPromise = null;
+          });
+      }
+    }
+    return;
+  }
+
   if (trackId) activeTrackId = trackId;
 
   // Stop ALL media & synth loops first so tracks NEVER overlap
