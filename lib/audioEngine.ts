@@ -675,14 +675,14 @@ export function stopAllBGM(): void {
 
 // ─── SFX Tone Synthesizer (Respects sfxMuted & Scaled Volume) ───────────────
 
-export const SFX_VOLUME_SCALE = 0.416; // Reduced by 20% from 0.52 for smooth, comfortable listening 
+export const SFX_VOLUME_SCALE = 0.18; // Soft, smooth master SFX scale to prevent speaker clipping/distortion at high volume
 
 function playSfxTone(
   frequency: number,
   duration: number,
   startTime: number,
-  type: OscillatorType = 'square',
-  volume: number = 0.2,
+  type: OscillatorType = 'triangle',
+  volume: number = 0.12,
   gainEnvelope?: { attack?: number; decay?: number; sustain?: number; release?: number }
 ): void {
   if (isSfxMuted()) return;
@@ -696,16 +696,21 @@ function playSfxTone(
 
     const osc = c.createOscillator();
     const gainNode = c.createGain();
+    const filterNode = c.createBiquadFilter();
 
     osc.type = type;
     osc.frequency.setValueAtTime(frequency, startTime);
 
+    // Low-pass filter (3000Hz) to soften high digital harmonics & eliminate speaker clipping/crackling
+    filterNode.type = 'lowpass';
+    filterNode.frequency.setValueAtTime(3000, startTime);
+
     const env = gainEnvelope ?? {};
-    const attack = env.attack ?? 0.02;
-    const decay = env.decay ?? 0.08;
-    const effectiveVol = volume * SFX_VOLUME_SCALE;
-    const sustain = (env.sustain ?? volume * 0.7) * SFX_VOLUME_SCALE;
-    const release = env.release ?? 0.05;
+    const attack = env.attack ?? 0.01;
+    const decay = env.decay ?? 0.06;
+    const effectiveVol = Math.min(0.25, volume * SFX_VOLUME_SCALE);
+    const sustain = Math.min(0.20, (env.sustain ?? volume * 0.5) * SFX_VOLUME_SCALE);
+    const release = env.release ?? 0.04;
 
     gainNode.gain.setValueAtTime(0, startTime);
     gainNode.gain.linearRampToValueAtTime(effectiveVol, startTime + attack);
@@ -713,14 +718,15 @@ function playSfxTone(
     gainNode.gain.setValueAtTime(sustain, Math.max(startTime + attack + decay, startTime + duration - release));
     gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
 
-    osc.connect(gainNode);
+    osc.connect(filterNode);
+    filterNode.connect(gainNode);
     gainNode.connect(c.destination);
     osc.start(startTime);
     osc.stop(startTime + duration);
   } catch {}
 }
 
-function playSfxNoise(duration: number, startTime: number, volume: number = 0.08): void {
+function playSfxNoise(duration: number, startTime: number, volume: number = 0.05): void {
   if (isSfxMuted()) return;
   const c = getCtx();
   if (!c) return;
@@ -734,7 +740,7 @@ function playSfxNoise(duration: number, startTime: number, volume: number = 0.08
     const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * 0.5;
+      data[i] = (Math.random() * 2 - 1) * 0.3;
     }
     const source = c.createBufferSource();
     source.buffer = buffer;
@@ -756,8 +762,8 @@ export function sfxGearEquip(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  playSfxTone(523, 0.06, t, 'square', 0.18);
-  playSfxTone(659, 0.06, t + 0.06, 'square', 0.18);
+  playSfxTone(523, 0.06, t, 'triangle', 0.12);
+  playSfxTone(659, 0.06, t + 0.06, 'triangle', 0.12);
 }
 
 export function sfxCorrect(): void {
@@ -766,24 +772,20 @@ export function sfxCorrect(): void {
   if (!c) return;
   const t = c.currentTime;
 
-  // Ultra High-Energy Arcade Power-Hit SFX for Sombo Boss Battle
+  // Smooth, Warm Arcade Power-Hit SFX for Sombo Boss Battle
   if (activeTrackId === 'fast_boss_beat' || activeTrackId === 'high_beat_lofi') {
-    // 1. High-speed 16th-note 8-Bit Arcade Power-Hit (C5 -> E5 -> G5 -> C6 -> E6 -> G6)
-    const bossHitNotes = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98];
+    const bossHitNotes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
     bossHitNotes.forEach((freq, i) => {
-      playSfxTone(freq, 0.07, t + i * 0.04, 'square', 0.28);
+      playSfxTone(freq, 0.05, t + i * 0.035, 'triangle', 0.12);
     });
-
-    // 2. High octave power chime overlay
-    playSfxTone(1046.50, 0.15, t + 0.18, 'triangle', 0.25);
-    playSfxTone(1567.98, 0.22, t + 0.24, 'sine', 0.22);
+    playSfxTone(1318.51, 0.12, t + 0.16, 'sine', 0.10);
   } else {
-    // Standard Quiz Classroom Correct SFX
+    // Standard Quiz Classroom Correct SFX (Warm triangle & sine chimes)
     const notes = [261.63, 329.63, 392.0, 523.25];
     notes.forEach((freq, i) => {
-      playSfxTone(freq, 0.12, t + i * 0.1, 'square', 0.22);
+      playSfxTone(freq, 0.08, t + i * 0.07, 'triangle', 0.10);
     });
-    playSfxTone(1046.5, 0.2, t + 0.4, 'sine', 0.16);
+    playSfxTone(1046.5, 0.14, t + 0.28, 'sine', 0.08);
   }
 }
 
@@ -791,9 +793,10 @@ export function sfxWrong(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  playSfxTone(220, 0.08, t, 'sawtooth', 0.2);
-  playSfxTone(180, 0.08, t + 0.1, 'sawtooth', 0.2);
-  playSfxTone(150, 0.12, t + 0.2, 'sawtooth', 0.16);
+  // Soft, warm low-frequency error tone (no harsh screeching or distortion)
+  playSfxTone(220, 0.07, t, 'triangle', 0.10);
+  playSfxTone(180, 0.07, t + 0.07, 'triangle', 0.10);
+  playSfxTone(140, 0.10, t + 0.14, 'sine', 0.08);
 }
 
 export function sfxArchiveUnlock(): void {
@@ -802,9 +805,9 @@ export function sfxArchiveUnlock(): void {
   const t = c.currentTime;
   for (let i = 0; i < 8; i++) {
     const freq = 400 + i * 120;
-    playSfxTone(freq, 0.08, t + i * 0.06, 'sine', 0.12 + i * 0.01);
+    playSfxTone(freq, 0.08, t + i * 0.06, 'sine', 0.08 + i * 0.01);
   }
-  playSfxTone(1568, 0.25, t + 0.48, 'sine', 0.18);
+  playSfxTone(1568, 0.25, t + 0.48, 'sine', 0.12);
 }
 
 export function sfxBridgeExtend(): void {
@@ -813,7 +816,7 @@ export function sfxBridgeExtend(): void {
   const t = c.currentTime;
   const chimes = [880, 1108.73, 1318.51, 1760];
   chimes.forEach((freq, i) => {
-    playSfxTone(freq, 0.15, t + i * 0.08, 'sine', 0.16);
+    playSfxTone(freq, 0.15, t + i * 0.08, 'sine', 0.10);
   });
 }
 
@@ -827,7 +830,7 @@ export function sfxVictory(): void {
   ] as [number, number][];
   let cursor = 0;
   melody.forEach(([freq, dur]) => {
-    playSfxTone(freq, dur * 0.9, t + cursor, 'square', 0.22);
+    playSfxTone(freq, dur * 0.9, t + cursor, 'triangle', 0.14);
     cursor += dur;
   });
 }
