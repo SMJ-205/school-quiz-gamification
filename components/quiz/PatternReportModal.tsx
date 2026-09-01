@@ -171,6 +171,14 @@ export default function PatternReportModal({
 
         {/* Guru Lab Feedback & Student Character */}
         <div className="w-full bg-amber-950/40 border-2 border-amber-800/60 rounded-xl p-3 sm:p-4 mb-6 flex items-center gap-3">
+          <div className="shrink-0 hidden sm:block">
+            <PixelSprite character={character} pixelSize={0.25} />
+          </div>
+
+          <div className="flex-1 font-dialogue text-sm sm:text-lg text-stone-200 leading-snug">
+            <span className="text-amber-300 font-bold">Guru Lab:</span> “Kemampuan pengamatan pola adalah fondasi utama berpikir ilmiah. Pertahankan rasa ingin tahu ini!”
+          </div>
+
           <div className="shrink-0 relative w-12 h-16 sm:w-14 sm:h-20 flex items-end justify-center">
             <img
               src="/sprites/teacher_lab_idle.png"
@@ -187,14 +195,6 @@ export default function PatternReportModal({
                 ].join(' '),
               }}
             />
-          </div>
-
-          <div className="flex-1 font-dialogue text-sm sm:text-lg text-stone-200 leading-snug">
-            <span className="text-amber-300 font-bold">Guru Lab berkata:</span> “Kemampuan pengamatan pola adalah fondasi utama berpikir ilmiah. Pertahankan rasa ingin tahu ini!”
-          </div>
-
-          <div className="shrink-0 hidden sm:block">
-            <PixelSprite character={character} pixelSize={0.25} />
           </div>
         </div>
 

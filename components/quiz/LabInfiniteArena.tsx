@@ -347,10 +347,7 @@ export default function LabInfiniteArena() {
                   className="flex-1 comic-bubble-wrapper !border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.35)] flex flex-col justify-center cursor-pointer select-none transition-all hover:border-cyan-300 min-h-[100px] sm:min-h-[135px]"
                   title={isTyping ? 'Klik untuk mempercepat teks' : ''}
                 >
-                  <div className="w-full flex flex-col px-1 sm:px-2 min-h-[55px] sm:min-h-[75px]">
-                    <div className="text-[10px] sm:text-xs font-bold text-cyan-400 tracking-wider mb-1 uppercase">
-                      🔍 {currentQuestion?.categoryLabel || 'Detektif Pola'}
-                    </div>
+                  <div className="w-full flex flex-col px-1 sm:px-2 min-h-[55px] sm:min-h-[75px] justify-center">
                     <p className="font-dialogue text-lg sm:text-2xl text-white tracking-wide leading-snug whitespace-pre-line break-words">
                       {displayedText}
                       {isTyping && <span className="typewriter-cursor text-cyan-400">▋</span>}
@@ -536,6 +533,9 @@ export default function LabInfiniteArena() {
 
             {/* Guru Lab Character & Intro Dialogue */}
             <div className="flex items-center gap-3 bg-cyan-950/70 border border-cyan-500/50 rounded-xl p-3 mb-5 text-left w-full">
+              <div className="flex-1 font-dialogue text-sm sm:text-base text-cyan-200 leading-snug">
+                <span className="text-cyan-300 font-bold">Guru Lab:</span> “Selamat datang di Laboratorium IPA! Sebelum kita mulai bereksperimen, kamu sedang menempuh pendidikan di Kelas berapa?”
+              </div>
               <div className="shrink-0 relative w-14 h-20 flex items-end justify-center">
                 <img
                   src="/sprites/teacher_lab_idle.png"
@@ -552,9 +552,6 @@ export default function LabInfiniteArena() {
                     ].join(' '),
                   }}
                 />
-              </div>
-              <div className="flex-1 font-dialogue text-sm sm:text-base text-cyan-200 leading-snug">
-                <span className="text-cyan-300 font-bold">Guru Lab berkata:</span> “Selamat datang di Laboratorium IPA! Sebelum kita mulai bereksperimen, kamu sedang menempuh pendidikan di Kelas berapa?”
               </div>
             </div>
 
