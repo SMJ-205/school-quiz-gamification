@@ -675,14 +675,14 @@ export function stopAllBGM(): void {
 
 // ─── SFX Tone Synthesizer (Respects sfxMuted & Scaled Volume) ───────────────
 
-export const SFX_VOLUME_SCALE = 0.18; // Soft, smooth master SFX scale to prevent speaker clipping/distortion at high volume
+export const SFX_VOLUME_SCALE = 0.45; // Balanced, clear SFX scale to be clearly audible over BGM without speaker distortion
 
 function playSfxTone(
   frequency: number,
   duration: number,
   startTime: number,
   type: OscillatorType = 'triangle',
-  volume: number = 0.12,
+  volume: number = 0.20,
   gainEnvelope?: { attack?: number; decay?: number; sustain?: number; release?: number }
 ): void {
   if (isSfxMuted()) return;
@@ -701,15 +701,15 @@ function playSfxTone(
     osc.type = type;
     osc.frequency.setValueAtTime(frequency, startTime);
 
-    // Low-pass filter (3000Hz) to soften high digital harmonics & eliminate speaker clipping/crackling
+    // Low-pass filter (4800Hz) to preserve crisp retro chimes while eliminating harsh digital clipping/crackling
     filterNode.type = 'lowpass';
-    filterNode.frequency.setValueAtTime(3000, startTime);
+    filterNode.frequency.setValueAtTime(4800, startTime);
 
     const env = gainEnvelope ?? {};
     const attack = env.attack ?? 0.01;
     const decay = env.decay ?? 0.06;
-    const effectiveVol = Math.min(0.25, volume * SFX_VOLUME_SCALE);
-    const sustain = Math.min(0.20, (env.sustain ?? volume * 0.5) * SFX_VOLUME_SCALE);
+    const effectiveVol = volume * SFX_VOLUME_SCALE;
+    const sustain = (env.sustain ?? volume * 0.6) * SFX_VOLUME_SCALE;
     const release = env.release ?? 0.04;
 
     gainNode.gain.setValueAtTime(0, startTime);
@@ -726,7 +726,7 @@ function playSfxTone(
   } catch {}
 }
 
-function playSfxNoise(duration: number, startTime: number, volume: number = 0.05): void {
+function playSfxNoise(duration: number, startTime: number, volume: number = 0.08): void {
   if (isSfxMuted()) return;
   const c = getCtx();
   if (!c) return;
@@ -762,8 +762,8 @@ export function sfxGearEquip(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  playSfxTone(523, 0.06, t, 'triangle', 0.12);
-  playSfxTone(659, 0.06, t + 0.06, 'triangle', 0.12);
+  playSfxTone(523, 0.06, t, 'triangle', 0.18);
+  playSfxTone(659, 0.06, t + 0.06, 'triangle', 0.18);
 }
 
 export function sfxCorrect(): void {
@@ -772,20 +772,20 @@ export function sfxCorrect(): void {
   if (!c) return;
   const t = c.currentTime;
 
-  // Smooth, Warm Arcade Power-Hit SFX for Sombo Boss Battle
+  // Clear, Warm & Punchy Arcade Power-Hit SFX for Sombo Boss Battle
   if (activeTrackId === 'fast_boss_beat' || activeTrackId === 'high_beat_lofi') {
     const bossHitNotes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
     bossHitNotes.forEach((freq, i) => {
-      playSfxTone(freq, 0.05, t + i * 0.035, 'triangle', 0.12);
+      playSfxTone(freq, 0.06, t + i * 0.035, 'triangle', 0.22);
     });
-    playSfxTone(1318.51, 0.12, t + 0.16, 'sine', 0.10);
+    playSfxTone(1318.51, 0.15, t + 0.16, 'sine', 0.20);
   } else {
-    // Standard Quiz Classroom Correct SFX (Warm triangle & sine chimes)
+    // Standard Quiz Classroom Correct SFX (Crisp, warm triangle & sine chimes)
     const notes = [261.63, 329.63, 392.0, 523.25];
     notes.forEach((freq, i) => {
-      playSfxTone(freq, 0.08, t + i * 0.07, 'triangle', 0.10);
+      playSfxTone(freq, 0.10, t + i * 0.08, 'triangle', 0.22);
     });
-    playSfxTone(1046.5, 0.14, t + 0.28, 'sine', 0.08);
+    playSfxTone(1046.5, 0.16, t + 0.32, 'sine', 0.18);
   }
 }
 
@@ -793,10 +793,10 @@ export function sfxWrong(): void {
   const c = getCtx();
   if (!c) return;
   const t = c.currentTime;
-  // Soft, warm low-frequency error tone (no harsh screeching or distortion)
-  playSfxTone(220, 0.07, t, 'triangle', 0.10);
-  playSfxTone(180, 0.07, t + 0.07, 'triangle', 0.10);
-  playSfxTone(140, 0.10, t + 0.14, 'sine', 0.08);
+  // Clear, warm low-frequency error tone (clearly audible over BGM)
+  playSfxTone(220, 0.09, t, 'triangle', 0.22);
+  playSfxTone(180, 0.09, t + 0.09, 'triangle', 0.22);
+  playSfxTone(140, 0.12, t + 0.18, 'sine', 0.18);
 }
 
 export function sfxArchiveUnlock(): void {
