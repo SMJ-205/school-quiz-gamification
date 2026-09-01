@@ -169,9 +169,8 @@ export default function CharacterCustomizer() {
           {/* Big Next Button */}
           <button
             onClick={handleStart}
-            className="btn-pixel btn-pixel-gold text-sm sm:text-base py-3.5 px-6 sm:px-8 w-full max-w-md flex items-center justify-center gap-2 sm:gap-3 tracking-wider shadow-xl cursor-pointer"
+            className="btn-pixel btn-pixel-gold text-sm sm:text-base py-3.5 px-6 sm:px-8 w-full max-w-md flex items-center justify-center gap-2 sm:gap-3 tracking-wider shadow-xl cursor-pointer font-bold"
           >
-            <span>🏫</span>
             <span>LANJUT: PILIH TEMPAT BELAJAR</span>
             <span>▶</span>
           </button>
