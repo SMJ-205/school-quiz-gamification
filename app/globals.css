@@ -86,6 +86,12 @@ body {
   overflow: hidden;
 }
 
+.crt-arcade-frame.overflow-y-auto,
+.crt-arcade-frame.overflow-auto,
+.crt-arcade-frame-scrollable {
+  overflow-y: auto !important;
+}
+
 /* CRT Scanlines subtle overlay */
 .crt-arcade-frame::after {
   content: '';

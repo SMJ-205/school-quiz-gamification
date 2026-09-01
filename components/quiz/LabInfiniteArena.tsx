@@ -523,7 +523,7 @@ export default function LabInfiniteArena() {
       {/* ── Grade Selection Modal (Konfirmasi Tingkat Kelas SD) ────────────────────────── */}
       {showGradeModal && (
         <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 md:p-10 select-none animate-fadeIn overflow-y-auto">
-          <div className="relative w-full max-w-3xl sm:max-w-4xl lg:max-w-5xl max-h-[92vh] overflow-y-auto crt-arcade-frame bg-[#081320] border-4 border-cyan-400 rounded-3xl p-5 sm:p-8 md:p-12 shadow-[0_0_60px_rgba(6,182,212,0.6)] text-stone-100 font-pixel text-center flex flex-col items-center my-auto custom-scrollbar">
+          <div className="relative w-full max-w-3xl sm:max-w-4xl lg:max-w-5xl max-h-[88vh] overflow-y-auto crt-arcade-frame crt-arcade-frame-scrollable bg-[#081320] border-4 border-cyan-400 rounded-3xl p-5 sm:p-8 md:p-10 shadow-[0_0_60px_rgba(6,182,212,0.6)] text-stone-100 font-pixel text-center flex flex-col items-center my-auto custom-scrollbar">
             
             {/* Header Badge */}
             <div className="inline-flex items-center gap-2 bg-cyan-950/90 border-2 border-cyan-400 text-cyan-300 font-bold text-xs sm:text-sm md:text-base px-4 py-1.5 rounded-full mb-6 sm:mb-8 shadow-[0_0_20px_rgba(6,182,212,0.45)] uppercase tracking-widest shrink-0">
@@ -532,14 +532,16 @@ export default function LabInfiniteArena() {
             </div>
 
             {/* Guru Lab Character & Intro Dialogue Box */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 bg-cyan-950/90 border-2 border-cyan-500/70 rounded-2xl px-6 sm:px-10 md:px-12 py-5 sm:py-7 mb-8 sm:mb-10 text-left w-full shadow-xl shrink-0">
-              <div className="flex-1 font-dialogue text-base sm:text-lg md:text-xl text-cyan-100 leading-relaxed pl-3 sm:pl-6 md:pl-8 pr-2">
-                <span className="bg-cyan-900/80 border border-cyan-400/60 text-cyan-300 font-bold px-3 py-1 rounded-lg inline-block mr-3 mb-1.5 shadow-sm">
-                  Guru Lab:
-                </span>
-                <span className="inline-block mt-1 sm:mt-0">
+            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 bg-cyan-950/90 border-2 border-cyan-500/70 rounded-2xl p-5 sm:p-7 md:p-8 mb-6 sm:mb-8 text-left w-full shadow-xl shrink-0">
+              <div className="flex-1 font-dialogue text-base sm:text-lg md:text-xl text-cyan-100 leading-relaxed pl-2 sm:pl-4">
+                <div className="mb-2">
+                  <span className="bg-cyan-900/90 border-2 border-cyan-400 text-cyan-300 font-bold px-3.5 py-1 rounded-lg text-sm sm:text-base inline-block shadow-md">
+                    Guru Lab:
+                  </span>
+                </div>
+                <p className="text-cyan-100 text-base sm:text-lg md:text-xl leading-relaxed">
                   “Selamat datang di Laboratorium IPA! Sebelum kita mulai bereksperimen, kamu sedang menempuh pendidikan di Kelas berapa?”
-                </span>
+                </p>
               </div>
               <div className="shrink-0 relative w-16 h-24 sm:w-20 sm:h-28 flex items-end justify-center pr-2 sm:pr-4">
                 <img
@@ -589,7 +591,7 @@ export default function LabInfiniteArena() {
             </div>
 
             {/* Cancel / Exit Action Button with Generous Blank Space & Divider Line */}
-            <div className="w-full mt-8 sm:mt-10 md:mt-12 pt-6 sm:pt-8 border-t-2 border-cyan-900/70 flex items-center justify-center shrink-0">
+            <div className="w-full mt-6 sm:mt-8 md:mt-10 pt-6 sm:pt-8 mb-2 border-t-2 border-cyan-900/80 flex items-center justify-center shrink-0">
               <button
                 onClick={() => setScreen('background_select')}
                 className="btn-pixel !bg-slate-800 hover:!bg-slate-700 !border-slate-500 hover:!border-cyan-400 text-slate-200 hover:text-white px-8 sm:px-10 py-3.5 sm:py-4 text-xs sm:text-sm md:text-base font-bold flex items-center justify-center gap-3 cursor-pointer transition-all hover:scale-105 shadow-2xl font-dialogue uppercase tracking-wider rounded-xl"
