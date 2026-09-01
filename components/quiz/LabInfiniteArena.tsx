@@ -558,12 +558,12 @@ export default function LabInfiniteArena() {
             {/* 6 Grade Buttons Grid (Kelas 1 - 6 SD) */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 w-full mb-6 text-left font-dialogue">
               {[
-                { grade: 1, title: 'Kelas 1 SD', desc: 'Pola Tambah 1-3 • Rotasi Panah' },
-                { grade: 2, title: 'Kelas 2 SD', desc: 'Pola +2/+3 • Urutan Bentuk 2D' },
-                { grade: 3, title: 'Kelas 3 SD', desc: 'Beda Bertingkat • Perkalian 2' },
-                { grade: 4, title: 'Kelas 4 SD', desc: 'Perkalian 2/3 • Matriks 2x2' },
-                { grade: 5, title: 'Kelas 5 SD', desc: 'Deret Kuadrat • Matriks 3x3' },
-                { grade: 6, title: 'Kelas 6 SD', desc: 'Fibonacci • Matriks Gambar 3x3 (Peak)' },
+                { grade: 1, title: 'Kelas 1 SD', desc: 'Pola Penjumlahan (+1..+5) • Rotasi 2D' },
+                { grade: 2, title: 'Kelas 2 SD', desc: 'Pola Loncat (+2,+5,+10) • Deret Gambar' },
+                { grade: 3, title: 'Kelas 3 SD', desc: 'Pola Bertingkat • Perkalian ×2/×3' },
+                { grade: 4, title: 'Kelas 4 SD', desc: 'Perkalian Kelipatan • Deret Kuadrat' },
+                { grade: 5, title: 'Kelas 5 SD', desc: 'Deret Kuadrat • Pembelahan Sel' },
+                { grade: 6, title: 'Kelas 6 SD', desc: 'Fibonacci • Matriks Gambar 3x3 TPA' },
               ].map((g) => (
                 <button
                   key={g.grade}

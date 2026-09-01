@@ -151,25 +151,25 @@ function buildUniqueOptionBoxes(correctBox: QuadrantBox, candidates: QuadrantBox
 // ─── STRICT GRADE-BASED DIFFICULTY CALCULATOR (Kelas 1 - 6 SD) ─────────────
 
 export function getDifficultyForGradeAndNumber(qNum: number, grade: number = 6): 1 | 2 | 3 | 4 {
-  if (grade <= 1) return 1; // Kelas 1 SD: STRICTLY Level 1 ONLY (Termudah)
-  if (grade === 2) return qNum <= 5 ? 1 : 2; // Kelas 2 SD: Level 1-2
-  if (grade === 3) return 2; // Kelas 3 SD: Level 2
-  if (grade === 4) return qNum <= 4 ? 2 : 3; // Kelas 4 SD: Level 2-3
-  if (grade === 5) return 3; // Kelas 5 SD: Level 3
+  if (grade <= 1) return 1; // Kelas 1 SD: STRICTLY Level 1 ONLY (Termudah & Intuitif)
+  if (grade === 2) return 1; // Kelas 2 SD: STRICTLY Level 1 ONLY (Pola Penjumlahan/Pengurangan & Loncat 2,3,4,5,10)
+  if (grade === 3) return qNum <= 5 ? 1 : 2; // Kelas 3 SD: Level 1 s.d. Level 2 (Perkalian Kelipatan 2 & 3 Sederhana)
+  if (grade === 4) return qNum <= 4 ? 2 : 3; // Kelas 4 SD: Level 2 s.d. Level 3 (Kuadrat Dasar & Matriks 3x3)
+  if (grade === 5) return 3; // Kelas 5 SD: Level 3 (Deret Kuadrat, Pembelahan Sel, Matriks 3x3)
   // Kelas 6 SD Peak
   if (qNum <= 3) return 3;
-  return 4; // Level 4 (Max SD 6 Peak)
+  return 4; // Level 4 (Fibonacci, Kuadrat Offset, Matriks 3x3 TPA Peak)
 }
 
 // ─── 1. Aritmatika & Bertingkat ─────────────────────────────────────────────
 
 function generateArithmetic(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
   if (difficulty === 1) {
-    // Level 1 (Kelas 1 SD): Super Easy Constant Addition (+1, +2, +3, +4, +5) or Subtraction (-1, -2)
+    // Level 1 (Kelas 1 - 2 SD): Super Easy Constant Addition (+1, +2, +3, +4, +5, +10) or Subtraction (-1, -2, -3, -5)
     const isSub = Math.random() > 0.5;
     if (isSub) {
-      const step = pickRandom([1, 2]);
-      const start = randomInt(10, 20);
+      const step = pickRandom([1, 2, 3, 5]);
+      const start = randomInt(10, 25);
       const seq = [start, start - step, start - step * 2, start - step * 3];
       const answer = start - step * 4;
       const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + step + 1, answer - 1, answer + 2]);
@@ -177,7 +177,7 @@ function generateArithmetic(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
       return {
         id: `arit_l1_sub_${Date.now()}_${Math.random()}`,
         category: 'aritmatika',
-        categoryLabel: 'Aritmatika Pengurangan (Level 1 - SD 1)',
+        categoryLabel: 'Aritmatika Pengurangan (Level 1 - SD 1/2)',
         difficultyLevel: 1,
         question: `Detektif cilik, tentukan angka berikutnya yang berkurang -${step} ini:\n${seq.join(', ')}, ?`,
         options,
@@ -185,7 +185,7 @@ function generateArithmetic(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
         hint: `🔬 *Analisis Guru Lab:* Setiap langkah selalu berkurang -${step}. Jadi ${seq[seq.length - 1]} - ${step} = ${answer}.`,
       };
     } else {
-      const step = pickRandom([1, 2, 3, 4, 5]);
+      const step = pickRandom([1, 2, 3, 4, 5, 10]);
       const start = randomInt(1, 15);
       const seq = [start, start + step, start + step * 2, start + step * 3];
       const answer = start + step * 4;
@@ -194,7 +194,7 @@ function generateArithmetic(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
       return {
         id: `arit_l1_add_${Date.now()}_${Math.random()}`,
         category: 'aritmatika',
-        categoryLabel: 'Aritmatika Penjumlahan (Level 1 - SD 1)',
+        categoryLabel: 'Aritmatika Penjumlahan (Level 1 - SD 1/2)',
         difficultyLevel: 1,
         question: `Detektif cilik, tentukan angka berikutnya dari pola bertambah +${step} ini:\n${seq.join(', ')}, ?`,
         options,
@@ -285,8 +285,8 @@ function generateArithmetic(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
 
 function generateGeometric(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
   if (difficulty === 1) {
-    const step = pickRandom([2, 3, 4, 5]);
-    const start = randomInt(1, 8) * step;
+    const step = pickRandom([2, 3, 4, 5, 10]);
+    const start = randomInt(1, 5) * step;
     const seq = [start, start + step, start + step * 2, start + step * 3];
     const answer = start + step * 4;
 
@@ -295,16 +295,16 @@ function generateGeometric(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
     return {
       id: `geo_l1_${Date.now()}_${Math.random()}`,
       category: 'geometris',
-      categoryLabel: `Pola Loncat ${step} (Level 1 - SD 1)`,
+      categoryLabel: `Pola Loncat ${step} (Level 1 - SD 1/2)`,
       difficultyLevel: 1,
-      question: `Tentukan angka berikutnya dari pola loncat ${step} ini:\n${seq.join(', ')}, ?`,
+      question: `Tentukan angka berikutnya dari pola loncat +${step} ini:\n${seq.join(', ')}, ?`,
       options,
       correctIndex,
       hint: `🔬 *Analisis Guru Lab:* Angka selalu melompat +${step}. ${seq[seq.length - 1]} + ${step} = ${answer}.`,
     };
   } else if (difficulty === 2) {
-    const mult = pickRandom([2, 3, 4]);
-    const start = randomInt(1, 5);
+    const mult = pickRandom([2, 3]);
+    const start = mult === 2 ? randomInt(1, 4) : randomInt(1, 2);
     const seq = [start, start * mult, start * mult * mult, start * mult * mult * mult];
     const answer = start * mult * mult * mult * mult;
 
@@ -313,7 +313,7 @@ function generateGeometric(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
     return {
       id: `geo_l2_${Date.now()}_${Math.random()}`,
       category: 'geometris',
-      categoryLabel: `Perkalian Kelipatan ${mult} (Level 2)`,
+      categoryLabel: `Perkalian Kelipatan ×${mult} (Level 2)`,
       difficultyLevel: 2,
       question: `Tentukan angka berikutnya dari pola kelipatan ×${mult} ini:\n${seq.join(', ')}, ?`,
       options,
