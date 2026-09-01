@@ -522,21 +522,21 @@ export default function LabInfiniteArena() {
 
       {/* ── Grade Selection Modal (Konfirmasi Tingkat Kelas SD) ────────────────────────── */}
       {showGradeModal && (
-        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md overflow-y-auto p-2 sm:p-6 md:p-8 select-none animate-fadeIn flex justify-center items-center">
-          <div className="relative w-full max-w-2xl sm:max-w-3xl lg:max-w-4xl crt-arcade-frame bg-[#081320] border-3 sm:border-4 border-cyan-400 rounded-2xl sm:rounded-3xl p-3 sm:p-6 md:p-8 text-stone-100 font-pixel text-center flex flex-col items-center my-auto shadow-[0_0_50px_rgba(6,182,212,0.55)]">
-            <div className="w-full px-1 sm:px-4 md:px-6 flex flex-col items-center">
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md overflow-y-auto p-3 sm:p-6 md:p-10 select-none animate-fadeIn flex justify-center items-center">
+          <div className="relative w-full max-w-2xl sm:max-w-3xl lg:max-w-5xl crt-arcade-frame bg-[#081320] border-3 sm:border-4 border-cyan-400 rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 text-stone-100 font-pixel text-center flex flex-col items-center my-auto shadow-[0_0_55px_rgba(6,182,212,0.6)]">
+            <div className="w-full px-2 sm:px-6 md:px-8 flex flex-col items-center">
               
               {/* Header Badge */}
-              <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-cyan-950/90 border-2 border-cyan-400 text-cyan-300 font-bold text-[10px] sm:text-xs md:text-sm px-3 py-1 sm:px-4 sm:py-1.5 rounded-full mb-3 sm:mb-5 shadow-[0_0_15px_rgba(6,182,212,0.4)] uppercase tracking-widest shrink-0">
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-cyan-950/90 border-2 border-cyan-400 text-cyan-300 font-bold text-[10px] sm:text-xs md:text-sm px-3.5 py-1 sm:px-5 sm:py-2 rounded-full mb-4 sm:mb-6 md:mb-7 shadow-[0_0_18px_rgba(6,182,212,0.45)] uppercase tracking-widest shrink-0">
                 <span>🔬</span>
                 <span>KONFIRMASI TINGKAT KELAS SD</span>
               </div>
 
               {/* Guru Lab Character & Intro Dialogue Box */}
-              <div className="flex flex-row items-center gap-2.5 sm:gap-5 bg-cyan-950/90 border-2 border-cyan-500/70 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 mb-4 sm:mb-6 text-left w-full shadow-xl shrink-0">
+              <div className="flex flex-row items-center gap-2.5 sm:gap-5 bg-cyan-950/90 border-2 border-cyan-500/70 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 md:p-6 mb-6 sm:mb-8 md:mb-10 text-left w-full shadow-xl shrink-0">
                 <div className="flex-1 font-dialogue text-xs sm:text-base md:text-lg text-cyan-100 leading-tight sm:leading-relaxed pl-1 sm:pl-3">
                   <div className="mb-1 sm:mb-1.5">
-                    <span className="bg-cyan-900/90 border border-cyan-400 text-cyan-300 font-bold px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md sm:rounded-lg text-[10px] sm:text-xs inline-block shadow-md">
+                    <span className="bg-cyan-900/90 border border-cyan-400 text-cyan-300 font-bold px-2.5 py-0.5 sm:px-3.5 sm:py-1 rounded-md sm:rounded-lg text-[10px] sm:text-xs inline-block shadow-md">
                       Guru Lab:
                     </span>
                   </div>
@@ -563,8 +563,8 @@ export default function LabInfiniteArena() {
                 </div>
               </div>
 
-              {/* 6 Grade Buttons Grid (Kelas 1 - 6 SD) - Forced Blank Space Gap above & below */}
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 w-full text-left font-dialogue mb-4 sm:mb-6 mt-1 shrink-0">
+              {/* 6 Grade Buttons Grid (Kelas 1 - 6 SD) - Generous Vertical & Horizontal Gaps */}
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 md:gap-6 w-full text-left font-dialogue mb-6 sm:mb-8 md:mb-10 mt-1 shrink-0">
                 {[
                   { grade: 1, title: 'Kelas 1 SD', desc: 'Pola Penjumlahan (+1..+5) • Rotasi 2D' },
                   { grade: 2, title: 'Kelas 2 SD', desc: 'Pola Loncat (+2,+5,+10) • Deret Gambar' },
@@ -576,9 +576,9 @@ export default function LabInfiniteArena() {
                   <button
                     key={g.grade}
                     onClick={() => handleConfirmGrade(g.grade)}
-                    className="btn-pixel !bg-slate-900/90 hover:!bg-cyan-950 !border-cyan-500/80 hover:!border-cyan-300 text-slate-100 p-2.5 sm:p-3.5 md:p-4 rounded-xl sm:rounded-2xl flex flex-col justify-between transition-all hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.45)] cursor-pointer group shadow-lg min-h-[56px] sm:min-h-[76px] md:min-h-[84px]"
+                    className="btn-pixel !bg-slate-900/90 hover:!bg-cyan-950 !border-cyan-500/80 hover:!border-cyan-300 text-slate-100 p-3 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl flex flex-col justify-between transition-all hover:scale-[1.02] hover:shadow-[0_0_22px_rgba(6,182,212,0.5)] cursor-pointer group shadow-lg min-h-[60px] sm:min-h-[82px] md:min-h-[92px]"
                   >
-                    <div className="flex items-center justify-between w-full mb-0.5 sm:mb-1.5">
+                    <div className="flex items-center justify-between w-full mb-1 sm:mb-2">
                       <span className="font-bold text-cyan-300 group-hover:text-cyan-100 text-xs sm:text-base md:text-lg">
                         {g.title}
                       </span>
@@ -592,10 +592,10 @@ export default function LabInfiniteArena() {
               </div>
 
               {/* Cancel / Exit Action Button with Forced Blank Space Gap */}
-              <div className="w-full flex items-center justify-center shrink-0 mt-3 sm:mt-5 pt-3 sm:pt-4 border-t-2 border-cyan-900/60">
+              <div className="w-full flex items-center justify-center shrink-0 mt-4 sm:mt-6 md:mt-8 pt-4 sm:pt-6 border-t-2 border-cyan-900/60">
                 <button
                   onClick={() => setScreen('background_select')}
-                  className="btn-pixel !bg-slate-800 hover:!bg-slate-700 !border-slate-500 hover:!border-cyan-400 text-slate-200 hover:text-white px-5 sm:px-8 py-2.5 sm:py-3 text-[10px] sm:text-xs md:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2.5 cursor-pointer transition-all hover:scale-105 shadow-2xl font-dialogue uppercase tracking-wider rounded-lg sm:rounded-xl"
+                  className="btn-pixel !bg-slate-800 hover:!bg-slate-700 !border-slate-500 hover:!border-cyan-400 text-slate-200 hover:text-white px-6 sm:px-10 py-3 sm:py-3.5 text-[10px] sm:text-xs md:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2.5 cursor-pointer transition-all hover:scale-105 shadow-2xl font-dialogue uppercase tracking-wider rounded-lg sm:rounded-xl"
                 >
                   <span>◀</span>
                   <span>KEMBALI KE TEMPAT BELAJAR</span>
