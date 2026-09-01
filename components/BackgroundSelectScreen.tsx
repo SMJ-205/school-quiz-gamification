@@ -126,7 +126,7 @@ export default function BackgroundSelectScreen() {
       <div className="crt-scanlines-overlay" />
 
       {/* Main CRT Frame Container */}
-      <div className="relative z-10 w-full max-w-5xl crt-arcade-frame bg-[#140E0A] p-4 sm:p-7 md:p-8 flex flex-col items-center text-center border-4 border-[#7D4E2D] shadow-2xl rounded-2xl my-auto">
+      <div className="relative z-10 w-full max-w-6xl lg:max-w-7xl crt-arcade-frame bg-[#140E0A] p-4 sm:p-7 md:p-8 flex flex-col items-center text-center border-4 border-[#7D4E2D] shadow-2xl rounded-2xl my-auto">
         <div className="w-full flex flex-col items-center">
 
           {/* Top Header */}
@@ -146,7 +146,7 @@ export default function BackgroundSelectScreen() {
           {/* 4 Cards Grid: 2 col on sm, 4 col on lg+, stacked on mobile with generous blank space buffer */}
           <div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 w-full mb-6 sm:mb-8 text-left"
-            style={{ paddingLeft: '36px', paddingRight: '36px' }}
+            style={{ paddingLeft: '32px', paddingRight: '32px' }}
           >
             {PLACE_OPTIONS.map((opt) => {
               const isSelected = activePlaceId === opt.id;
@@ -155,7 +155,7 @@ export default function BackgroundSelectScreen() {
                 <div
                   key={opt.id}
                   onClick={() => handleSelect(opt)}
-                  className={`rounded-2xl border-4 overflow-hidden transition-all duration-300 cursor-pointer relative flex flex-col group ${
+                  className={`rounded-2xl border-4 overflow-hidden transition-all duration-300 cursor-pointer relative flex flex-col justify-between group ${
                     isSelected
                       ? opt.isBoss
                         ? 'border-red-500 shadow-[0_0_32px_rgba(220,38,38,0.55)] scale-[1.02] bg-[#1A0808]'
@@ -170,7 +170,7 @@ export default function BackgroundSelectScreen() {
                   }`}
                 >
                   {/* Thumbnail Image Banner */}
-                  <div className="relative h-40 sm:h-48 w-full bg-stone-950 overflow-hidden">
+                  <div className="relative h-40 sm:h-48 w-full bg-stone-950 overflow-hidden shrink-0">
                     <img
                       src={opt.url}
                       alt={opt.title}
@@ -228,18 +228,18 @@ export default function BackgroundSelectScreen() {
                   </div>
 
                   {/* Description Body */}
-                  <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
+                  <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between overflow-hidden">
                     <p className="font-dialogue text-base sm:text-lg md:text-xl text-stone-100 leading-snug tracking-wide">
                       {opt.desc}
                     </p>
                     {opt.isBoss && (
-                      <div className="mt-3 text-xs sm:text-sm text-red-300 font-dialogue border border-red-900/80 rounded-lg px-2.5 py-1.5 bg-red-950/70 font-bold">
-                        ⚡ Mode Khusus — Soal otomatis • Dynamic Math Battle • Unlimited Math
+                      <div className="mt-2.5 text-xs sm:text-sm text-red-300 font-dialogue border border-red-900/80 rounded-lg px-2.5 py-1.5 bg-red-950/70 font-bold leading-tight">
+                        ⚡ Mode Khusus: Math Battle & Unlimited Math
                       </div>
                     )}
                     {opt.isInfinite && (
-                      <div className="mt-3 text-xs sm:text-sm text-cyan-300 font-dialogue border border-cyan-900/80 rounded-lg px-2.5 py-1.5 bg-cyan-950/70 font-bold">
-                        ♾️ Mode Infinite — Deret Gambar 3x3 • Gradasi Kesulitan
+                      <div className="mt-2.5 text-xs sm:text-sm text-cyan-300 font-dialogue border border-cyan-900/80 rounded-lg px-2.5 py-1.5 bg-cyan-950/70 font-bold leading-tight">
+                        ♾️ Mode Infinite: Deret Gambar 3x3 TPA
                       </div>
                     )}
                   </div>
