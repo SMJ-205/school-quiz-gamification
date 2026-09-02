@@ -178,9 +178,6 @@ Cahaya matahari membutuhkan waktu sekitar berapa menit untuk sampai ke Bumi?
             {/* Scrim Overlays for Header High Contrast & Text Legibility */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/25 to-black/85 pointer-events-none" />
 
-            {/* Radial Warm Spotlight Ambient Glow */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_60%,_rgba(245,158,11,0.3),_transparent_70%)] animate-pulse pointer-events-none" />
-
             {/* Light Sheen Sweep Effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-200/20 to-transparent anim-light-sheen pointer-events-none w-1/2 h-full z-0" />
 
