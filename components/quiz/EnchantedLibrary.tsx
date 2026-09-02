@@ -12,7 +12,7 @@ import { useGameStore } from '@/store/useGameStore';
 import PixelProgressBar from '../PixelProgressBar';
 import QuestionPanel from './QuestionPanel';
 import PixelSprite from '../PixelSprite';
-import { sfxArchiveUnlock } from '@/lib/audioEngine';
+import { sfxArchiveUnlock, isAudioMuted, toggleAudioMute } from '@/lib/audioEngine';
 
 export default function EnchantedLibrary() {
   const { currentQuestionIndex, correctAnswersCount, questions, character, studentName, selectedBackground, setScreen, resetGame } = useGameStore();
@@ -20,6 +20,16 @@ export default function EnchantedLibrary() {
   const [prevCorrect, setPrevCorrect] = useState(correctAnswersCount);
   const [showExitModal, setShowExitModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [muted, setMuted] = useState<boolean>(false);
+
+  useEffect(() => {
+    setMuted(isAudioMuted());
+  }, []);
+
+  function handleToggleSound() {
+    const next = toggleAudioMute();
+    setMuted(next);
+  }
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 640);
@@ -59,12 +69,25 @@ export default function EnchantedLibrary() {
       {/* ── TOP HUD BAR (Full Width Edge-to-Edge) ────────────────────────── */}
       <div className="relative z-20 p-2 sm:p-3 bg-black/90 border-b-2 border-amber-950 flex items-center justify-between gap-2 font-pixel mb-1 sm:mb-8">
         <div className="flex items-center gap-2">
-          <div className="retro-pill-badge !bg-amber-950 !border-amber-400 text-amber-300 text-xs sm:text-sm py-1 px-3 font-bold">
-            📖 RAK ARSIP {floorNumber}
+          <div className="retro-pill-badge !bg-amber-950 !border-amber-400 text-amber-300 text-xs sm:text-sm py-1 px-3 font-bold shadow-[0_0_10px_rgba(245,158,11,0.3)]">
+            KUIS ILMU PERPUSTAKAAN
           </div>
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={handleToggleSound}
+            className={`btn-pixel text-xs py-1 px-2.5 flex items-center gap-1 cursor-pointer transition-all ${
+              muted
+                ? '!bg-red-950/80 !border-red-500 text-red-300 shadow-[0_0_10px_rgba(239,68,68,0.4)]'
+                : '!bg-stone-800 hover:!bg-stone-700 !border-amber-500/60 text-amber-300'
+            }`}
+            title={muted ? 'Nyalakan Musik & SFX (Unmute)' : 'Matikan Musik & SFX (Mute)'}
+          >
+            <span>{muted ? '🔇' : '🔊'}</span>
+            <span className="font-bold hidden sm:inline">{muted ? 'MUTED' : 'SUARA'}</span>
+          </button>
+
           <button
             onClick={() => setShowExitModal(true)}
             className="btn-pixel !bg-red-950/90 hover:!bg-red-900 !border-red-600/80 text-red-200 text-xs py-1.5 px-3 flex items-center gap-1.5 cursor-pointer shadow-md"
@@ -73,9 +96,6 @@ export default function EnchantedLibrary() {
             <span>🏠</span>
             <span>MENU UTAMA</span>
           </button>
-          <div className="retro-pill-badge !bg-stone-900/90 !border-amber-500/60 text-amber-300 text-xs py-1 px-3 hidden sm:flex">
-            ⚔️ KUIS ILMU PERPUSTAKAAN
-          </div>
         </div>
       </div>
 
