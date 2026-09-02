@@ -350,7 +350,7 @@ export default function LabInfiniteArena() {
             <div className="absolute inset-0 bg-gradient-to-b from-cyan-950/50 via-black/40 to-cyan-950/75 pointer-events-none z-0" />
 
             {/* Top Info Banner - Cyan Science Styling with Guaranteed Blank Space Gap from Top Bar */}
-            <div className="relative z-20 w-full max-w-3xl mx-auto flex items-center justify-between text-xs sm:text-sm font-bold text-cyan-300 bg-cyan-950/85 px-3 py-1.5 rounded-lg border border-cyan-400/60 backdrop-blur-sm shadow-[0_0_15px_rgba(6,182,212,0.3)] mt-5 sm:mt-7 md:mt-8">
+            <div className="relative z-20 w-full max-w-3xl mx-auto flex items-center justify-between text-xs sm:text-sm font-bold text-cyan-300 bg-cyan-950/85 px-3.5 py-2 rounded-lg border border-cyan-400/60 backdrop-blur-sm shadow-[0_0_15px_rgba(6,182,212,0.3)] mt-6 sm:mt-10 md:mt-12">
               <span className="flex items-center gap-1.5">
                 <span className="text-cyan-400">SOAL #{questionCount}</span>
                 <span className="text-cyan-600">•</span>
