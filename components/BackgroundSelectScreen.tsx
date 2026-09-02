@@ -249,7 +249,7 @@ export default function BackgroundSelectScreen() {
           </div>
 
           {/* Action Button Navigation */}
-          <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t-2 border-amber-950/80">
+          <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3 pt-3">
             <button
               onClick={handleBack}
               className="btn-pixel !bg-stone-800 hover:!bg-stone-700 !border-stone-600 !text-amber-200 hover:!text-white w-full sm:w-auto px-5 py-3 text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer font-bold shadow-lg"
