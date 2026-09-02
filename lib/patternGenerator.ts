@@ -76,6 +76,27 @@ function buildUniqueTextOptions(
 // ─── STRICT UNIQUE VISUAL OPTION BOXES GUARANTEE ───────────────────────────
 
 function areBoxesEqual(a: QuadrantBox, b: QuadrantBox): boolean {
+  if (a.pentagonData !== undefined || b.pentagonData !== undefined) {
+    return JSON.stringify(a.pentagonData) === JSON.stringify(b.pentagonData);
+  }
+  if (a.pointerCircleData !== undefined || b.pointerCircleData !== undefined) {
+    return JSON.stringify(a.pointerCircleData) === JSON.stringify(b.pointerCircleData);
+  }
+  if (a.ringNotchData !== undefined || b.ringNotchData !== undefined) {
+    return JSON.stringify(a.ringNotchData) === JSON.stringify(b.ringNotchData);
+  }
+  if (a.nestedShapeData !== undefined || b.nestedShapeData !== undefined) {
+    return JSON.stringify(a.nestedShapeData) === JSON.stringify(b.nestedShapeData);
+  }
+  if (a.spiderwebData !== undefined || b.spiderwebData !== undefined) {
+    return JSON.stringify(a.spiderwebData) === JSON.stringify(b.spiderwebData);
+  }
+  if (a.gridOuterDotData !== undefined || b.gridOuterDotData !== undefined) {
+    return JSON.stringify(a.gridOuterDotData) === JSON.stringify(b.gridOuterDotData);
+  }
+  if (a.orbitDotsData !== undefined || b.orbitDotsData !== undefined) {
+    return JSON.stringify(a.orbitDotsData) === JSON.stringify(b.orbitDotsData);
+  }
   if (a.angles !== undefined || b.angles !== undefined) {
     return JSON.stringify(a.angles) === JSON.stringify(b.angles);
   }
@@ -111,7 +132,83 @@ function buildUniqueOptionBoxes(correctBox: QuadrantBox, candidates: QuadrantBox
     attempts++;
     let fallback: QuadrantBox;
 
-    if (correctBox.shapeType !== undefined) {
+    if (correctBox.pentagonData !== undefined) {
+      const unusedVertex = [0, 1, 2, 3, 4].find(
+        (v) => !uniqueList.some((b) => b.pentagonData?.dotVertex === v)
+      );
+      fallback = {
+        pentagonData: {
+          arrowAngle: (correctBox.pentagonData.arrowAngle + 90) % 360,
+          dotVertex: unusedVertex ?? (correctBox.pentagonData.dotVertex + 1) % 5,
+        },
+      };
+    } else if (correctBox.pointerCircleData !== undefined) {
+      const allAngles = [0, 45, 90, 135, 180, 225, 270, 315];
+      const unusedAngle = allAngles.find(
+        (a) => !uniqueList.some((b) => b.pointerCircleData?.dotPositionAngle === a)
+      );
+      fallback = {
+        pointerCircleData: {
+          dotPositionAngle: unusedAngle ?? (correctBox.pointerCircleData.dotPositionAngle + 90) % 360,
+        },
+      };
+    } else if (correctBox.ringNotchData !== undefined) {
+      const allAngles = [0, 45, 90, 135, 180, 225, 270, 315];
+      const unusedAngle = allAngles.find(
+        (a) => !uniqueList.some((b) => b.ringNotchData?.angle === a)
+      );
+      fallback = {
+        ringNotchData: {
+          angle: unusedAngle ?? (correctBox.ringNotchData.angle + 90) % 360,
+        },
+      };
+    } else if (correctBox.nestedShapeData !== undefined) {
+      const allShapes: ('circle' | 'triangle' | 'square' | 'diamond')[] = [
+        'circle',
+        'triangle',
+        'square',
+        'diamond',
+      ];
+      const unusedInner = allShapes.find(
+        (s) => !uniqueList.some((b) => b.nestedShapeData?.innerShape === s)
+      );
+      fallback = {
+        nestedShapeData: {
+          outerShape: correctBox.nestedShapeData.outerShape,
+          innerShape: unusedInner || 'circle',
+          innerFilled: !correctBox.nestedShapeData.innerFilled,
+        },
+      };
+    } else if (correctBox.spiderwebData !== undefined) {
+      const unusedBug = [0, 1, 2, 3, 4].find(
+        (v) => !uniqueList.some((b) => b.spiderwebData?.bugVertex === v)
+      );
+      fallback = {
+        spiderwebData: {
+          lightningBranches: correctBox.spiderwebData.lightningBranches,
+          bugVertex: unusedBug ?? (correctBox.spiderwebData.bugVertex + 1) % 5,
+        },
+      };
+    } else if (correctBox.gridOuterDotData !== undefined) {
+      const positions: ('tl' | 'tr' | 'br' | 'bl')[] = ['tl', 'tr', 'br', 'bl'];
+      const unusedPos = positions.find(
+        (p) => !uniqueList.some((b) => b.gridOuterDotData?.outerDotPos === p)
+      );
+      fallback = {
+        gridOuterDotData: {
+          ...correctBox.gridOuterDotData,
+          outerDotPos: unusedPos || 'tl',
+        },
+      };
+    } else if (correctBox.orbitDotsData !== undefined) {
+      fallback = {
+        orbitDotsData: {
+          centerShape: correctBox.orbitDotsData.centerShape,
+          centerFilled: !correctBox.orbitDotsData.centerFilled,
+          activeDots: [(correctBox.orbitDotsData.activeDots[0] + 1) % 6],
+        },
+      };
+    } else if (correctBox.shapeType !== undefined) {
       const allShapes: QuadrantBox['shapeType'][] = [
         'square_filled',
         'circle_filled',
@@ -783,7 +880,425 @@ function generateShapesRowQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
   };
 }
 
-// 3.5. Mode: 2x2 Quadrant Grid Matrix
+// 3.6. Mode: Pentagon & Arrow (Reference Row 1)
+function generatePentagonArrowQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+  const stepAngle = pickRandom([45, 90, 72]);
+  const startAngle = pickRandom([0, 45, 90, 180]);
+  const startVertex = randomInt(0, 4);
+
+  const boxes: QuadrantBox[] = [];
+  for (let i = 0; i < 8; i++) {
+    boxes.push({
+      pentagonData: {
+        arrowAngle: (startAngle + i * stepAngle) % 360,
+        dotVertex: (startVertex + i) % 5,
+      },
+    });
+  }
+  boxes.push({ isQuestion: true });
+
+  const correctAngle = (startAngle + 8 * stepAngle) % 360;
+  const correctVertex = (startVertex + 8) % 5;
+  const correctBox: QuadrantBox = {
+    pentagonData: {
+      arrowAngle: correctAngle,
+      dotVertex: correctVertex,
+    },
+  };
+
+  const candidateDistractors: QuadrantBox[] = [
+    { pentagonData: { arrowAngle: (correctAngle + 90) % 360, dotVertex: correctVertex } },
+    { pentagonData: { arrowAngle: correctAngle, dotVertex: (correctVertex + 1) % 5 } },
+    { pentagonData: { arrowAngle: (correctAngle + 180) % 360, dotVertex: (correctVertex + 2) % 5 } },
+  ];
+
+  const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
+  const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+  return {
+    id: `vis_penta_${Date.now()}_${Math.random()}`,
+    category: 'visual',
+    categoryLabel: `Deret Pentagon, Panah & Titik Orbit (Level ${difficulty})`,
+    difficultyLevel: difficulty,
+    question: `Analisis rotasi panah dalam pentagon (${stepAngle}°) dan pergeseran titik orbit pada sudutnya:`,
+    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    correctIndex,
+    hint: `🔬 *Analisis Guru Lab:* Panah berputar +${stepAngle}° searah jarum jam dan titik melompat ke sudut (vertex) berikutnya di tiap tahap.`,
+    visualMatrixData: {
+      type: 'pentagon_arrow',
+      gridCols: 3,
+      boxes,
+      optionBoxes,
+    },
+  };
+}
+
+// 3.7. Mode: Pointer Hand Circle with Perimeter Orbiting Dot (Reference Row 2)
+function generatePointerCircleQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+  const stepAngle = pickRandom([45, 90]);
+  const startAngle = pickRandom([0, 45, 90, 180, 270]);
+
+  const boxes: QuadrantBox[] = [];
+  for (let i = 0; i < 8; i++) {
+    boxes.push({
+      pointerCircleData: {
+        dotPositionAngle: (startAngle + i * stepAngle) % 360,
+      },
+    });
+  }
+  boxes.push({ isQuestion: true });
+
+  const correctAngle = (startAngle + 8 * stepAngle) % 360;
+  const correctBox: QuadrantBox = {
+    pointerCircleData: {
+      dotPositionAngle: correctAngle,
+    },
+  };
+
+  const candidateDistractors: QuadrantBox[] = [
+    { pointerCircleData: { dotPositionAngle: (correctAngle + 45) % 360 } },
+    { pointerCircleData: { dotPositionAngle: (correctAngle + 90) % 360 } },
+    { pointerCircleData: { dotPositionAngle: (correctAngle + 180) % 360 } },
+  ];
+
+  const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
+  const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+  return {
+    id: `vis_pointer_${Date.now()}_${Math.random()}`,
+    category: 'visual',
+    categoryLabel: `Deret Penunjuk & Orbit Keliling Lingkaran (Level ${difficulty})`,
+    difficultyLevel: difficulty,
+    question: `Perhatikan posisi penunjuk tangan dan rotasi titik pada keliling lingkaran pusat (${stepAngle}°):`,
+    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    correctIndex,
+    hint: `🔬 *Analisis Guru Lab:* Titik mengelilingi keliling lingkaran dengan perpindahan sudut +${stepAngle}°.`,
+    visualMatrixData: {
+      type: 'pointer_circle',
+      gridCols: 3,
+      boxes,
+      optionBoxes,
+    },
+  };
+}
+
+// 3.8. Mode: Rotating Ring Notch / Arc (Reference Row 3)
+function generateRingNotchQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+  const stepAngle = pickRandom([45, 90, 135]);
+  const startAngle = pickRandom([0, 45, 90, 180]);
+
+  const boxes: QuadrantBox[] = [];
+  for (let i = 0; i < 8; i++) {
+    boxes.push({
+      ringNotchData: {
+        angle: (startAngle + i * stepAngle) % 360,
+      },
+    });
+  }
+  boxes.push({ isQuestion: true });
+
+  const correctAngle = (startAngle + 8 * stepAngle) % 360;
+  const correctBox: QuadrantBox = {
+    ringNotchData: {
+      angle: correctAngle,
+    },
+  };
+
+  const candidateDistractors: QuadrantBox[] = [
+    { ringNotchData: { angle: (correctAngle + 45) % 360 } },
+    { ringNotchData: { angle: (correctAngle + 90) % 360 } },
+    { ringNotchData: { angle: (correctAngle + 180) % 360 } },
+  ];
+
+  const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
+  const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+  return {
+    id: `vis_ring_${Date.now()}_${Math.random()}`,
+    category: 'visual',
+    categoryLabel: `Deret Rotasi Cincin Takik / Busur (Level ${difficulty})`,
+    difficultyLevel: difficulty,
+    question: `Analisis arah rotasi busur cincin berlubang pada matriks berikut:`,
+    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    correctIndex,
+    hint: `🔬 *Analisis Guru Lab:* Cincin berlubang berputar +${stepAngle}° searah jarum jam pada setiap langkah.`,
+    visualMatrixData: {
+      type: 'ring_notch',
+      gridCols: 3,
+      boxes,
+      optionBoxes,
+    },
+  };
+}
+
+// 3.9. Mode: Concentric / Nested Shapes (Reference Row 4)
+function generateNestedShapesQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+  const shapePool: ('circle' | 'triangle' | 'square' | 'diamond')[] = ['circle', 'triangle', 'diamond', 'square'];
+  const outerIdx = randomInt(0, 3);
+  const outerShape = shapePool[outerIdx];
+
+  const boxes: QuadrantBox[] = [];
+  for (let i = 0; i < 8; i++) {
+    const innerShape = shapePool[(i + 1) % 4];
+    boxes.push({
+      nestedShapeData: {
+        outerShape,
+        innerShape,
+        innerFilled: i % 2 === 0,
+      },
+    });
+  }
+  boxes.push({ isQuestion: true });
+
+  const correctInner = shapePool[(8 + 1) % 4];
+  const correctBox: QuadrantBox = {
+    nestedShapeData: {
+      outerShape,
+      innerShape: correctInner,
+      innerFilled: 8 % 2 === 0,
+    },
+  };
+
+  const candidateDistractors: QuadrantBox[] = [
+    { nestedShapeData: { outerShape, innerShape: shapePool[0], innerFilled: !(8 % 2 === 0) } },
+    { nestedShapeData: { outerShape, innerShape: shapePool[2], innerFilled: 8 % 2 === 0 } },
+    { nestedShapeData: { outerShape, innerShape: correctInner, innerFilled: !(8 % 2 === 0) } },
+  ];
+
+  const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
+  const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+  return {
+    id: `vis_nested_${Date.now()}_${Math.random()}`,
+    category: 'visual',
+    categoryLabel: `Deret Gambar Bersarang (Level ${difficulty})`,
+    difficultyLevel: difficulty,
+    question: `Amati pergantian bentuk dalam (inner shape) dan pengisian warna pada gambar bersarang:`,
+    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    correctIndex,
+    hint: `🔬 *Analisis Guru Lab:* Bentuk luar tetap (${outerShape.toUpperCase()}), sedangkan bentuk dalam berganti secara teratur dan isian warnanya selang-seling.`,
+    visualMatrixData: {
+      type: 'nested_shapes',
+      gridCols: 3,
+      boxes,
+      optionBoxes,
+    },
+  };
+}
+
+// 3.10. Mode: Spiderweb Network & Lightning (Reference Row 5)
+function generateSpiderwebQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+  const startBug = randomInt(0, 4);
+  const startLightning = randomInt(0, 4);
+
+  const boxes: QuadrantBox[] = [];
+  for (let i = 0; i < 8; i++) {
+    const bugVertex = (startBug + i) % 5;
+    const lBranch = [(startLightning + i) % 5];
+    boxes.push({
+      spiderwebData: {
+        lightningBranches: lBranch,
+        bugVertex,
+      },
+    });
+  }
+  boxes.push({ isQuestion: true });
+
+  const correctBug = (startBug + 8) % 5;
+  const correctLightning = [(startLightning + 8) % 5];
+  const correctBox: QuadrantBox = {
+    spiderwebData: {
+      lightningBranches: correctLightning,
+      bugVertex: correctBug,
+    },
+  };
+
+  const candidateDistractors: QuadrantBox[] = [
+    { spiderwebData: { lightningBranches: [(correctLightning[0] + 1) % 5], bugVertex: correctBug } },
+    { spiderwebData: { lightningBranches: correctLightning, bugVertex: (correctBug + 1) % 5 } },
+    { spiderwebData: { lightningBranches: [(correctLightning[0] + 2) % 5], bugVertex: (correctBug + 2) % 5 } },
+  ];
+
+  const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
+  const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+  return {
+    id: `vis_web_${Date.now()}_${Math.random()}`,
+    category: 'visual',
+    categoryLabel: `Deret Jaring Laba-Laba & Kilat Petir (Level ${difficulty})`,
+    difficultyLevel: difficulty,
+    question: `Analisis lintasan pergerakan serangga dan posisi sambaran petir pada simpul jaring:`,
+    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    correctIndex,
+    hint: `🔬 *Analisis Guru Lab:* Serangga berpindah +1 simpul searah jarum jam dan petir menyambar simpul berikutnya secara berurutan.`,
+    visualMatrixData: {
+      type: 'spiderweb_network',
+      gridCols: 3,
+      boxes,
+      optionBoxes,
+    },
+  };
+}
+
+// 3.11. Mode: Grid 2x2 with Outer Corner Orbiting Dot (Reference Row 6)
+function generateGridOuterDotQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+  const positions: ('tl' | 'tr' | 'br' | 'bl')[] = ['tl', 'tr', 'br', 'bl'];
+  const startDotIdx = randomInt(0, 3);
+  const startGridIdx = randomInt(0, 3);
+
+  const boxes: QuadrantBox[] = [];
+  for (let i = 0; i < 8; i++) {
+    const dotPos = positions[(startDotIdx + i) % 4];
+    const gridActive = positions[(startGridIdx + i) % 4];
+    boxes.push({
+      gridOuterDotData: {
+        tl: gridActive === 'tl',
+        tr: gridActive === 'tr',
+        bl: gridActive === 'bl',
+        br: gridActive === 'br',
+        outerDotPos: dotPos,
+      },
+    });
+  }
+  boxes.push({ isQuestion: true });
+
+  const correctDotPos = positions[(startDotIdx + 8) % 4];
+  const correctGridActive = positions[(startGridIdx + 8) % 4];
+  const correctBox: QuadrantBox = {
+    gridOuterDotData: {
+      tl: correctGridActive === 'tl',
+      tr: correctGridActive === 'tr',
+      bl: correctGridActive === 'bl',
+      br: correctGridActive === 'br',
+      outerDotPos: correctDotPos,
+    },
+  };
+
+  const candidateDistractors: QuadrantBox[] = [
+    {
+      gridOuterDotData: {
+        tl: correctGridActive === 'tl',
+        tr: correctGridActive === 'tr',
+        bl: correctGridActive === 'bl',
+        br: correctGridActive === 'br',
+        outerDotPos: positions[(startDotIdx + 9) % 4],
+      },
+    },
+    {
+      gridOuterDotData: {
+        tl: correctGridActive !== 'tl',
+        tr: false,
+        bl: false,
+        br: true,
+        outerDotPos: correctDotPos,
+      },
+    },
+    {
+      gridOuterDotData: {
+        tl: true,
+        tr: true,
+        bl: false,
+        br: false,
+        outerDotPos: positions[(startDotIdx + 10) % 4],
+      },
+    },
+  ];
+
+  const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
+  const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+  return {
+    id: `vis_gridot_${Date.now()}_${Math.random()}`,
+    category: 'visual',
+    categoryLabel: `Deret Grid 2x2 & Titik Sudut Luar (Level ${difficulty})`,
+    difficultyLevel: difficulty,
+    question: `Analisis pergerakan shading grid dalam dan orbit titik pada 4 sudut luar:`,
+    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    correctIndex,
+    hint: `🔬 *Analisis Guru Lab:* Titik sudut luar berputar searah jarum jam mengelilingi 4 sudut kotak grid.`,
+    visualMatrixData: {
+      type: 'grid_outer_dot',
+      gridCols: 3,
+      boxes,
+      optionBoxes,
+    },
+  };
+}
+
+// 3.12. Mode: Central Shape with Orbiting Satellite Dots Ring (Reference Row 7)
+function generateOrbitDotsQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+  const shapes: ('diamond' | 'square' | 'triangle' | 'circle')[] = ['diamond', 'square', 'triangle', 'circle'];
+  const centerShape = pickRandom(shapes);
+  const startIdx = randomInt(0, 5);
+
+  const boxes: QuadrantBox[] = [];
+  for (let i = 0; i < 8; i++) {
+    const active = [(startIdx + i) % 6, (startIdx + i + 1) % 6];
+    boxes.push({
+      orbitDotsData: {
+        centerShape,
+        centerFilled: i % 2 === 0,
+        activeDots: active,
+      },
+    });
+  }
+  boxes.push({ isQuestion: true });
+
+  const correctActive = [(startIdx + 8) % 6, (startIdx + 8 + 1) % 6];
+  const correctBox: QuadrantBox = {
+    orbitDotsData: {
+      centerShape,
+      centerFilled: 8 % 2 === 0,
+      activeDots: correctActive,
+    },
+  };
+
+  const candidateDistractors: QuadrantBox[] = [
+    {
+      orbitDotsData: {
+        centerShape,
+        centerFilled: !(8 % 2 === 0),
+        activeDots: correctActive,
+      },
+    },
+    {
+      orbitDotsData: {
+        centerShape,
+        centerFilled: 8 % 2 === 0,
+        activeDots: [(startIdx + 9) % 6, (startIdx + 10) % 6],
+      },
+    },
+    {
+      orbitDotsData: {
+        centerShape: shapes.find((s) => s !== centerShape) || 'circle',
+        centerFilled: 8 % 2 === 0,
+        activeDots: correctActive,
+      },
+    },
+  ];
+
+  const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
+  const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+  return {
+    id: `vis_orbitdots_${Date.now()}_${Math.random()}`,
+    category: 'visual',
+    categoryLabel: `Deret Bentuk Pusat & Ring Satelit Dot (Level ${difficulty})`,
+    difficultyLevel: difficulty,
+    question: `Analisis pergeseran 2 titik hitam aktif pada ring 6 satelit di sekeliling bentuk pusat:`,
+    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    correctIndex,
+    hint: `🔬 *Analisis Guru Lab:* Dua titik aktif berputar 1 langkah searah jarum jam mengelilingi 6 posisi satelit.`,
+    visualMatrixData: {
+      type: 'orbit_dots',
+      gridCols: 3,
+      boxes,
+      optionBoxes,
+    },
+  };
+}
+
+// Helper to construct 2x2 quadrant matrix questions
 function buildVisualMatrixQuestion(
   categoryLabel: string,
   questionText: string,
@@ -825,12 +1340,32 @@ function generateVisualMatrixQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestio
     return generateGrade1VisualQuestion();
   }
 
-  const mode = pickRandom(['clock_hands', 'capsule_symbols', 'domino_dots', 'shapes_row', 'quadrant_grid']);
+  const mode = pickRandom([
+    'clock_hands',
+    'capsule_symbols',
+    'domino_dots',
+    'shapes_row',
+    'pentagon_arrow',
+    'pointer_circle',
+    'ring_notch',
+    'nested_shapes',
+    'spiderweb_network',
+    'grid_outer_dot',
+    'orbit_dots',
+    'quadrant_grid',
+  ]);
 
   if (mode === 'clock_hands') return generateClockHandsQuestion(difficulty);
   if (mode === 'capsule_symbols') return generateCapsuleQuestion(difficulty);
   if (mode === 'domino_dots') return generateDominoQuestion(difficulty);
   if (mode === 'shapes_row') return generateShapesRowQuestion(difficulty);
+  if (mode === 'pentagon_arrow') return generatePentagonArrowQuestion(difficulty);
+  if (mode === 'pointer_circle') return generatePointerCircleQuestion(difficulty);
+  if (mode === 'ring_notch') return generateRingNotchQuestion(difficulty);
+  if (mode === 'nested_shapes') return generateNestedShapesQuestion(difficulty);
+  if (mode === 'spiderweb_network') return generateSpiderwebQuestion(difficulty);
+  if (mode === 'grid_outer_dot') return generateGridOuterDotQuestion(difficulty);
+  if (mode === 'orbit_dots') return generateOrbitDotsQuestion(difficulty);
 
   // 5 Sub-variations for quadrant_grid
   const patternType = pickRandom([1, 2, 3, 4, 5]);
@@ -1090,26 +1625,29 @@ function dispatchPatternQuestion(
 ): PatternQuestion {
   const difficulty = getDifficultyForGradeAndNumber(questionNumber, grade);
 
-  const categories: PatternCategory[] = ['aritmatika', 'geometris', 'visual', 'lab_science'];
-  const available = previousCategory ? categories.filter((c) => c !== previousCategory) : categories;
-  const chosenCategory = pickRandom(available);
+  // User Requirement: 60% Visual Image Series (3x3 Matrix) vs 40% Number/Math Logic
+  const isVisual = Math.random() < 0.60;
 
-  // Every 3rd question, guarantee a procedural visual figure matrix question!
-  if (questionNumber % 3 === 0) {
+  if (isVisual) {
     return generateVisualMatrixQuestion(difficulty);
-  }
+  } else {
+    const mathCategories: PatternCategory[] = ['aritmatika', 'geometris', 'lab_science'];
+    const available =
+      previousCategory && mathCategories.includes(previousCategory)
+        ? mathCategories.filter((c) => c !== previousCategory)
+        : mathCategories;
+    const chosenCategory = pickRandom(available);
 
-  switch (chosenCategory) {
-    case 'aritmatika':
-      return generateArithmetic(difficulty);
-    case 'geometris':
-      return generateGeometric(difficulty);
-    case 'visual':
-      return generateVisualMatrixQuestion(difficulty);
-    case 'lab_science':
-      return generateLabScience(difficulty);
-    default:
-      return generateArithmetic(difficulty);
+    switch (chosenCategory) {
+      case 'aritmatika':
+        return generateArithmetic(difficulty);
+      case 'geometris':
+        return generateGeometric(difficulty);
+      case 'lab_science':
+        return generateLabScience(difficulty);
+      default:
+        return generateArithmetic(difficulty);
+    }
   }
 }
 

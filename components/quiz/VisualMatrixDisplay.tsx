@@ -43,11 +43,68 @@ export interface QuadrantBox {
     | 'diamond';
   shapeCount?: number; // 1, 2, 3
 
+  // Mode 6: Pentagon & Arrow (Reference Row 1)
+  pentagonData?: {
+    arrowAngle: number; // angle in deg: 0, 45, 72, 90, 144, 180, etc.
+    dotVertex: number; // vertex index 0..4
+  };
+
+  // Mode 7: Pointer Hand Circle with Orbiting Dot & Corner Icons (Reference Row 2)
+  pointerCircleData?: {
+    dotPositionAngle: number; // 0, 45, 90, 135, 180, 225, 270, 315
+  };
+
+  // Mode 8: Rotating Ring Notch / Arc (Reference Row 3)
+  ringNotchData?: {
+    angle: number; // rotation deg 0..360
+  };
+
+  // Mode 9: Nested / Concentric Geometric Shapes (Reference Row 4)
+  nestedShapeData?: {
+    outerShape: 'circle' | 'triangle' | 'square' | 'diamond';
+    innerShape: 'circle' | 'triangle' | 'square' | 'diamond';
+    innerFilled?: boolean;
+  };
+
+  // Mode 10: Spiderweb Network with Lightning & Bug (Reference Row 5)
+  spiderwebData?: {
+    lightningBranches: number[]; // array of vertex indices 0..4 receiving lightning
+    bugVertex: number; // vertex index 0..4 where spider/bug sits
+  };
+
+  // Mode 11: Quadrant Grid with Outer Corner Orbiting Dot (Reference Row 6)
+  gridOuterDotData?: {
+    tl?: boolean;
+    tr?: boolean;
+    bl?: boolean;
+    br?: boolean;
+    outerDotPos: 'tl' | 'tr' | 'br' | 'bl';
+  };
+
+  // Mode 12: Central Shape with Orbiting Satellite Dots Ring (Reference Row 7)
+  orbitDotsData?: {
+    centerShape: 'diamond' | 'square' | 'triangle' | 'circle';
+    centerFilled?: boolean;
+    activeDots: number[]; // indices 0..5 of filled outer dots
+  };
+
   isQuestion?: boolean;
 }
 
 export interface VisualMatrixData {
-  type: 'quadrant_matrix' | 'clock_hands' | 'capsule_symbols' | 'domino_dots' | 'shapes_row';
+  type:
+    | 'quadrant_matrix'
+    | 'clock_hands'
+    | 'capsule_symbols'
+    | 'domino_dots'
+    | 'shapes_row'
+    | 'pentagon_arrow'
+    | 'pointer_circle'
+    | 'ring_notch'
+    | 'nested_shapes'
+    | 'spiderweb_network'
+    | 'grid_outer_dot'
+    | 'orbit_dots';
   title?: string;
   gridCols: number; // 3 for 3x3 matrix
   boxes: QuadrantBox[];
@@ -95,6 +152,26 @@ export function QuadrantBoxView({
   const isCapsule = box.capsuleTopDot !== undefined || box.symbols !== undefined;
   const isDomino = box.dotCount !== undefined;
   const isShape = box.shapeType !== undefined;
+  const isPentagon = box.pentagonData !== undefined;
+  const isPointerCircle = box.pointerCircleData !== undefined;
+  const isRingNotch = box.ringNotchData !== undefined;
+  const isNestedShape = box.nestedShapeData !== undefined;
+  const isSpiderweb = box.spiderwebData !== undefined;
+  const isGridOuterDot = box.gridOuterDotData !== undefined;
+  const isOrbitDots = box.orbitDotsData !== undefined;
+
+  const isCustomSvg =
+    isClockHands ||
+    isCapsule ||
+    isDomino ||
+    isShape ||
+    isPentagon ||
+    isPointerCircle ||
+    isRingNotch ||
+    isNestedShape ||
+    isSpiderweb ||
+    isGridOuterDot ||
+    isOrbitDots;
 
   return (
     <div
@@ -102,12 +179,10 @@ export function QuadrantBoxView({
         highlight ? 'border-cyan-400 ring-2 ring-cyan-400/50' : 'border-slate-800'
       } rounded-xl p-1 shadow-md flex items-center justify-center overflow-hidden transition-all`}
     >
-      {/* 1. Mode: Clock Hands / Rays (Angled Line Hands + Center Dot) */}
+      {/* 1. Mode: Clock Hands / Rays */}
       {isClockHands && (
         <svg viewBox="0 0 64 64" className="w-full h-full">
-          {/* Center Black Circle */}
           <circle cx="32" cy="32" r="7" fill="#0f172a" />
-          {/* Rays sticking out */}
           {(box.angles || []).map((deg, idx) => {
             const rad = ((deg - 90) * Math.PI) / 180;
             const x2 = 32 + 25 * Math.cos(rad);
@@ -128,10 +203,9 @@ export function QuadrantBoxView({
         </svg>
       )}
 
-      {/* 2. Mode: Capsule & Corner Symbols (Capsule Pill + Circles/Crosses) */}
+      {/* 2. Mode: Capsule & Corner Symbols */}
       {isCapsule && (
         <svg viewBox="0 0 64 64" className="w-full h-full">
-          {/* Central Pill Capsule */}
           <rect
             x="23"
             y="12"
@@ -143,7 +217,6 @@ export function QuadrantBoxView({
             stroke="#0f172a"
             strokeWidth="3.5"
           />
-          {/* Top Dot */}
           <circle
             cx="32"
             cy="23"
@@ -152,7 +225,6 @@ export function QuadrantBoxView({
             stroke="#0f172a"
             strokeWidth="2.5"
           />
-          {/* Bottom Dot */}
           <circle
             cx="32"
             cy="41"
@@ -161,7 +233,6 @@ export function QuadrantBoxView({
             stroke="#0f172a"
             strokeWidth="2.5"
           />
-          {/* Corner Symbols */}
           {(box.symbols || []).map((sym, idx) => {
             const posCoords = {
               tl: { x: 10, y: 12 },
@@ -224,7 +295,6 @@ export function QuadrantBoxView({
             stroke="#0f172a"
             strokeWidth="3"
           />
-          {/* Dot positions for 1 to 8 dots */}
           {(() => {
             const count = box.dotCount || 0;
             const dotCoords = [
@@ -245,7 +315,7 @@ export function QuadrantBoxView({
         </svg>
       )}
 
-      {/* 4. Mode: Geometric Shapes (Triangle, Square, Star, Diamond, etc.) */}
+      {/* 4. Mode: Geometric Shapes */}
       {isShape && (
         <svg viewBox="0 0 64 64" className="w-full h-full">
           {box.shapeType === 'circle_filled' && <circle cx="32" cy="32" r="16" fill="#0f172a" />}
@@ -274,8 +344,281 @@ export function QuadrantBoxView({
         </svg>
       )}
 
+      {/* 6. Mode: Pentagon & Arrow (Reference Row 1) */}
+      {isPentagon && box.pentagonData && (
+        <svg viewBox="0 0 64 64" className="w-full h-full">
+          <polygon
+            points="32,10 54,26 45,52 19,52 10,26"
+            fill="none"
+            stroke="#0f172a"
+            strokeWidth="3"
+          />
+          <polygon points="32,26 38,32 32,38 26,32" fill="#0f172a" />
+          <circle cx="32" cy="32" r="2" fill="#ffffff" />
+          {(() => {
+            const rad = ((box.pentagonData.arrowAngle - 90) * Math.PI) / 180;
+            const ax = 32 + 18 * Math.cos(rad);
+            const ay = 32 + 18 * Math.sin(rad);
+            return (
+              <g>
+                <line x1="32" y1="32" x2={ax} y2={ay} stroke="#0f172a" strokeWidth="3.5" strokeLinecap="round" />
+                <circle cx={ax} cy={ay} r="3" fill="#0f172a" />
+              </g>
+            );
+          })()}
+          {(() => {
+            const vCoords = [
+              { x: 32, y: 10 },
+              { x: 54, y: 26 },
+              { x: 45, y: 52 },
+              { x: 19, y: 52 },
+              { x: 10, y: 26 },
+            ];
+            const v = vCoords[box.pentagonData.dotVertex % 5];
+            return (
+              <circle
+                cx={v.x}
+                cy={v.y}
+                r="4.5"
+                fill="#ffffff"
+                stroke="#0f172a"
+                strokeWidth="2.5"
+              />
+            );
+          })()}
+        </svg>
+      )}
+
+      {/* 7. Mode: Pointer Hand Circle & Orbit Dot (Reference Row 2) */}
+      {isPointerCircle && box.pointerCircleData && (
+        <svg viewBox="0 0 64 64" className="w-full h-full">
+          <path
+            d="M 8 10 Q 14 10 16 12 L 20 12 C 21 12 21 14 19 14 L 14 14 Q 12 14 10 12 Z"
+            fill="#0f172a"
+          />
+          <circle cx="11" cy="11" r="3" fill="#0f172a" />
+          <line x1="13" y1="11" x2="20" y2="11" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" />
+
+          <polygon points="12,50 14,54 18,54 15,57 16,61 12,58 8,61 9,57 6,54 10,54" fill="#0f172a" />
+
+          <path d="M 50 50 A 7 7 0 0 1 50 62 Z" fill="#0f172a" />
+
+          <circle cx="34" cy="34" r="14" fill="none" stroke="#0f172a" strokeWidth="3" />
+
+          {(() => {
+            const rad = ((box.pointerCircleData.dotPositionAngle - 90) * Math.PI) / 180;
+            const dx = 34 + 14 * Math.cos(rad);
+            const dy = 34 + 14 * Math.sin(rad);
+            return <circle cx={dx} cy={dy} r="4" fill="#0f172a" stroke="#ffffff" strokeWidth="1" />;
+          })()}
+        </svg>
+      )}
+
+      {/* 8. Mode: Rotating Ring Notch / Arc (Reference Row 3) */}
+      {isRingNotch && box.ringNotchData && (
+        <svg viewBox="0 0 64 64" className="w-full h-full">
+          <g transform={`rotate(${box.ringNotchData.angle}, 32, 32)`}>
+            <circle cx="32" cy="32" r="18" fill="#0f172a" />
+            <circle cx="32" cy="32" r="10" fill="#ffffff" />
+            <polygon points="32,32 44,14 52,24" fill="#ffffff" />
+            <polygon points="32,24 38,32 32,40 26,32" fill="#0f172a" />
+          </g>
+        </svg>
+      )}
+
+      {/* 9. Mode: Concentric / Nested Shapes (Reference Row 4) */}
+      {isNestedShape && box.nestedShapeData && (
+        <svg viewBox="0 0 64 64" className="w-full h-full">
+          {box.nestedShapeData.outerShape === 'circle' && (
+            <circle cx="32" cy="32" r="22" fill="#0f172a" />
+          )}
+          {box.nestedShapeData.outerShape === 'triangle' && (
+            <polygon points="32,8 56,54 8,54" fill="#0f172a" />
+          )}
+          {box.nestedShapeData.outerShape === 'square' && (
+            <rect x="10" y="10" width="44" height="44" fill="#0f172a" />
+          )}
+          {box.nestedShapeData.outerShape === 'diamond' && (
+            <polygon points="32,8 56,32 32,56 8,32" fill="#0f172a" />
+          )}
+
+          {box.nestedShapeData.innerShape === 'circle' && (
+            <circle
+              cx="32"
+              cy="32"
+              r="11"
+              fill={box.nestedShapeData.innerFilled ? '#0f172a' : '#ffffff'}
+              stroke="#ffffff"
+              strokeWidth="2"
+            />
+          )}
+          {box.nestedShapeData.innerShape === 'triangle' && (
+            <polygon
+              points="32,20 44,42 20,42"
+              fill={box.nestedShapeData.innerFilled ? '#0f172a' : '#ffffff'}
+              stroke="#ffffff"
+              strokeWidth="2"
+            />
+          )}
+          {box.nestedShapeData.innerShape === 'square' && (
+            <rect
+              x="21"
+              y="21"
+              width="22"
+              height="22"
+              fill={box.nestedShapeData.innerFilled ? '#0f172a' : '#ffffff'}
+              stroke="#ffffff"
+              strokeWidth="2"
+            />
+          )}
+          {box.nestedShapeData.innerShape === 'diamond' && (
+            <polygon
+              points="32,18 46,32 32,46 18,32"
+              fill={box.nestedShapeData.innerFilled ? '#0f172a' : '#ffffff'}
+              stroke="#ffffff"
+              strokeWidth="2"
+            />
+          )}
+        </svg>
+      )}
+
+      {/* 10. Mode: Spiderweb Network & Lightning (Reference Row 5) */}
+      {isSpiderweb && box.spiderwebData && (
+        <svg viewBox="0 0 64 64" className="w-full h-full">
+          <polygon points="32,8 54,24 45,54 19,54 10,24" fill="none" stroke="#0f172a" strokeWidth="2" />
+          <polygon points="32,20 43,28 39,43 25,43 21,28" fill="none" stroke="#0f172a" strokeWidth="1.5" />
+          <line x1="32" y1="32" x2="32" y2="8" stroke="#0f172a" strokeWidth="1.5" />
+          <line x1="32" y1="32" x2="54" y2="24" stroke="#0f172a" strokeWidth="1.5" />
+          <line x1="32" y1="32" x2="45" y2="54" stroke="#0f172a" strokeWidth="1.5" />
+          <line x1="32" y1="32" x2="19" y2="54" stroke="#0f172a" strokeWidth="1.5" />
+          <line x1="32" y1="32" x2="10" y2="24" stroke="#0f172a" strokeWidth="1.5" />
+
+          {box.spiderwebData.lightningBranches.map((vIdx) => {
+            const vCoords = [
+              { x: 32, y: 4 },
+              { x: 56, y: 20 },
+              { x: 47, y: 56 },
+              { x: 17, y: 56 },
+              { x: 8, y: 20 },
+            ];
+            const v = vCoords[vIdx % 5];
+            return (
+              <polygon
+                key={vIdx}
+                points={`${v.x},${v.y-4} ${v.x-3},${v.y+1} ${v.x+1},${v.y+1} ${v.x-2},${v.y+6} ${v.x+4},${v.y-1} ${v.x},${v.y-1}`}
+                fill="#0f172a"
+              />
+            );
+          })}
+
+          {(() => {
+            const vCoords = [
+              { x: 32, y: 8 },
+              { x: 54, y: 24 },
+              { x: 45, y: 54 },
+              { x: 19, y: 54 },
+              { x: 10, y: 24 },
+            ];
+            const bug = vCoords[box.spiderwebData.bugVertex % 5];
+            return (
+              <g>
+                <circle cx={bug.x} cy={bug.y} r="4" fill="#0f172a" />
+                <line x1={bug.x-5} y1={bug.y-3} x2={bug.x+5} y2={bug.y+3} stroke="#0f172a" strokeWidth="1.5" />
+                <line x1={bug.x-5} y1={bug.y+3} x2={bug.x+5} y2={bug.y-3} stroke="#0f172a" strokeWidth="1.5" />
+              </g>
+            );
+          })()}
+        </svg>
+      )}
+
+      {/* 11. Mode: Grid 2x2 with Outer Corner Satellite Dot (Reference Row 6) */}
+      {isGridOuterDot && box.gridOuterDotData && (
+        <svg viewBox="0 0 64 64" className="w-full h-full">
+          <rect x="18" y="18" width="28" height="28" fill="none" stroke="#0f172a" strokeWidth="2.5" />
+          <line x1="32" y1="18" x2="32" y2="46" stroke="#0f172a" strokeWidth="2" />
+          <line x1="18" y1="32" x2="46" y2="32" stroke="#0f172a" strokeWidth="2" />
+
+          {box.gridOuterDotData.tl && <rect x="19" y="19" width="12" height="12" fill="#0f172a" />}
+          {box.gridOuterDotData.tr && <rect x="33" y="19" width="12" height="12" fill="#0f172a" />}
+          {box.gridOuterDotData.bl && <rect x="19" y="33" width="12" height="12" fill="#0f172a" />}
+          {box.gridOuterDotData.br && <rect x="33" y="33" width="12" height="12" fill="#0f172a" />}
+
+          {(() => {
+            const pos = box.gridOuterDotData.outerDotPos;
+            const dotCoord = {
+              tl: { x: 10, y: 10 },
+              tr: { x: 54, y: 10 },
+              br: { x: 54, y: 54 },
+              bl: { x: 10, y: 54 },
+            }[pos];
+            return <circle cx={dotCoord.x} cy={dotCoord.y} r="4.5" fill="#0f172a" />;
+          })()}
+        </svg>
+      )}
+
+      {/* 12. Mode: Central Shape with Orbiting Satellite Dots Ring (Reference Row 7) */}
+      {isOrbitDots && box.orbitDotsData && (
+        <svg viewBox="0 0 64 64" className="w-full h-full">
+          {box.orbitDotsData.centerShape === 'circle' && (
+            <circle
+              cx="32"
+              cy="32"
+              r="12"
+              fill={box.orbitDotsData.centerFilled ? '#0f172a' : '#ffffff'}
+              stroke="#0f172a"
+              strokeWidth="3"
+            />
+          )}
+          {box.orbitDotsData.centerShape === 'square' && (
+            <rect
+              x="22"
+              y="22"
+              width="20"
+              height="20"
+              fill={box.orbitDotsData.centerFilled ? '#0f172a' : '#ffffff'}
+              stroke="#0f172a"
+              strokeWidth="3"
+            />
+          )}
+          {box.orbitDotsData.centerShape === 'triangle' && (
+            <polygon
+              points="32,18 44,40 20,40"
+              fill={box.orbitDotsData.centerFilled ? '#0f172a' : '#ffffff'}
+              stroke="#0f172a"
+              strokeWidth="3"
+            />
+          )}
+          {box.orbitDotsData.centerShape === 'diamond' && (
+            <polygon
+              points="32,18 44,32 32,46 20,32"
+              fill={box.orbitDotsData.centerFilled ? '#0f172a' : '#ffffff'}
+              stroke="#0f172a"
+              strokeWidth="3"
+            />
+          )}
+
+          {[0, 1, 2, 3, 4, 5].map((idx) => {
+            const rad = ((idx * 60 - 90) * Math.PI) / 180;
+            const dx = 32 + 22 * Math.cos(rad);
+            const dy = 32 + 22 * Math.sin(rad);
+            const isActive = box.orbitDotsData?.activeDots.includes(idx);
+            return (
+              <circle
+                key={idx}
+                cx={dx}
+                cy={dy}
+                r="3.5"
+                fill={isActive ? '#0f172a' : '#ffffff'}
+                stroke="#0f172a"
+                strokeWidth="2"
+              />
+            );
+          })}
+        </svg>
+      )}
+
       {/* 5. Default Mode: 2x2 Quadrant Box (Shaded Grid Cells) */}
-      {!isClockHands && !isCapsule && !isDomino && !isShape && (
+      {!isCustomSvg && (
         <div className="w-full h-full grid grid-cols-2 grid-rows-2 gap-0.5">
           <div
             className={`rounded-tl-sm transition-colors ${
