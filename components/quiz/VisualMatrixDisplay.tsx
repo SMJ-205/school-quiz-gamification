@@ -659,8 +659,7 @@ export default function VisualMatrixDisplay({
     <div className="w-full flex flex-col items-center gap-3 my-2">
       {/* 3x3 Visual Grid Matrix Display Card */}
       <div className="bg-slate-950/90 border-2 border-cyan-400/80 rounded-xl p-3 sm:p-4 shadow-[0_0_20px_rgba(6,182,212,0.3)] flex flex-col items-center">
-        <div className="text-xs sm:text-sm font-bold text-cyan-300 mb-2.5 font-dialogue tracking-wide flex items-center gap-1.5">
-          <span>🧩</span>
+        <div className="text-xs sm:text-sm font-bold text-cyan-300 mb-2.5 font-dialogue tracking-wide flex items-center gap-1.5 text-center">
           <span>{data.title || 'LENGKAPI POLA GAMBAR MATRIKS KOTAK YANG KOSONG (?)'}</span>
         </div>
 

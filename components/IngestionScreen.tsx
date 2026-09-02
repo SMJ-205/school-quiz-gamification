@@ -6,9 +6,17 @@ import { useGameStore } from '@/store/useGameStore';
 import { parseQuizMarkdown, readMarkdownFile } from '@/lib/markdownParser';
 import { NOTEBOOKLM_PROMPT } from '@/lib/constants';
 import { sfxFileLoaded, sfxWrong, isAudioMuted, toggleAudioMute, unlockAudioEngine } from '@/lib/audioEngine';
+import HowToPlayModal from '@/components/HowToPlayModal';
 
 export default function IngestionScreen() {
-  const { setStudentName, loadQuizSession, studentName, showNotebookLMModal, setShowNotebookLMModal } = useGameStore();
+  const {
+    setStudentName,
+    loadQuizSession,
+    studentName,
+    showNotebookLMModal,
+    setShowNotebookLMModal,
+    setShowHowToPlayModal,
+  } = useGameStore();
   const [error, setError]     = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied]   = useState(false);
@@ -260,11 +268,19 @@ Cahaya matahari membutuhkan waktu sekitar berapa menit untuk sampai ke Bumi?
         {/* Helper Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3">
           <button
-            className="btn-pixel btn-pixel-teal flex-1 text-xs sm:text-sm py-3 flex items-center justify-center gap-2 shadow-lg"
+            className="btn-pixel btn-pixel-teal flex-1 text-xs sm:text-sm py-3 flex items-center justify-center gap-2 shadow-lg cursor-pointer"
             onClick={() => setShowNotebookLMModal(true)}
           >
             <span>🤖</span>
-            <span>BUAT KUIS VIA NOTEBOOKLM</span>
+            <span>PROMPT NOTEBOOKLM</span>
+          </button>
+
+          <button
+            className="btn-pixel btn-pixel-gold flex-1 text-xs sm:text-sm py-3 flex items-center justify-center gap-2 shadow-lg cursor-pointer font-bold"
+            onClick={() => setShowHowToPlayModal(true)}
+          >
+            <span>📖</span>
+            <span>CARA MEMULAI GAME (PANDUAN 101)</span>
           </button>
         </div>
       </div>
@@ -307,6 +323,9 @@ Cahaya matahari membutuhkan waktu sekitar berapa menit untuk sampai ke Bumi?
           </div>
         </div>
       )}
+
+      {/* Beginner 101 How To Play Guide Modal */}
+      <HowToPlayModal />
     </div>
   );
 }

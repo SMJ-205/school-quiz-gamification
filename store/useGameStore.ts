@@ -59,6 +59,7 @@ export interface GameState {
   // UI overlays
   showNotebookLMModal: boolean;
   showParentReport: boolean;
+  showHowToPlayModal: boolean;
 
   // Actions
   setScreen: (screen: GameScreen) => void;
@@ -73,6 +74,7 @@ export interface GameState {
   resetGame: () => void;
   setShowNotebookLMModal: (show: boolean) => void;
   setShowParentReport: (show: boolean) => void;
+  setShowHowToPlayModal: (show: boolean) => void;
 }
 
 // ─── Store ────────────────────────────────────────────────────────────────────
@@ -103,6 +105,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   // UI
   showNotebookLMModal: false,
   showParentReport: false,
+  showHowToPlayModal: false,
 
   // ─── Actions ──────────────────────────────────────────────────────────────
 
@@ -185,4 +188,5 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   setShowNotebookLMModal: (show) => set({ showNotebookLMModal: show }),
   setShowParentReport: (show) => set({ showParentReport: show }),
+  setShowHowToPlayModal: (show) => set({ showHowToPlayModal: show }),
 }));
