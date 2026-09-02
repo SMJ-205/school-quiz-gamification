@@ -536,18 +536,21 @@ export default function LabInfiniteArena() {
               </div>
 
               {/* Guru Lab Character & Intro Dialogue Box */}
-              <div className="flex flex-row items-center gap-2.5 sm:gap-5 bg-cyan-950/90 border-2 border-cyan-500/70 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 md:p-6 text-left w-full shadow-xl shrink-0">
-                <div className="flex-1 font-dialogue text-xs sm:text-base md:text-lg text-cyan-100 leading-tight sm:leading-relaxed pl-1 sm:pl-3">
-                  <div className="mb-1 sm:mb-1.5">
-                    <span className="bg-cyan-900/90 border border-cyan-400 text-cyan-300 font-bold px-2.5 py-0.5 sm:px-3.5 sm:py-1 rounded-md sm:rounded-lg text-[10px] sm:text-xs inline-block shadow-md">
+              <div
+                className="flex flex-row items-center gap-3 sm:gap-6 bg-cyan-950/90 border-2 border-cyan-500/70 rounded-xl sm:rounded-2xl py-4 sm:py-6 md:py-7 text-left w-full shadow-xl shrink-0"
+                style={{ paddingLeft: '32px', paddingRight: '24px' }}
+              >
+                <div className="flex-1 font-dialogue text-cyan-100 pl-2 sm:pl-4">
+                  <div className="mb-1.5 sm:mb-2.5">
+                    <span className="bg-cyan-900/90 border border-cyan-400 text-cyan-300 font-bold px-3 py-1 sm:px-4 sm:py-1.5 rounded-md sm:rounded-lg text-xs sm:text-sm md:text-base inline-block shadow-md">
                       Guru Lab:
                     </span>
                   </div>
-                  <p className="text-cyan-100 text-xs sm:text-base md:text-lg leading-tight sm:leading-relaxed">
+                  <p className="text-cyan-50 text-base sm:text-xl md:text-2xl font-bold leading-snug sm:leading-relaxed drop-shadow">
                     “Selamat datang di Laboratorium IPA! Sebelum kita mulai bereksperimen, kamu sedang menempuh pendidikan di Kelas berapa?”
                   </p>
                 </div>
-                <div className="shrink-0 relative w-11 h-16 sm:w-16 sm:h-24 flex items-end justify-center pr-1 sm:pr-2">
+                <div className="shrink-0 relative w-12 h-18 sm:w-20 sm:h-28 flex items-end justify-center pr-1 sm:pr-2">
                   <img
                     src="/sprites/teacher_lab_idle.png"
                     alt="Guru Lab"
