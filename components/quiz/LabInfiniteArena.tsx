@@ -349,23 +349,6 @@ export default function LabInfiniteArena() {
           >
             <div className="absolute inset-0 bg-gradient-to-b from-cyan-950/50 via-black/40 to-cyan-950/75 pointer-events-none z-0" />
 
-            {/* Uncollapsible Physical Blank Space Clearance Spacer */}
-            <div className="h-5 sm:h-8 md:h-10 shrink-0 pointer-events-none relative z-10" />
-
-            {/* Top Info Banner - Cyan Science Styling with Physical Blank Space Gap from Top Bar */}
-            <div className="relative z-20 w-full max-w-3xl mx-auto flex items-center justify-between text-xs sm:text-sm font-bold text-cyan-300 bg-cyan-950/85 px-3.5 py-2 rounded-lg border border-cyan-400/60 backdrop-blur-sm shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-              <span className="flex items-center gap-1.5">
-                <span className="text-cyan-400">SOAL #{questionCount}</span>
-                <span className="text-cyan-600">•</span>
-                <span className="text-cyan-200">{currentQuestion?.categoryLabel || 'Detektif Pola'}</span>
-              </span>
-
-              <span className="flex items-center gap-3">
-                <span className="text-slate-300">BENAR: <strong className="text-emerald-400">{correctCount}</strong></span>
-                <span className="text-slate-300">POIN: <strong className="text-cyan-300">{score}</strong></span>
-              </span>
-            </div>
-
             {/* Comic Dialogue & Guru Lab Sprite Container */}
             <div className="relative z-20 w-full max-w-3xl mx-auto pt-3 sm:pt-4 mb-2 flex flex-col gap-3">
               <div className="flex flex-row items-end gap-3 sm:gap-4">
@@ -522,14 +505,19 @@ export default function LabInfiniteArena() {
           </div>
 
           {/* CRT Bottom Bar - Cyan Blue Theme */}
-          <div className="p-2 sm:p-3 flex items-center justify-between border-t-2 border-cyan-900/80 bg-cyan-950/95 z-20 font-dialogue text-xs sm:text-base text-cyan-300">
+          <div className="p-2.5 sm:p-3.5 flex flex-col sm:flex-row items-center justify-between gap-2 border-t-2 border-cyan-900/80 bg-cyan-950/95 z-20 font-dialogue text-xs sm:text-sm md:text-base text-cyan-300">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
-              <span className="font-bold text-cyan-200">DETEKTIF POLA</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.8)] shrink-0" />
+              <span className="font-bold text-cyan-200 tracking-wide">
+                SOAL #{questionCount} • {currentQuestion?.categoryLabel || 'Detektif Pola'}
+              </span>
             </div>
 
-            <div className="flex items-center gap-4 text-cyan-300">
-              <span>AKURASI: <strong className="text-white">{questionCount > 1 ? Math.round((correctCount / (revealed ? questionCount : questionCount - 1)) * 100) : 0}%</strong></span>
+            <div className="flex items-center gap-3 sm:gap-5 text-cyan-300">
+              <span>BENAR: <strong className="text-emerald-400">{correctCount}</strong></span>
+              <span className="text-cyan-700/80">•</span>
+              <span>AKURASI: <strong className="text-white">{questionCount > 1 ? Math.round((correctCount / (revealed ? questionCount : questionCount - 1)) * 100) : (revealed ? (isCorrect ? 100 : 0) : 0)}%</strong></span>
+              <span className="text-cyan-700/80">•</span>
               <span>TOTAL POIN: <strong className="text-cyan-200">{score}</strong></span>
             </div>
           </div>
