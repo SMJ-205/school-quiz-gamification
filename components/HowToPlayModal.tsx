@@ -83,7 +83,7 @@ export default function HowToPlayModal() {
               </div>
 
               <div className="bg-cyan-950/40 border border-cyan-500/40 p-3 rounded-lg">
-                <div className="font-bold text-cyan-300 mb-1">🔬 Lab IPA (Detektif Pola)</div>
+                <div className="font-bold text-cyan-300 mb-1">🔬 Lab IPA (Identifikasi Pola)</div>
                 <div className="text-stone-300 text-xs sm:text-sm">
                   Latihan logika induktif, deret angka, dan rotasi visual matriks 3x3 otomatis tanpa batas untuk mengasah Tes Potensi Akademik (TPA).
                 </div>

@@ -312,7 +312,7 @@ export default function LabInfiniteArena() {
         <div className="flex items-center gap-2">
           <div className="retro-pill-badge !bg-cyan-950 !border-cyan-400 text-cyan-300 text-xs sm:text-sm py-1 px-3 flex items-center gap-1.5 shadow-[0_0_10px_rgba(6,182,212,0.3)]">
             <span>🔬</span>
-            <span>LAB IPA • DETEKTIF POLA</span>
+            <span>LAB IPA - IDENTIFIKASI POLA</span>
           </div>
         </div>
 
@@ -518,7 +518,7 @@ export default function LabInfiniteArena() {
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.8)] shrink-0" />
           <span className="font-bold text-cyan-200 tracking-wide">
-            SOAL #{questionCount} • {currentQuestion?.categoryLabel || 'Detektif Pola'}
+            SOAL #{questionCount} • {currentQuestion?.categoryLabel || 'Identifikasi Pola'}
           </span>
         </div>
 

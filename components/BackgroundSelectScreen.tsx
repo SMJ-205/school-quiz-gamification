@@ -45,7 +45,7 @@ const PLACE_OPTIONS: PlaceOption[] = [
   {
     id: 'lab_ipa',
     title: 'Laboratorium IPA',
-    subtitle: '♾️ Detektif Pola (Infinite)',
+    subtitle: '♾️ Identifikasi Pola',
     desc: 'Asah logika induktif & spasialmu memprediksi pola aritmatika, geometris, dan rotasi visual 2D otomatis tanpa batas bersama Guru Lab!',
     url: '/backgrounds/lab_ipa.jpg',
     tag: 'GURU LAB 🔬',

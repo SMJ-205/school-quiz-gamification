@@ -93,7 +93,7 @@ export default function PatternReportModal({
             </div>
           </div>
           <h2 className="text-2xl sm:text-4xl font-bold text-amber-300 drop-shadow-[0_2px_8px_rgba(255,179,0,0.5)]">
-            LAPORAN DETEKTIF POLA
+            LAPORAN IDENTIFIKASI POLA
           </h2>
           <p className="font-dialogue text-stone-300 text-base sm:text-xl mt-1">
             Evaluasi Penalaran Induktif & Spasial — <span className="text-amber-300 font-bold">{studentName || 'Petualang'}</span>
