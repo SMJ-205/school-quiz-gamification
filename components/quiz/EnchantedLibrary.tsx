@@ -49,7 +49,7 @@ export default function EnchantedLibrary() {
       <div className="crt-scanlines-overlay" />
 
       {/* ── TOP HUD BAR (Full Width Edge-to-Edge) ────────────────────────── */}
-      <div className="relative z-20 p-2.5 sm:p-3 bg-black/90 border-b-2 border-amber-950 flex items-center justify-between gap-2 font-pixel">
+      <div className="relative z-20 p-2.5 sm:p-3 bg-black/90 border-b-2 border-amber-950 flex items-center justify-between gap-2 font-pixel mb-4 sm:mb-8">
         <div className="flex items-center gap-2">
           <div className="retro-pill-badge !bg-amber-950 !border-amber-400 text-amber-300 text-xs sm:text-sm py-1 px-3 font-bold">
             📖 RAK ARSIP {floorNumber}
@@ -72,9 +72,12 @@ export default function EnchantedLibrary() {
       </div>
 
       {/* ── MAIN ARENA STAGE (Flexible Fill Height) ───────────────────────── */}
-      <div className="relative z-20 flex-1 flex flex-col items-center justify-between px-3 sm:px-6 pb-3 sm:pb-6 pt-10 sm:pt-14 md:pt-16 overflow-y-auto w-full">
-        {/* Upper Arena Space: Question & Answers Panel (Guaranteed 0.5cm+ blank space clearance below top HUD) */}
-        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-6 sm:mt-10 md:mt-12 mb-auto flex flex-col items-center justify-center px-2">
+      <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-3 sm:p-6 overflow-y-auto w-full">
+        {/* Dedicated 0.5cm - 1cm Top Clearance Spacer (Guarantees visible background wallpaper below top HUD) */}
+        <div className="w-full h-8 sm:h-12 md:h-16 shrink-0 pointer-events-none" aria-hidden="true" />
+
+        {/* Upper Arena Space: Question & Answers Panel */}
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto my-auto flex flex-col items-center justify-center px-2">
           <QuestionPanel />
         </div>
 

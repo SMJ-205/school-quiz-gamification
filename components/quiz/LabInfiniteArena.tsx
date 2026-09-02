@@ -296,7 +296,7 @@ export default function LabInfiniteArena() {
       <div className="crt-scanlines-overlay" />
 
       {/* ── CRT TOP BAR - Cyan Science Theme (Full Width Edge-to-Edge) ── */}
-      <div className="relative z-20 px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between border-b-2 border-cyan-900/80 bg-black/90 backdrop-blur-sm gap-2 font-pixel">
+      <div className="relative z-20 px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between border-b-2 border-cyan-900/80 bg-black/90 backdrop-blur-sm gap-2 font-pixel mb-4 sm:mb-8">
         <div className="flex items-center gap-2">
           <div className="retro-pill-badge !bg-cyan-950 !border-cyan-400 text-cyan-300 text-xs sm:text-sm py-1 px-3 flex items-center gap-1.5 shadow-[0_0_10px_rgba(6,182,212,0.3)]">
             <span>🔬</span>
@@ -345,10 +345,12 @@ export default function LabInfiniteArena() {
       </div>
 
       {/* ── MAIN LAB ARENA STAGE (Flexible Fill Height) ────────────────── */}
-      <div className="relative z-20 flex-1 flex flex-col items-center justify-between px-3 sm:px-6 pb-3 sm:pb-6 pt-10 sm:pt-14 md:pt-16 overflow-y-auto w-full">
+      <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-3 sm:p-6 overflow-y-auto w-full">
+        {/* Dedicated 0.5cm - 1cm Top Clearance Spacer (Guarantees visible background wallpaper below top HUD) */}
+        <div className="w-full h-8 sm:h-12 md:h-16 shrink-0 pointer-events-none" aria-hidden="true" />
         
         {/* Comic Dialogue & Guru Lab Sprite Container (Scaled to Sombo Battle Format) */}
-        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-5xl xl:max-w-6xl mx-auto mt-6 sm:mt-10 md:mt-12 pt-4 sm:pt-8 md:pt-10 mb-auto flex flex-col items-center justify-center gap-5 sm:gap-8 px-2">
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-5xl xl:max-w-6xl mx-auto my-auto flex flex-col items-center justify-center gap-5 sm:gap-8 px-2">
           
           {/* Top Question Row: Speech Bubble on Left, Guru Lab on Right */}
           <div className="w-full flex flex-row items-end gap-3 sm:gap-6">
