@@ -541,12 +541,12 @@ export default function LabInfiniteArena() {
                 style={{ paddingLeft: '32px', paddingRight: '24px' }}
               >
                 <div className="flex-1 font-dialogue text-cyan-100 pl-2 sm:pl-4">
-                  <div className="mb-1.5 sm:mb-2.5">
-                    <span className="bg-cyan-900/90 border border-cyan-400 text-cyan-300 font-bold px-3 py-1 sm:px-4 sm:py-1.5 rounded-md sm:rounded-lg text-xs sm:text-sm md:text-base inline-block shadow-md">
-                      Guru Lab:
+                  <div className="mb-1 sm:mb-1.5">
+                    <span className="text-cyan-300 font-bold text-xs sm:text-sm md:text-base tracking-wider">
+                      Guru Lab
                     </span>
                   </div>
-                  <p className="text-cyan-50 text-base sm:text-xl md:text-2xl font-bold leading-snug sm:leading-relaxed drop-shadow">
+                  <p className="text-cyan-100 text-base sm:text-xl md:text-2xl font-normal leading-snug sm:leading-relaxed">
                     “Selamat datang di Laboratorium IPA! Sebelum kita mulai bereksperimen, kamu sedang menempuh pendidikan di Kelas berapa?”
                   </p>
                 </div>
