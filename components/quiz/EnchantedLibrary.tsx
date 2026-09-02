@@ -19,6 +19,14 @@ export default function EnchantedLibrary() {
   const [archiveOpened, setArchiveOpened] = useState(false);
   const [prevCorrect, setPrevCorrect] = useState(correctAnswersCount);
   const [showExitModal, setShowExitModal] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (correctAnswersCount > prevCorrect) {
@@ -49,7 +57,7 @@ export default function EnchantedLibrary() {
       <div className="crt-scanlines-overlay" />
 
       {/* ── TOP HUD BAR (Full Width Edge-to-Edge) ────────────────────────── */}
-      <div className="relative z-20 p-2.5 sm:p-3 bg-black/90 border-b-2 border-amber-950 flex items-center justify-between gap-2 font-pixel mb-4 sm:mb-8">
+      <div className="relative z-20 p-2 sm:p-3 bg-black/90 border-b-2 border-amber-950 flex items-center justify-between gap-2 font-pixel mb-1 sm:mb-8">
         <div className="flex items-center gap-2">
           <div className="retro-pill-badge !bg-amber-950 !border-amber-400 text-amber-300 text-xs sm:text-sm py-1 px-3 font-bold">
             📖 RAK ARSIP {floorNumber}
@@ -72,21 +80,21 @@ export default function EnchantedLibrary() {
       </div>
 
       {/* ── MAIN ARENA STAGE (Flexible Fill Height) ───────────────────────── */}
-      <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-3 sm:p-6 overflow-y-auto w-full">
-        {/* Dedicated 0.5cm - 1cm Top Clearance Spacer (Guarantees visible background wallpaper below top HUD) */}
-        <div className="w-full h-8 sm:h-12 md:h-16 shrink-0 pointer-events-none" aria-hidden="true" />
+      <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-2 sm:p-6 overflow-y-auto w-full">
+        {/* Dedicated Top Clearance Spacer (Hidden on Mobile for Compactness, 0.5cm+ on Desktop) */}
+        <div className="w-full h-1 sm:h-12 md:h-16 shrink-0 pointer-events-none" aria-hidden="true" />
 
         {/* Upper Arena Space: Question & Answers Panel */}
-        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto my-auto flex flex-col items-center justify-center px-2">
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto my-auto flex flex-col items-center justify-center px-1 sm:px-2">
           <QuestionPanel />
         </div>
 
         {/* Lower Stage: Student Character Standing on Floor */}
-        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-auto flex items-end justify-between px-2 sm:px-8 pt-4 pb-2">
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-auto flex items-end justify-between px-2 sm:px-8 pt-2 sm:pt-4 pb-1 sm:pb-2">
           {/* Student Sprite on Floor with Name Badge */}
-          <div className="flex items-end gap-3 sm:gap-5">
-            <PixelSprite character={character} pixelSize={0.65} animate />
-            <div className="bg-black/90 border-2 border-amber-500/80 px-4 py-1.5 rounded-xl text-amber-300 font-dialogue text-xl sm:text-2xl shadow-2xl mb-1">
+          <div className="flex items-end gap-2 sm:gap-5">
+            <PixelSprite character={character} pixelSize={isMobile ? 0.35 : 0.65} animate />
+            <div className="bg-black/90 border-2 border-amber-500/80 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-amber-300 font-dialogue text-sm sm:text-2xl shadow-2xl mb-1">
               {studentName || 'Petualang'}
             </div>
           </div>

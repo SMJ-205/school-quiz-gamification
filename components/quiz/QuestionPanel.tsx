@@ -153,27 +153,27 @@ export default function QuestionPanel() {
       <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-5xl xl:max-w-6xl mx-auto flex flex-col gap-5 sm:gap-8 my-auto">
 
         {/* Natural Chat Dialogue: Speech Bubble on Left, Pak Guru / Bu Guru on Right */}
-        <div className="flex flex-row items-end gap-3 sm:gap-6">
+        <div className="flex flex-row items-end gap-2 sm:gap-6">
 
-          {/* Speech Bubble Container — Reserved for 2 lines of chat text by default */}
+          {/* Speech Bubble Container — Compact on Mobile, 2-Line Reserved on Desktop */}
           <div
             onClick={handleFastForward}
-            className="flex-1 comic-bubble-wrapper flex flex-col justify-center cursor-pointer select-none transition-all hover:border-amber-400 min-h-[140px] sm:min-h-[185px] md:min-h-[210px] shadow-2xl p-3 sm:p-5"
+            className="flex-1 comic-bubble-wrapper flex flex-col justify-center cursor-pointer select-none transition-all hover:border-amber-400 min-h-[90px] sm:min-h-[185px] md:min-h-[210px] shadow-2xl p-2.5 sm:p-5"
             title={isTyping ? 'Klik untuk mempercepat teks' : ''}
           >
-            {/* Reserved text area for 2 lines of dialogue to naturally space Teacher head */}
-            <div className="w-full flex items-center px-2 sm:px-4 min-h-[90px] sm:min-h-[125px] md:min-h-[145px]">
-              <p className="font-dialogue text-xl sm:text-3xl md:text-4xl lg:text-5xl text-white tracking-wide leading-normal sm:leading-relaxed whitespace-pre-line break-words">
+            {/* Dialogue Text Container */}
+            <div className="w-full flex items-center px-1.5 sm:px-4 min-h-[55px] sm:min-h-[125px] md:min-h-[145px]">
+              <p className="font-dialogue text-lg sm:text-3xl md:text-4xl lg:text-5xl text-white tracking-wide leading-normal sm:leading-relaxed whitespace-pre-line break-words">
                 {displayedText}
                 {isTyping && <span className="typewriter-cursor">▋</span>}
               </p>
             </div>
           </div>
 
-          {/* Teacher Sprite — Aligned with 2-line speech bubble height to prevent top border clipping */}
+          {/* Teacher Sprite — Compact on Mobile (<640px), Full Size on Desktop */}
           <div className="shrink-0 flex items-end justify-center self-end mb-1">
             <div
-              className="relative w-22 h-34 sm:w-28 sm:h-44 md:w-34 md:h-52 flex items-end justify-center"
+              className="relative w-16 h-26 sm:w-28 sm:h-44 md:w-34 md:h-52 flex items-end justify-center"
               style={{
                 transform: isFemaleTeacher ? 'scale(1.08)' : 'scale(1.02)',
                 transformOrigin: 'bottom center',
@@ -215,8 +215,8 @@ export default function QuestionPanel() {
 
         </div>
 
-        {/* Options Grid (1 col on mobile, 2 col on tablet/desktop) — Sombo Boss Battle Sizing */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full">
+        {/* Options Grid — 2 Columns on Mobile & Desktop (Matching Sombo Battle Format) */}
+        <div className="grid grid-cols-2 gap-2 sm:gap-6 w-full">
           {question.options.map((opt, i) => {
             let stateClass = '';
             if (revealed) {
@@ -228,21 +228,21 @@ export default function QuestionPanel() {
             return (
               <button
                 key={i}
-                className={`answer-option !text-xl sm:!text-3xl md:!text-4xl !py-4 sm:!py-5 !px-5 sm:!px-8 min-h-[75px] sm:min-h-[95px] hover:!border-amber-400 ${stateClass}`}
+                className={`answer-option !text-base sm:!text-3xl md:!text-4xl !py-2.5 sm:!py-5 !px-3 sm:!px-8 min-h-[50px] sm:min-h-[95px] hover:!border-amber-400 ${stateClass}`}
                 onClick={() => handleSelect(i)}
                 disabled={revealed}
               >
-                <span className="opt-key font-bold font-dialogue text-2xl sm:text-3xl md:text-4xl shrink-0 text-amber-300">
+                <span className="opt-key font-bold font-dialogue text-base sm:text-3xl md:text-4xl shrink-0 text-amber-300">
                   {OPTION_KEYS[i]})
                 </span>
-                <span className="flex-1 font-dialogue leading-tight text-left text-xl sm:text-3xl md:text-4xl break-words">
+                <span className="flex-1 font-dialogue leading-tight text-left text-sm sm:text-3xl md:text-4xl break-words">
                   {opt}
                 </span>
                 {revealed && i === question.correctIndex && (
-                  <span className="text-emerald-400 font-bold text-xl sm:text-3xl ml-auto shrink-0">✓</span>
+                  <span className="text-emerald-400 font-bold text-base sm:text-3xl ml-auto shrink-0">✓</span>
                 )}
                 {revealed && i === selected && !isCorrect && (
-                  <span className="text-red-400 font-bold text-xl sm:text-3xl ml-auto shrink-0">✗</span>
+                  <span className="text-red-400 font-bold text-base sm:text-3xl ml-auto shrink-0">✗</span>
                 )}
               </button>
             );
