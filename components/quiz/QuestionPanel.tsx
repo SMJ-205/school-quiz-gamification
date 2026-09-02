@@ -18,6 +18,55 @@ import GuardianOwlModal from './GuardianOwlModal';
 
 const OPTION_KEYS = ['A', 'B', 'C', 'D'];
 
+/**
+ * ─── CONFIG ANIMASI MULUT GURU (TEACHER MOUTH CONFIG) ───────────────────────
+ * Ubah koordinat & ukuran di bawah ini untuk kalibrasi animasi mulut Bu Guru / Pak Guru:
+ * - female: Bu Guru (Perpustakaan Taman Pagi)
+ * - male: Pak Guru (Perpustakaan Klasik)
+ */
+export const TEACHER_MOUTH_CONFIG = {
+  female: {
+    // Tampilan Desktop (>= 640px)
+    desktop: {
+      left: '41.8%',
+      bottom: '59.9%',
+      openWidth: '13%',
+      closedWidth: '11%',
+      openHeight: '4%',
+      closedHeight: '1.8%',
+    },
+    // Tampilan Mobile (< 640px)
+    mobile: {
+      left: '41.8%',
+      bottom: '59.9%',
+      openWidth: '14%',
+      closedWidth: '11.5%',
+      openHeight: '4.2%',
+      closedHeight: '2%',
+    },
+  },
+  male: {
+    // Tampilan Desktop (>= 640px)
+    desktop: {
+      left: '38.5%',
+      bottom: '63.5%',
+      openWidth: '15%',
+      closedWidth: '13%',
+      openHeight: '5%',
+      closedHeight: '2%',
+    },
+    // Tampilan Mobile (< 640px)
+    mobile: {
+      left: '38.5%',
+      bottom: '63.5%',
+      openWidth: '15.5%',
+      closedWidth: '13%',
+      openHeight: '5.2%',
+      closedHeight: '2.2%',
+    },
+  },
+};
+
 export default function QuestionPanel() {
   const { questions, currentQuestionIndex, submitAnswer, nextQuestion, selectedBackground } = useGameStore();
   const question = questions[currentQuestionIndex];
@@ -27,6 +76,14 @@ export default function QuestionPanel() {
   const [currentHint, setCurrentHint] = useState<string>('');
   const [showOwl, setShowOwl]         = useState(false);
   const [revealed, setRevealed]       = useState(false);
+  const [isMobile, setIsMobile]       = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Teacher selection (Bu Guru for Perpustakaan Pagi / sunlit library)
   const isFemaleTeacher = selectedBackground === '/backgrounds/library_sunlit.jpg';
@@ -194,22 +251,31 @@ export default function QuestionPanel() {
                   ].join(' '),
                 }}
               />
-              <div
-                aria-hidden="true"
-                style={{
-                  position: 'absolute',
-                  left: isFemaleTeacher ? '41.8%' : '38.5%',
-                  bottom: isFemaleTeacher ? '59.9%' : '63.5%',
-                  transform: 'translate(-50%, 50%)',
-                  width: mouthOpen ? (isFemaleTeacher ? '13%' : '15%') : (isFemaleTeacher ? '11%' : '13%'),
-                  height: mouthOpen ? (isFemaleTeacher ? '4%' : '5%') : (isFemaleTeacher ? '1.8%' : '2%'),
-                  borderRadius: '50%',
-                  backgroundColor: mouthOpen ? 'rgba(25,6,6,0.95)' : 'rgba(50,20,12,0.82)',
-                  boxShadow: mouthOpen ? 'inset 0 1px 2px rgba(255,220,210,0.3)' : 'none',
-                  transition: 'height 55ms ease, width 55ms ease',
-                  pointerEvents: 'none',
-                }}
-              />
+              {/* Mouth Flap Overlay synced with TEACHER_MOUTH_CONFIG */}
+              {(() => {
+                const teacherConfig = isFemaleTeacher
+                  ? isMobile ? TEACHER_MOUTH_CONFIG.female.mobile : TEACHER_MOUTH_CONFIG.female.desktop
+                  : isMobile ? TEACHER_MOUTH_CONFIG.male.mobile : TEACHER_MOUTH_CONFIG.male.desktop;
+
+                return (
+                  <div
+                    aria-hidden="true"
+                    style={{
+                      position: 'absolute',
+                      left: teacherConfig.left,
+                      bottom: teacherConfig.bottom,
+                      transform: 'translate(-50%, 50%)',
+                      width: mouthOpen ? teacherConfig.openWidth : teacherConfig.closedWidth,
+                      height: mouthOpen ? teacherConfig.openHeight : teacherConfig.closedHeight,
+                      borderRadius: '50%',
+                      backgroundColor: mouthOpen ? 'rgba(25,6,6,0.95)' : 'rgba(50,20,12,0.82)',
+                      boxShadow: mouthOpen ? 'inset 0 1px 2px rgba(255,220,210,0.3)' : 'none',
+                      transition: 'height 55ms ease, width 55ms ease',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                );
+              })()}
             </div>
           </div>
 
