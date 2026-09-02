@@ -170,12 +170,12 @@ export default function QuestionPanel() {
             </div>
           </div>
 
-          {/* Teacher Sprite — Perfectly sized to prevent top border clipping */}
+          {/* Teacher Sprite — Sized to fit comfortably within the speech bubble height */}
           <div className="shrink-0 flex items-end justify-center self-end mb-1">
             <div
-              className="relative w-22 h-34 sm:w-28 sm:h-44 md:w-34 md:h-52 flex items-end justify-center"
+              className="relative w-20 h-30 sm:w-26 sm:h-38 md:w-30 md:h-44 flex items-end justify-center"
               style={{
-                transform: isFemaleTeacher ? 'scale(1.15)' : 'scale(1.1)',
+                transform: isFemaleTeacher ? 'scale(1.05)' : 'scale(1.0)',
                 transformOrigin: 'bottom center',
               }}
             >

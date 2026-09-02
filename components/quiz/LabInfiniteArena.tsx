@@ -345,10 +345,10 @@ export default function LabInfiniteArena() {
       </div>
 
       {/* ── MAIN LAB ARENA STAGE (Flexible Fill Height) ────────────────── */}
-      <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-3 sm:p-6 pt-6 sm:pt-10 md:pt-12 overflow-y-auto w-full">
+      <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-3 sm:p-6 pt-10 sm:pt-16 md:pt-20 overflow-y-auto w-full">
         
         {/* Comic Dialogue & Guru Lab Sprite Container (Scaled to Sombo Battle Format) */}
-        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-5xl xl:max-w-6xl mx-auto my-auto flex flex-col items-center justify-center gap-5 sm:gap-8 px-2 pt-2 sm:pt-4">
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-5xl xl:max-w-6xl mx-auto mt-4 sm:mt-8 md:mt-10 mb-auto flex flex-col items-center justify-center gap-5 sm:gap-8 px-2">
           
           {/* Top Question Row: Speech Bubble on Left, Guru Lab on Right */}
           <div className="w-full flex flex-row items-end gap-3 sm:gap-6">
@@ -370,9 +370,9 @@ export default function LabInfiniteArena() {
             {/* Guru Lab Sprite — Perfectly sized to prevent top border clipping */}
             <div className="shrink-0 flex items-end justify-center self-end mb-1">
               <div
-                className="relative w-22 h-34 sm:w-28 sm:h-44 md:w-34 md:h-52 flex items-end justify-center"
+                className="relative w-20 h-30 sm:w-26 sm:h-38 md:w-30 md:h-44 flex items-end justify-center"
                 style={{
-                  transform: `scale(${GURU_LAB_CONFIG.spriteScale * 1.02})`,
+                  transform: `scale(${GURU_LAB_CONFIG.spriteScale})`,
                   transformOrigin: 'bottom center',
                 }}
               >
