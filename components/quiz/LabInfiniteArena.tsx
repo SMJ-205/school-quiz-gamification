@@ -314,12 +314,6 @@ export default function LabInfiniteArena() {
             <span>🔬</span>
             <span>LAB IPA • DETEKTIF POLA</span>
           </div>
-
-          {currentStreak > 1 && (
-            <div className="retro-pill-badge !bg-cyan-900 !border-cyan-300 text-cyan-200 text-xs py-1 px-2.5 animate-pulse shadow-[0_0_12px_rgba(6,182,212,0.5)]">
-              ⚡ STREAK x{currentStreak}
-            </div>
-          )}
         </div>
 
         <div className="flex items-center gap-2">
@@ -333,7 +327,7 @@ export default function LabInfiniteArena() {
             title={muted ? 'Nyalakan Musik & SFX (Unmute)' : 'Matikan Musik & SFX (Mute)'}
           >
             <span>{muted ? '🔇' : '🔊'}</span>
-            <span className="font-bold">{muted ? 'MUTED' : 'SUARA'}</span>
+            <span className="font-bold hidden sm:inline">{muted ? 'MUTED' : 'SUARA'}</span>
           </button>
 
           <button
