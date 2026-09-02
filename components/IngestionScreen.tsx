@@ -168,25 +168,39 @@ Cahaya matahari membutuhkan waktu sekitar berapa menit untuk sampai ke Bumi?
 
         {/* CRT Style Header Poster Banner */}
         <div className="crt-arcade-frame p-2.5 sm:p-3 mb-5 text-center overflow-hidden relative group">
-          {/* Poster Image Container */}
+          {/* Poster Image Container with Alive Breathing Animation */}
           <div className="relative w-full h-52 sm:h-64 md:h-72 rounded-xl overflow-hidden border-2 border-amber-500/50 shadow-2xl">
             <img
               src="/backgrounds/main_menu_poster.jpg"
               alt="The Growth of Knowledge — Characters Poster"
-              className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700"
+              className="w-full h-full object-cover object-center anim-poster-breath transition-transform duration-1000"
             />
             {/* Scrim Overlays for Header High Contrast & Text Legibility */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/30 to-black/85" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/25 to-black/85 pointer-events-none" />
+
+            {/* Radial Warm Spotlight Ambient Glow */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_60%,_rgba(245,158,11,0.3),_transparent_70%)] animate-pulse pointer-events-none" />
+
+            {/* Light Sheen Sweep Effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-200/20 to-transparent anim-light-sheen pointer-events-none w-1/2 h-full z-0" />
+
+            {/* Floating Magical Knowledge Particles */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+              <div className="magic-particle w-2 h-2 left-[15%] bottom-2" style={{ animationDuration: '5.5s', animationDelay: '0.2s' }} />
+              <div className="magic-particle w-3 h-3 left-[28%] bottom-1" style={{ animationDuration: '7s', animationDelay: '1.5s' }} />
+              <div className="magic-particle w-2.5 h-2.5 left-[45%] bottom-3" style={{ animationDuration: '6s', animationDelay: '3.1s' }} />
+              <div className="magic-particle w-3.5 h-3.5 left-[62%] bottom-1" style={{ animationDuration: '8s', animationDelay: '0.8s' }} />
+              <div className="magic-particle w-2 h-2 left-[78%] bottom-4" style={{ animationDuration: '6.5s', animationDelay: '2.4s' }} />
+              <div className="magic-particle w-3 h-3 left-[88%] bottom-2" style={{ animationDuration: '7.5s', animationDelay: '4.2s' }} />
+            </div>
 
             {/* Attached Header Content Overlayed on Poster */}
             <div className="absolute inset-0 p-3 sm:p-4 flex flex-col justify-between items-center text-center z-10">
-              {/* Top Badge */}
-              <div className="flex items-center justify-center gap-2 sm:gap-3 mt-1">
-                <span className="text-xl sm:text-2xl drop-shadow">📖</span>
+              {/* Top Badge (Clean without book or glitter emoji) */}
+              <div className="flex items-center justify-center mt-1">
                 <div className="retro-pill-badge !bg-amber-950/90 !border-amber-400 text-amber-300 shadow-md">
                   ACADEMY ARCHIVES
                 </div>
-                <span className="text-xl sm:text-2xl drop-shadow">✨</span>
               </div>
 
               {/* Bottom Title & Subtitle Attached on Poster */}

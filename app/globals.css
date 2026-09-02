@@ -659,3 +659,57 @@ body {
   cursor: not-allowed;
   opacity: 0.65;
 }
+
+/* Hero Poster Alive & Particle Effects */
+@keyframes heroPosterBreath {
+  0%, 100% {
+    transform: scale(1.0) translateY(0);
+  }
+  50% {
+    transform: scale(1.05) translateY(-3px);
+  }
+}
+
+.anim-poster-breath {
+  animation: heroPosterBreath 10s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+@keyframes lightSheenSweep {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  35%, 100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+.anim-light-sheen {
+  animation: lightSheenSweep 7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes particleDrift {
+  0% {
+    transform: translateY(40px) translateX(0) scale(0.6);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.85;
+  }
+  75% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(-220px) translateX(20px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.magic-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(254, 240, 138, 0.95) 0%, rgba(245, 158, 11, 0.5) 60%, transparent 100%);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+  animation: particleDrift 6s ease-in-out infinite;
+}
