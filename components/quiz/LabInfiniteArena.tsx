@@ -477,35 +477,38 @@ export default function LabInfiniteArena() {
 
         </div>
 
-        {/* Bottom Stage Floor Row — Student Character Sprite & Action Bar Floating Right Next to Head/Badge */}
+        {/* Bottom Stage Floor Row — Student Character Sprite & Action Bar Floating Right Next to Head Level */}
         <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-auto flex items-end justify-start px-2 sm:px-8 pt-0.5 pb-1 gap-2 sm:gap-4">
-          {/* Student Sprite on Floor with Name Badge */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* Student Sprite on Floor with Name Badge & Action Bar at Head/Neck Level */}
+          <div className="flex items-center gap-2 sm:gap-4">
             <PixelSprite character={character} pixelSize={isMobile ? 0.35 : 0.65} animate />
-            <div className="bg-cyan-950/90 border-2 border-cyan-400/80 px-2.5 sm:px-4 py-1 rounded-lg sm:rounded-xl text-cyan-300 font-dialogue text-xs sm:text-xl shadow-2xl shrink-0">
-              {studentName || 'Petualang'}
-            </div>
-          </div>
-
-          {/* Action Bar (when revealed) placed DIRECTLY to the right of student character badge */}
-          {revealed && !showOwl && (
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 p-1.5 sm:p-2.5 bg-cyan-950/95 border-2 sm:border-3 border-cyan-400 rounded-xl sm:rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.4)] my-auto">
-              <div className="font-dialogue text-xs sm:text-base">
-                {isCorrect ? (
-                  <span className="text-emerald-400 font-bold">✨ JAWABAN TEPAT! (+100 Poin)</span>
-                ) : (
-                  <span className="text-red-400 font-bold">Pola belum tepat!</span>
-                )}
+            
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+              <div className="bg-cyan-950/90 border-2 border-cyan-400/80 px-2.5 sm:px-4 py-1 rounded-lg sm:rounded-xl text-cyan-300 font-dialogue text-xs sm:text-xl shadow-2xl shrink-0">
+                {studentName || 'Petualang'}
               </div>
 
-              <button
-                className="btn-pixel !bg-cyan-700 hover:!bg-cyan-600 !border-cyan-400 text-white !py-1 sm:!py-2 !px-2.5 sm:!px-5 text-xs sm:text-sm font-bold flex items-center gap-1 cursor-pointer shadow-xl"
-                onClick={handleNextQuestion}
-              >
-                <span>SOAL SELANJUTNYA ▶</span>
-              </button>
+              {/* Action Bar (when revealed) placed DIRECTLY at student head/badge level */}
+              {revealed && !showOwl && (
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 p-1.5 sm:p-2 bg-cyan-950/95 border-2 sm:border-3 border-cyan-400 rounded-xl sm:rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+                  <div className="font-dialogue text-xs sm:text-base">
+                    {isCorrect ? (
+                      <span className="text-emerald-400 font-bold">✨ JAWABAN TEPAT! (+100 Poin)</span>
+                    ) : (
+                      <span className="text-red-400 font-bold">Pola belum tepat!</span>
+                    )}
+                  </div>
+
+                  <button
+                    className="btn-pixel !bg-cyan-700 hover:!bg-cyan-600 !border-cyan-400 text-white !py-1 sm:!py-1.5 !px-2.5 sm:!px-4 text-xs sm:text-sm font-bold flex items-center gap-1 cursor-pointer shadow-xl"
+                    onClick={handleNextQuestion}
+                  >
+                    <span>SOAL SELANJUTNYA ▶</span>
+                  </button>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
 
       </div>
