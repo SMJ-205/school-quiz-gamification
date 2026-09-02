@@ -347,32 +347,32 @@ export default function LabInfiniteArena() {
       {/* ── MAIN LAB ARENA STAGE (Flexible Fill Height) ────────────────── */}
       <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-3 sm:p-6 overflow-y-auto w-full">
         
-        {/* Comic Dialogue & Guru Lab Sprite Container (Centered!) */}
-        <div className="w-full max-w-2xl sm:max-w-3xl lg:max-w-4xl mx-auto my-auto flex flex-col items-center justify-center gap-4 sm:gap-6 px-2">
+        {/* Comic Dialogue & Guru Lab Sprite Container (Scaled to Sombo Battle Format) */}
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-5xl xl:max-w-6xl mx-auto my-auto flex flex-col items-center justify-center gap-5 sm:gap-8 px-2">
           
           {/* Top Question Row: Speech Bubble on Left, Guru Lab on Right */}
-          <div className="w-full flex flex-row items-end gap-3 sm:gap-4">
+          <div className="w-full flex flex-row items-end gap-3 sm:gap-6">
             
             {/* Speech Bubble with Cyan Blue Accents */}
             <div
               onClick={handleFastForward}
-              className="flex-1 comic-bubble-wrapper !border-cyan-400 shadow-[0_0_25px_rgba(6,182,212,0.4)] flex flex-col justify-center cursor-pointer select-none transition-all hover:border-cyan-300 min-h-[100px] sm:min-h-[135px]"
+              className="flex-1 comic-bubble-wrapper !border-cyan-400 shadow-[0_0_25px_rgba(6,182,212,0.4)] flex flex-col justify-center cursor-pointer select-none transition-all hover:border-cyan-300 min-h-[120px] sm:min-h-[160px] md:min-h-[180px] p-2 sm:p-4"
               title={isTyping ? 'Klik untuk mempercepat teks' : ''}
             >
-              <div className="w-full flex flex-col px-3 sm:px-4 py-2 min-h-[55px] sm:min-h-[75px] justify-center">
-                <p className="font-dialogue text-lg sm:text-2xl text-white tracking-wide leading-snug whitespace-pre-line break-words">
+              <div className="w-full flex flex-col px-2 sm:px-4 min-h-[65px] sm:min-h-[95px] justify-center">
+                <p className="font-dialogue text-xl sm:text-3xl md:text-4xl lg:text-5xl text-white tracking-wide leading-normal sm:leading-relaxed whitespace-pre-line break-words">
                   {displayedText}
                   {isTyping && <span className="typewriter-cursor text-cyan-400">▋</span>}
                 </p>
               </div>
             </div>
 
-            {/* Guru Lab Sprite */}
-            <div className="shrink-0 flex items-end justify-center self-end mb-0.5">
+            {/* Guru Lab Sprite — Scaled up to match Sombo Boss presence */}
+            <div className="shrink-0 flex items-end justify-center self-end mb-1">
               <div
-                className="relative w-20 h-28 sm:w-26 sm:h-38 flex items-end justify-center"
+                className="relative w-24 h-36 sm:w-32 sm:h-48 md:w-40 md:h-60 flex items-end justify-center"
                 style={{
-                  transform: `scale(${GURU_LAB_CONFIG.spriteScale})`,
+                  transform: `scale(${GURU_LAB_CONFIG.spriteScale * 1.15})`,
                   transformOrigin: 'bottom center',
                 }}
               >
@@ -383,11 +383,11 @@ export default function LabInfiniteArena() {
                   style={{
                     imageRendering: 'pixelated',
                     filter: [
-                      'drop-shadow(1px 0px 0px rgba(6,182,212,0.85))',
-                      'drop-shadow(-1px 0px 0px rgba(6,182,212,0.85))',
-                      'drop-shadow(0px 1px 0px rgba(6,182,212,0.85))',
-                      'drop-shadow(0px -1px 0px rgba(6,182,212,0.85))',
-                      'drop-shadow(0px 8px 16px rgba(0,0,0,0.8))',
+                      'drop-shadow(2px 0px 0px rgba(6,182,212,0.9))',
+                      'drop-shadow(-2px 0px 0px rgba(6,182,212,0.9))',
+                      'drop-shadow(0px 2px 0px rgba(6,182,212,0.9))',
+                      'drop-shadow(0px -2px 0px rgba(6,182,212,0.9))',
+                      'drop-shadow(0px 12px 24px rgba(0,0,0,0.9))',
                     ].join(' '),
                   }}
                 />
@@ -430,8 +430,8 @@ export default function LabInfiniteArena() {
               />
             </div>
           ) : (
-            /* Options Grid (A, B, C, D) */
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
+            /* Options Grid (A, B, C, D) — Sombo Boss Battle Sizing */
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full">
               {(currentQuestion?.options || []).map((opt, i) => {
                 let stateClass = '';
                 if (revealed) {
@@ -443,21 +443,21 @@ export default function LabInfiniteArena() {
                 return (
                   <button
                     key={i}
-                    className={`answer-option !text-base sm:!text-2xl !py-3 sm:!py-3.5 !px-4 hover:!border-cyan-400 ${stateClass}`}
+                    className={`answer-option !text-xl sm:!text-3xl md:!text-4xl !py-4 sm:!py-5 !px-5 sm:!px-8 min-h-[75px] sm:min-h-[95px] hover:!border-cyan-400 ${stateClass}`}
                     onClick={() => handleSelectOption(i)}
                     disabled={revealed}
                   >
-                    <span className="opt-key font-bold font-dialogue text-lg sm:text-2xl shrink-0 text-cyan-300">
+                    <span className="opt-key font-bold font-dialogue text-2xl sm:text-3xl md:text-4xl shrink-0 text-cyan-300">
                       {OPTION_KEYS[i]})
                     </span>
-                    <span className="flex-1 font-dialogue leading-tight text-left text-base sm:text-2xl break-words">
+                    <span className="flex-1 font-dialogue leading-tight text-left text-xl sm:text-3xl md:text-4xl break-words">
                       {opt}
                     </span>
                     {revealed && i === currentQuestion?.correctIndex && (
-                      <span className="text-emerald-400 font-bold text-base sm:text-xl ml-auto shrink-0">✓</span>
+                      <span className="text-emerald-400 font-bold text-xl sm:text-3xl ml-auto shrink-0">✓</span>
                     )}
                     {revealed && i === selected && !isCorrect && (
-                      <span className="text-red-400 font-bold text-base sm:text-xl ml-auto shrink-0">✗</span>
+                      <span className="text-red-400 font-bold text-xl sm:text-3xl ml-auto shrink-0">✗</span>
                     )}
                   </button>
                 );
@@ -467,8 +467,8 @@ export default function LabInfiniteArena() {
 
           {/* Action Bar for Next Question */}
           {revealed && !showOwl && (
-            <div className="w-full flex flex-wrap items-center justify-between gap-2 p-3 sm:p-4 bg-cyan-950/90 border-2 border-cyan-400 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.4)]">
-              <div className="font-dialogue text-lg sm:text-2xl">
+            <div className="w-full flex flex-wrap items-center justify-between gap-3 p-4 sm:p-6 bg-cyan-950/95 border-3 sm:border-4 border-cyan-400 rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+              <div className="font-dialogue text-xl sm:text-3xl">
                 {isCorrect ? (
                   <span className="text-emerald-400 font-bold">✨ JAWABAN TEPAT! (+100 Poin)</span>
                 ) : (
@@ -477,7 +477,7 @@ export default function LabInfiniteArena() {
               </div>
 
               <button
-                className="btn-pixel !bg-cyan-700 hover:!bg-cyan-600 !border-cyan-400 text-white !py-2.5 !px-5 sm:!px-7 text-xs sm:text-sm flex items-center gap-2 ml-auto cursor-pointer shadow-lg"
+                className="btn-pixel !bg-cyan-700 hover:!bg-cyan-600 !border-cyan-400 text-white !py-3 sm:!py-4 !px-6 sm:!px-10 text-sm sm:text-xl font-bold flex items-center gap-2 ml-auto cursor-pointer shadow-xl"
                 onClick={handleNextQuestion}
               >
                 <span>SOAL SELANJUTNYA ▶</span>
@@ -488,16 +488,16 @@ export default function LabInfiniteArena() {
         </div>
 
         {/* Bottom Stage Floor Row */}
-        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-auto flex items-end justify-between px-2 sm:px-8 pt-2">
-          <div className="flex items-end gap-2 sm:gap-4">
-            <PixelSprite character={character} pixelSize={0.42} animate />
-            <div className="bg-cyan-950/90 border border-cyan-400/60 px-3 py-1 rounded-lg text-cyan-300 font-dialogue text-base sm:text-lg shadow-lg mb-1">
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-auto flex items-end justify-between px-2 sm:px-8 pt-4 pb-2">
+          <div className="flex items-end gap-3 sm:gap-5">
+            <PixelSprite character={character} pixelSize={0.65} animate />
+            <div className="bg-cyan-950/90 border-2 border-cyan-400/80 px-4 py-1.5 rounded-xl text-cyan-300 font-dialogue text-xl sm:text-2xl shadow-2xl mb-1">
               {studentName || 'Petualang'}
             </div>
           </div>
 
           <div className="mb-1">
-            <div className="bg-cyan-950/80 border border-cyan-500/50 text-cyan-200 font-dialogue text-xs sm:text-base px-3.5 py-1.5 rounded-lg hidden sm:block shadow-md">
+            <div className="bg-cyan-950/85 border-2 border-cyan-500/60 text-cyan-200 font-dialogue text-sm sm:text-xl px-4 py-2 rounded-xl hidden sm:block shadow-lg">
               ♾️ Mode Infinite • Jawab sepuasnya & akhiri kapan saja!
             </div>
           </div>

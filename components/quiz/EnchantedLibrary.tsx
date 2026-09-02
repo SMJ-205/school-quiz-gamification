@@ -73,17 +73,17 @@ export default function EnchantedLibrary() {
 
       {/* ── MAIN ARENA STAGE (Flexible Fill Height) ───────────────────────── */}
       <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-3 sm:p-6 overflow-y-auto w-full">
-        {/* Upper Arena Space: Question & Answers Panel (Centered!) */}
-        <div className="w-full max-w-2xl sm:max-w-3xl lg:max-w-4xl mx-auto my-auto flex flex-col items-center justify-center px-2">
+        {/* Upper Arena Space: Question & Answers Panel (Scaled to Sombo Battle Format) */}
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto my-auto flex flex-col items-center justify-center px-2">
           <QuestionPanel />
         </div>
 
         {/* Lower Stage: Student Character Standing on Floor */}
-        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-auto flex items-end justify-between px-2 sm:px-8 pt-4">
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-auto flex items-end justify-between px-2 sm:px-8 pt-4 pb-2">
           {/* Student Sprite on Floor with Name Badge */}
-          <div className="flex items-end gap-2 sm:gap-4">
-            <PixelSprite character={character} pixelSize={0.42} animate />
-            <div className="bg-black/85 border border-amber-500/60 px-3 py-1 rounded-lg text-amber-300 font-dialogue text-lg sm:text-xl shadow-xl mb-1">
+          <div className="flex items-end gap-3 sm:gap-5">
+            <PixelSprite character={character} pixelSize={0.65} animate />
+            <div className="bg-black/90 border-2 border-amber-500/80 px-4 py-1.5 rounded-xl text-amber-300 font-dialogue text-xl sm:text-2xl shadow-2xl mb-1">
               {studentName || 'Petualang'}
             </div>
           </div>
@@ -91,11 +91,11 @@ export default function EnchantedLibrary() {
           {/* Status Alert if Archive Found */}
           <div className="mb-1">
             {archiveOpened ? (
-              <div className="bg-amber-950/95 border-2 border-amber-400 text-amber-200 font-dialogue text-lg sm:text-2xl px-4 py-2 rounded-xl shadow-2xl animate-bounce">
+              <div className="bg-amber-950/95 border-2 border-amber-400 text-amber-200 font-dialogue text-xl sm:text-3xl px-5 py-2.5 rounded-xl shadow-2xl animate-bounce">
                 ✨ ARSIP TERBUKA! (+100)
               </div>
             ) : (
-              <div className="bg-black/75 border border-stone-700 text-stone-300 font-dialogue text-xs sm:text-base px-3 py-1.5 rounded-lg hidden sm:block shadow-md">
+              <div className="bg-black/85 border-2 border-stone-700 text-stone-300 font-dialogue text-sm sm:text-xl px-4 py-2 rounded-xl hidden sm:block shadow-lg">
                 📚 Cari arsip ilmu di rak buku...
               </div>
             )}

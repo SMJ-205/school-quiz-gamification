@@ -150,32 +150,32 @@ export default function QuestionPanel() {
 
   return (
     <>
-      <div className="w-full max-w-2xl sm:max-w-3xl mx-auto flex flex-col gap-4 sm:gap-6 my-auto">
+      <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-5xl xl:max-w-6xl mx-auto flex flex-col gap-5 sm:gap-8 my-auto">
 
-        {/* Natural Chat Dialogue: Speech Bubble on Left, Pak Guru on Right */}
-        <div className="flex flex-row items-end gap-3 sm:gap-4">
+        {/* Natural Chat Dialogue: Speech Bubble on Left, Pak Guru / Bu Guru on Right */}
+        <div className="flex flex-row items-end gap-3 sm:gap-6">
 
           {/* Speech Bubble Container */}
           <div
             onClick={handleFastForward}
-            className="flex-1 comic-bubble-wrapper flex flex-col justify-center cursor-pointer select-none transition-all hover:border-amber-400 min-h-[95px] sm:min-h-[135px] md:min-h-[145px] shadow-2xl"
+            className="flex-1 comic-bubble-wrapper flex flex-col justify-center cursor-pointer select-none transition-all hover:border-amber-400 min-h-[120px] sm:min-h-[160px] md:min-h-[180px] shadow-2xl p-2 sm:p-4"
             title={isTyping ? 'Klik untuk mempercepat teks' : ''}
           >
             {/* Reserved text area with multi-line support for number series */}
-            <div className="w-full flex items-start px-2 sm:px-3 min-h-[50px] sm:min-h-[70px]">
-              <p className="font-dialogue text-lg sm:text-2xl md:text-3xl text-white tracking-wide leading-snug sm:leading-relaxed whitespace-pre-line break-words">
+            <div className="w-full flex items-start px-2 sm:px-4 min-h-[65px] sm:min-h-[95px]">
+              <p className="font-dialogue text-xl sm:text-3xl md:text-4xl lg:text-5xl text-white tracking-wide leading-normal sm:leading-relaxed whitespace-pre-line break-words">
                 {displayedText}
                 {isTyping && <span className="typewriter-cursor">▋</span>}
               </p>
             </div>
           </div>
 
-          {/* Teacher Sprite */}
-          <div className="shrink-0 flex items-end justify-center self-end mb-0.5">
+          {/* Teacher Sprite — Scaled up to match Sombo Boss presence */}
+          <div className="shrink-0 flex items-end justify-center self-end mb-1">
             <div
-              className="relative w-18 h-27 sm:w-22 sm:h-32 md:w-24 md:h-35 flex items-end justify-center"
+              className="relative w-24 h-36 sm:w-32 sm:h-48 md:w-40 md:h-60 flex items-end justify-center"
               style={{
-                transform: isFemaleTeacher ? 'scale(1.15)' : 'scale(1.05)',
+                transform: isFemaleTeacher ? 'scale(1.35)' : 'scale(1.25)',
                 transformOrigin: 'bottom center',
               }}
             >
@@ -186,11 +186,11 @@ export default function QuestionPanel() {
                 style={{
                   imageRendering: 'pixelated',
                   filter: [
-                    'drop-shadow(1px 0px 0px rgba(255,255,255,0.85))',
-                    'drop-shadow(-1px 0px 0px rgba(255,255,255,0.85))',
-                    'drop-shadow(0px 1px 0px rgba(255,255,255,0.85))',
-                    'drop-shadow(0px -1px 0px rgba(255,255,255,0.85))',
-                    'drop-shadow(0px 8px 16px rgba(0,0,0,0.85))',
+                    'drop-shadow(2px 0px 0px rgba(255,255,255,0.9))',
+                    'drop-shadow(-2px 0px 0px rgba(255,255,255,0.9))',
+                    'drop-shadow(0px 2px 0px rgba(255,255,255,0.9))',
+                    'drop-shadow(0px -2px 0px rgba(255,255,255,0.9))',
+                    'drop-shadow(0px 12px 24px rgba(0,0,0,0.9))',
                   ].join(' '),
                 }}
               />
@@ -215,8 +215,8 @@ export default function QuestionPanel() {
 
         </div>
 
-        {/* Options Grid (1 col on mobile, 2 col on tablet/desktop) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
+        {/* Options Grid (1 col on mobile, 2 col on tablet/desktop) — Sombo Boss Battle Sizing */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full">
           {question.options.map((opt, i) => {
             let stateClass = '';
             if (revealed) {
@@ -228,21 +228,21 @@ export default function QuestionPanel() {
             return (
               <button
                 key={i}
-                className={`answer-option !text-base sm:!text-2xl !py-3 sm:!py-3.5 !px-4 hover:!border-amber-400 ${stateClass}`}
+                className={`answer-option !text-xl sm:!text-3xl md:!text-4xl !py-4 sm:!py-5 !px-5 sm:!px-8 min-h-[75px] sm:min-h-[95px] hover:!border-amber-400 ${stateClass}`}
                 onClick={() => handleSelect(i)}
                 disabled={revealed}
               >
-                <span className="opt-key font-bold font-dialogue text-lg sm:text-2xl shrink-0 text-amber-300">
+                <span className="opt-key font-bold font-dialogue text-2xl sm:text-3xl md:text-4xl shrink-0 text-amber-300">
                   {OPTION_KEYS[i]})
                 </span>
-                <span className="flex-1 font-dialogue leading-tight text-left text-base sm:text-2xl break-words">
+                <span className="flex-1 font-dialogue leading-tight text-left text-xl sm:text-3xl md:text-4xl break-words">
                   {opt}
                 </span>
                 {revealed && i === question.correctIndex && (
-                  <span className="text-emerald-400 font-bold text-base sm:text-xl ml-auto shrink-0">✓</span>
+                  <span className="text-emerald-400 font-bold text-xl sm:text-3xl ml-auto shrink-0">✓</span>
                 )}
                 {revealed && i === selected && !isCorrect && (
-                  <span className="text-red-400 font-bold text-base sm:text-xl ml-auto shrink-0">✗</span>
+                  <span className="text-red-400 font-bold text-xl sm:text-3xl ml-auto shrink-0">✗</span>
                 )}
               </button>
             );
@@ -251,8 +251,8 @@ export default function QuestionPanel() {
 
         {/* Next Action Bar */}
         {revealed && !showOwl && (
-          <div className="flex flex-wrap items-center justify-between gap-2 p-3 sm:p-4 bg-black/90 border-2 border-amber-500 rounded-xl shadow-2xl">
-            <div className="font-dialogue text-lg sm:text-2xl">
+          <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-6 bg-black/95 border-3 sm:border-4 border-amber-500 rounded-2xl shadow-2xl">
+            <div className="font-dialogue text-xl sm:text-3xl">
               {isCorrect ? (
                 <span className="text-emerald-400 font-bold">✨ JAWABAN TEPAT! (+100 Poin)</span>
               ) : (
@@ -261,7 +261,7 @@ export default function QuestionPanel() {
             </div>
 
             <button
-              className="btn-pixel btn-pixel-gold !py-2.5 !px-5 sm:!px-7 text-xs sm:text-sm flex items-center gap-2 ml-auto shadow-lg"
+              className="btn-pixel btn-pixel-gold !py-3 sm:!py-4 !px-6 sm:!px-10 text-sm sm:text-xl font-bold flex items-center gap-2 ml-auto shadow-xl"
               onClick={handleNext}
             >
               <span>{currentQuestionIndex + 1 < questions.length ? 'SOAL BERIKUTNYA ▶' : 'SELESAIKAN MISI 🏆'}</span>
