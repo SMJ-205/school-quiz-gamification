@@ -475,41 +475,42 @@ export default function LabInfiniteArena() {
             </div>
           )}
 
-          {/* Action Bar for Next Question */}
-          {revealed && !showOwl && (
-            <div className="w-full flex flex-wrap items-center justify-between gap-3 p-4 sm:p-6 bg-cyan-950/95 border-3 sm:border-4 border-cyan-400 rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.4)]">
-              <div className="font-dialogue text-xl sm:text-3xl">
-                {isCorrect ? (
-                  <span className="text-emerald-400 font-bold">✨ JAWABAN TEPAT! (+100 Poin)</span>
-                ) : (
-                  <span className="text-red-400">Pola belum tepat. Pelajari analisisnya!</span>
-                )}
-              </div>
-
-              <button
-                className="btn-pixel !bg-cyan-700 hover:!bg-cyan-600 !border-cyan-400 text-white !py-3 sm:!py-4 !px-6 sm:!px-10 text-sm sm:text-xl font-bold flex items-center gap-2 ml-auto cursor-pointer shadow-xl"
-                onClick={handleNextQuestion}
-              >
-                <span>SOAL SELANJUTNYA ▶</span>
-              </button>
-            </div>
-          )}
-
         </div>
 
-        {/* Bottom Stage Floor Row */}
-        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-auto flex items-end justify-between px-2 sm:px-8 pt-2 sm:pt-4 pb-1 sm:pb-2">
-          <div className="flex items-end gap-2 sm:gap-5">
+        {/* Bottom Stage Floor Row — Floor Sprite on Left, Action Bar / Status on Right */}
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-auto flex items-end justify-between px-2 sm:px-8 pt-1 sm:pt-3 pb-1 sm:pb-2 gap-2">
+          {/* Student Sprite on Floor with Name Badge */}
+          <div className="flex items-end gap-2 sm:gap-5 shrink-0">
             <PixelSprite character={character} pixelSize={isMobile ? 0.35 : 0.65} animate />
             <div className="bg-cyan-950/90 border-2 border-cyan-400/80 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-cyan-300 font-dialogue text-sm sm:text-2xl shadow-2xl mb-1">
               {studentName || 'Petualang'}
             </div>
           </div>
 
-          <div className="mb-1">
-            <div className="bg-cyan-950/85 border-2 border-cyan-500/60 text-cyan-200 font-dialogue text-sm sm:text-xl px-4 py-2 rounded-xl hidden sm:block shadow-lg">
-              ♾️ Mode Infinite • Jawab sepuasnya & akhiri kapan saja!
-            </div>
+          {/* Floor Right Side: Action Bar (when revealed) or Mode Infinite badge */}
+          <div className="mb-1 shrink-0">
+            {revealed && !showOwl ? (
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 p-2 sm:p-3 bg-cyan-950/95 border-2 sm:border-3 border-cyan-400 rounded-xl sm:rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+                <div className="font-dialogue text-xs sm:text-xl">
+                  {isCorrect ? (
+                    <span className="text-emerald-400 font-bold">✨ JAWABAN TEPAT! (+100 Poin)</span>
+                  ) : (
+                    <span className="text-red-400 font-bold">Pola belum tepat!</span>
+                  )}
+                </div>
+
+                <button
+                  className="btn-pixel !bg-cyan-700 hover:!bg-cyan-600 !border-cyan-400 text-white !py-1.5 sm:!py-2.5 !px-3 sm:!px-6 text-xs sm:text-base font-bold flex items-center gap-1.5 cursor-pointer shadow-xl ml-auto"
+                  onClick={handleNextQuestion}
+                >
+                  <span>SOAL SELANJUTNYA ▶</span>
+                </button>
+              </div>
+            ) : (
+              <div className="bg-cyan-950/85 border-2 border-cyan-500/60 text-cyan-200 font-dialogue text-xs sm:text-xl px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl hidden sm:block shadow-lg">
+                ♾️ Mode Infinite • Jawab sepuasnya & akhiri kapan saja!
+              </div>
+            )}
           </div>
         </div>
 

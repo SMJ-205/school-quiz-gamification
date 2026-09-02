@@ -656,15 +656,15 @@ export default function VisualMatrixDisplay({
   const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 
   return (
-    <div className="w-full flex flex-col items-center gap-3 my-2">
-      {/* 3x3 Visual Grid Matrix Display Card */}
-      <div className="bg-slate-950/90 border-2 border-cyan-400/80 rounded-xl p-3 sm:p-4 shadow-[0_0_20px_rgba(6,182,212,0.3)] flex flex-col items-center">
-        <div className="text-xs sm:text-sm font-bold text-cyan-300 mb-2.5 font-dialogue tracking-wide flex items-center gap-1.5 text-center">
+    <div className="w-full flex flex-col md:flex-row items-center justify-center gap-3 sm:gap-5 my-1">
+      {/* 3x3 Visual Grid Matrix Display Card (Left Side) */}
+      <div className="bg-slate-950/90 border-2 border-cyan-400/80 rounded-xl p-2.5 sm:p-3 shadow-[0_0_20px_rgba(6,182,212,0.3)] flex flex-col items-center shrink-0">
+        <div className="text-xs sm:text-sm font-bold text-cyan-300 mb-2 font-dialogue tracking-wide flex items-center gap-1.5 text-center">
           <span>{data.title || 'LENGKAPI POLA GAMBAR MATRIKS KOTAK YANG KOSONG (?)'}</span>
         </div>
 
         <div
-          className={`grid gap-2 sm:gap-3 items-center justify-center ${
+          className={`grid gap-1.5 sm:gap-2.5 items-center justify-center ${
             data.gridCols === 3 ? 'grid-cols-3' : 'grid-cols-4'
           }`}
         >
@@ -674,9 +674,9 @@ export default function VisualMatrixDisplay({
         </div>
       </div>
 
-      {/* Visual Options Grid (A, B, C, D rendered as figure boxes!) */}
+      {/* Visual Options Grid (Right Side - 2x2 Grid) */}
       {data.optionBoxes && data.optionBoxes.length === 4 && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 w-full mt-1">
+        <div className="grid grid-cols-2 gap-2 sm:gap-2.5 shrink-0">
           {data.optionBoxes.map((optBox, i) => {
             let stateClass =
               'border-slate-700 bg-slate-900/90 hover:border-cyan-400 hover:bg-slate-800';
@@ -697,10 +697,10 @@ export default function VisualMatrixDisplay({
                 key={i}
                 onClick={() => onSelectOption && onSelectOption(i)}
                 disabled={revealed}
-                className={`flex flex-col items-center justify-center p-2 sm:p-2.5 rounded-xl border-2 transition-all cursor-pointer ${stateClass}`}
+                className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl border-2 transition-all cursor-pointer ${stateClass}`}
               >
                 <QuadrantBoxView box={optBox} size="sm" />
-                <span className="font-bold text-sm sm:text-base text-cyan-300 mt-1.5 font-dialogue">
+                <span className="font-bold text-xs sm:text-sm text-cyan-300 mt-1 font-dialogue">
                   Opsi {OPTION_LABELS[i]}
                 </span>
               </button>
