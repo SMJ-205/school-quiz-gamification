@@ -36,33 +36,38 @@ const OPTION_KEYS = ['A', 'B', 'C', 'D'];
 
 /**
  * ─── CONFIG ANIMASI MULUT & KARAKTER GURU LAB ───────────────────────────────
- * Ubah nilai di bawah ini untuk menyesuaikan ukuran sprite & animasi mulut Guru Lab:
+ * Ubah nilai di bawah ini untuk menyesuaikan posisi & ukuran animasi mulut Guru Lab:
+ * - desktop: Tampilan Desktop (>= 640px)
+ * - mobile: Tampilan Mobile (< 640px)
  */
 export const GURU_LAB_CONFIG = {
-  // Ukuran Skala Sprite Guru Lab (1.2x = 120% lebih besar)
+  // Ukuran Skala Sprite Guru Lab (1.01 = 101%)
   spriteScale: 1.01,
 
-  // Posisi relatif mulut pada gambar sprite Guru Lab (%)
-  mouthPosition: {
+  // Tampilan Desktop (>= 640px)
+  desktop: {
     left: '44.2%',   // Sumbu X (Posisi horizontal mulut dari kiri)
     bottom: '67.4%', // Sumbu Y (Posisi vertikal mulut dari bawah)
-  },
-
-  // Dimensi Mulut saat Berbicara (Terbuka vs Tertutup)
-  mouthDimensions: {
-    // Saat mulut TERBUKA (Mouth Open - ketika mengetik teks suara)
     openWidth: '7%',
-    openHeight: '2.5%',
-    openColor: 'rgba(20, 5, 5, 0.95)', // Warna rongga mulut terbuka
-
-    // Saat mulut TERTUTUP (Mouth Closed - saat spasi & tanda baca)
     closedWidth: '5%',
+    openHeight: '2.5%',
     closedHeight: '1%',
-    closedColor: 'rgba(25, 24, 24, 0.85)', // Warna bibir/garis mulut
-
-    // Kecepatan Transisi Animasi (ms)
-    transitionSpeed: '55ms',
   },
+
+  // Tampilan Mobile (< 640px)
+  mobile: {
+    left: '44.2%',   // Sumbu X (Posisi horizontal mulut dari kiri)
+    bottom: '64.0%', // Sumbu Y (Posisi vertikal mulut dari bawah)
+    openWidth: '7%',
+    closedWidth: '5%',
+    openHeight: '2.5%',
+    closedHeight: '1%',
+  },
+
+  // Pengaturan Warna & Kecepatan Transisi Animasi
+  openColor: 'rgba(20, 5, 5, 0.95)',       // Warna mulut terbuka
+  closedColor: 'rgba(25, 24, 24, 0.85)',   // Warna mulut tertutup
+  transitionSpeed: '55ms',                 // Kecepatan animasi (ms)
 };
 
 export default function LabInfiniteArena() {
@@ -401,28 +406,29 @@ export default function LabInfiniteArena() {
                     ].join(' '),
                   }}
                 />
-                <div
-                  aria-hidden="true"
-                  style={{
-                    position: 'absolute',
-                    left: GURU_LAB_CONFIG.mouthPosition.left,
-                    bottom: GURU_LAB_CONFIG.mouthPosition.bottom,
-                    transform: 'translate(-50%, 50%)',
-                    width: mouthOpen
-                      ? GURU_LAB_CONFIG.mouthDimensions.openWidth
-                      : GURU_LAB_CONFIG.mouthDimensions.closedWidth,
-                    height: mouthOpen
-                      ? GURU_LAB_CONFIG.mouthDimensions.openHeight
-                      : GURU_LAB_CONFIG.mouthDimensions.closedHeight,
-                    borderRadius: '50%',
-                    backgroundColor: mouthOpen
-                      ? GURU_LAB_CONFIG.mouthDimensions.openColor
-                      : GURU_LAB_CONFIG.mouthDimensions.closedColor,
-                    boxShadow: mouthOpen ? 'inset 0 1px 2px rgba(255,200,180,0.4)' : 'none',
-                    transition: `height ${GURU_LAB_CONFIG.mouthDimensions.transitionSpeed} ease, width ${GURU_LAB_CONFIG.mouthDimensions.transitionSpeed} ease`,
-                    pointerEvents: 'none',
-                  }}
-                />
+                {/* Mouth Flap Overlay synced with GURU_LAB_CONFIG */}
+                {(() => {
+                  const labConfig = isMobile ? GURU_LAB_CONFIG.mobile : GURU_LAB_CONFIG.desktop;
+
+                  return (
+                    <div
+                      aria-hidden="true"
+                      style={{
+                        position: 'absolute',
+                        left: labConfig.left,
+                        bottom: labConfig.bottom,
+                        transform: 'translate(-50%, 50%)',
+                        width: mouthOpen ? labConfig.openWidth : labConfig.closedWidth,
+                        height: mouthOpen ? labConfig.openHeight : labConfig.closedHeight,
+                        borderRadius: '50%',
+                        backgroundColor: mouthOpen ? GURU_LAB_CONFIG.openColor : GURU_LAB_CONFIG.closedColor,
+                        boxShadow: mouthOpen ? 'inset 0 1px 2px rgba(255,200,180,0.4)' : 'none',
+                        transition: `height ${GURU_LAB_CONFIG.transitionSpeed} ease, width ${GURU_LAB_CONFIG.transitionSpeed} ease`,
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  );
+                })()}
               </div>
             </div>
 

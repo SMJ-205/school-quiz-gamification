@@ -35,18 +35,18 @@ export const TEACHER_MOUTH_CONFIG = {
       openHeight: '4%',
       closedHeight: '1.8%',
     },
-    // Tampilan Mobile (< 640px) - Kalibrasi Presisi Bu Guru
+    // Tampilan Mobile (< 640px)
     mobile: {
-      left: '41.8%',
+      left: '40.8%',
       bottom: '56.5%',
-      openWidth: '13%',
-      closedWidth: '10.5%',
-      openHeight: '3.8%',
-      closedHeight: '1.8%',
+      openWidth: '10%',
+      closedWidth: '5%',
+      openHeight: '4%',
+      closedHeight: '1%',
     },
   },
   male: {
-    // Tampilan Desktop (>= 640px) — 100% Sudah Tepat (Jangan Diubah)
+    // Tampilan Desktop (>= 640px)
     desktop: {
       left: '38.5%',
       bottom: '63.5%',
@@ -55,14 +55,14 @@ export const TEACHER_MOUTH_CONFIG = {
       openHeight: '5%',
       closedHeight: '2%',
     },
-    // Tampilan Mobile (< 640px) — 100% Sudah Tepat (Jangan Diubah)
+    // Tampilan Mobile (< 640px)
     mobile: {
       left: '38.5%',
       bottom: '63.5%',
-      openWidth: '15%',
+      openWidth: '15.5%',
       closedWidth: '13%',
-      openHeight: '5%',
-      closedHeight: '2%',
+      openHeight: '5.2%',
+      closedHeight: '2.2%',
     },
   },
 };
