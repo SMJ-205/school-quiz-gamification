@@ -345,19 +345,21 @@ export default function LabInfiniteArena() {
       </div>
 
       {/* ── MAIN LAB ARENA STAGE (Flexible Fill Height) ────────────────── */}
-      <div className="relative z-20 flex-1 flex flex-col justify-between p-3 sm:p-6 overflow-y-auto">
+      <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-3 sm:p-6 overflow-y-auto w-full">
         
-        {/* Comic Dialogue & Guru Lab Sprite Container */}
-        <div className="w-full max-w-2xl sm:max-w-3xl mx-auto pt-2 sm:pt-4 mb-2 flex flex-col gap-4 my-auto">
-          <div className="flex flex-row items-end gap-3 sm:gap-4">
+        {/* Comic Dialogue & Guru Lab Sprite Container (Centered!) */}
+        <div className="w-full max-w-2xl sm:max-w-3xl lg:max-w-4xl mx-auto my-auto flex flex-col items-center justify-center gap-4 sm:gap-6 px-2">
+          
+          {/* Top Question Row: Speech Bubble on Left, Guru Lab on Right */}
+          <div className="w-full flex flex-row items-end gap-3 sm:gap-4">
             
             {/* Speech Bubble with Cyan Blue Accents */}
             <div
               onClick={handleFastForward}
-              className="flex-1 comic-bubble-wrapper !border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.35)] flex flex-col justify-center cursor-pointer select-none transition-all hover:border-cyan-300 min-h-[100px] sm:min-h-[135px]"
+              className="flex-1 comic-bubble-wrapper !border-cyan-400 shadow-[0_0_25px_rgba(6,182,212,0.4)] flex flex-col justify-center cursor-pointer select-none transition-all hover:border-cyan-300 min-h-[100px] sm:min-h-[135px]"
               title={isTyping ? 'Klik untuk mempercepat teks' : ''}
             >
-              <div className="w-full flex flex-col px-2 sm:px-3 min-h-[55px] sm:min-h-[75px] justify-center">
+              <div className="w-full flex flex-col px-3 sm:px-4 py-2 min-h-[55px] sm:min-h-[75px] justify-center">
                 <p className="font-dialogue text-lg sm:text-2xl text-white tracking-wide leading-snug whitespace-pre-line break-words">
                   {displayedText}
                   {isTyping && <span className="typewriter-cursor text-cyan-400">▋</span>}
@@ -368,7 +370,7 @@ export default function LabInfiniteArena() {
             {/* Guru Lab Sprite */}
             <div className="shrink-0 flex items-end justify-center self-end mb-0.5">
               <div
-                className="relative w-22 h-31 sm:w-26 sm:h-38 flex items-end justify-center"
+                className="relative w-20 h-28 sm:w-26 sm:h-38 flex items-end justify-center"
                 style={{
                   transform: `scale(${GURU_LAB_CONFIG.spriteScale})`,
                   transformOrigin: 'bottom center',
@@ -418,13 +420,15 @@ export default function LabInfiniteArena() {
 
           {/* Render Visual Matrix 2D Grid Puzzle if present, otherwise text options grid */}
           {currentQuestion?.visualMatrixData ? (
-            <VisualMatrixDisplay
-              data={currentQuestion.visualMatrixData}
-              selectedOption={selected}
-              revealed={revealed}
-              correctIndex={currentQuestion.correctIndex}
-              onSelectOption={handleSelectOption}
-            />
+            <div className="w-full flex justify-center">
+              <VisualMatrixDisplay
+                data={currentQuestion.visualMatrixData}
+                selectedOption={selected}
+                revealed={revealed}
+                correctIndex={currentQuestion.correctIndex}
+                onSelectOption={handleSelectOption}
+              />
+            </div>
           ) : (
             /* Options Grid (A, B, C, D) */
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
@@ -463,7 +467,7 @@ export default function LabInfiniteArena() {
 
           {/* Action Bar for Next Question */}
           {revealed && !showOwl && (
-            <div className="flex flex-wrap items-center justify-between gap-2 p-3 sm:p-4 bg-cyan-950/90 border-2 border-cyan-400 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+            <div className="w-full flex flex-wrap items-center justify-between gap-2 p-3 sm:p-4 bg-cyan-950/90 border-2 border-cyan-400 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.4)]">
               <div className="font-dialogue text-lg sm:text-2xl">
                 {isCorrect ? (
                   <span className="text-emerald-400 font-bold">✨ JAWABAN TEPAT! (+100 Poin)</span>
@@ -483,8 +487,8 @@ export default function LabInfiniteArena() {
 
         </div>
 
-        {/* Bottom Floor Stage with Student Sprite */}
-        <div className="w-full max-w-4xl sm:max-w-5xl mx-auto mt-auto flex items-end justify-between px-2 sm:px-8 pt-2">
+        {/* Bottom Stage Floor Row */}
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-auto flex items-end justify-between px-2 sm:px-8 pt-2">
           <div className="flex items-end gap-2 sm:gap-4">
             <PixelSprite character={character} pixelSize={0.42} animate />
             <div className="bg-cyan-950/90 border border-cyan-400/60 px-3 py-1 rounded-lg text-cyan-300 font-dialogue text-base sm:text-lg shadow-lg mb-1">

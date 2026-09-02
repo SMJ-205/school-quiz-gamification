@@ -72,14 +72,14 @@ export default function EnchantedLibrary() {
       </div>
 
       {/* ── MAIN ARENA STAGE (Flexible Fill Height) ───────────────────────── */}
-      <div className="relative z-20 flex-1 flex flex-col justify-between p-3 sm:p-6 overflow-y-auto">
-        {/* Upper Arena Space: Question & Answers Panel */}
-        <div className="w-full max-w-4xl mx-auto pt-2 sm:pt-4 my-auto">
+      <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-3 sm:p-6 overflow-y-auto w-full">
+        {/* Upper Arena Space: Question & Answers Panel (Centered!) */}
+        <div className="w-full max-w-2xl sm:max-w-3xl lg:max-w-4xl mx-auto my-auto flex flex-col items-center justify-center px-2">
           <QuestionPanel />
         </div>
 
         {/* Lower Stage: Student Character Standing on Floor */}
-        <div className="w-full mt-auto flex items-end justify-between px-2 sm:px-8 pt-4">
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-auto flex items-end justify-between px-2 sm:px-8 pt-4">
           {/* Student Sprite on Floor with Name Badge */}
           <div className="flex items-end gap-2 sm:gap-4">
             <PixelSprite character={character} pixelSize={0.42} animate />
