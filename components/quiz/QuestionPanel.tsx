@@ -150,37 +150,35 @@ export default function QuestionPanel() {
 
   return (
     <>
-      <div className="w-full flex flex-col gap-3.5 sm:gap-4 mt-2 sm:mt-3">
+      <div className="w-full max-w-2xl sm:max-w-3xl mx-auto flex flex-col gap-4 sm:gap-6 my-auto">
 
         {/* Natural Chat Dialogue: Speech Bubble on Left, Pak Guru on Right */}
         <div className="flex flex-row items-end gap-3 sm:gap-4">
 
-          {/* Speech Bubble Container: Sized for 2 lines from the start (no height jump) */}
           {/* Speech Bubble Container */}
           <div
             onClick={handleFastForward}
-            className="flex-1 comic-bubble-wrapper flex flex-col justify-center cursor-pointer select-none transition-all hover:border-amber-400 min-h-[90px] sm:min-h-[128px] md:min-h-[138px]"
+            className="flex-1 comic-bubble-wrapper flex flex-col justify-center cursor-pointer select-none transition-all hover:border-amber-400 min-h-[95px] sm:min-h-[135px] md:min-h-[145px] shadow-2xl"
             title={isTyping ? 'Klik untuk mempercepat teks' : ''}
           >
             {/* Reserved text area with multi-line support for number series */}
-            <div className="w-full flex items-start px-1 sm:px-2 min-h-[48px] sm:min-h-[64px] md:min-h-[72px]">
-              <p className="font-dialogue text-lg sm:text-2xl md:text-3xl text-white tracking-wide leading-snug sm:leading-relaxed pl-1 sm:pl-2 whitespace-pre-line break-words">
+            <div className="w-full flex items-start px-2 sm:px-3 min-h-[50px] sm:min-h-[70px]">
+              <p className="font-dialogue text-lg sm:text-2xl md:text-3xl text-white tracking-wide leading-snug sm:leading-relaxed whitespace-pre-line break-words">
                 {displayedText}
                 {isTyping && <span className="typewriter-cursor">▋</span>}
               </p>
             </div>
           </div>
 
-          {/* Teacher Sprite — height matched to comic box so head never exceeds bubble top */}
+          {/* Teacher Sprite */}
           <div className="shrink-0 flex items-end justify-center self-end mb-0.5">
             <div
-              className="relative w-16 h-24 sm:w-19 sm:h-28 md:w-21 md:h-30 flex items-end justify-center"
+              className="relative w-18 h-27 sm:w-22 sm:h-32 md:w-24 md:h-35 flex items-end justify-center"
               style={{
-                transform: isFemaleTeacher ? 'scale(1.1)' : 'none',
+                transform: isFemaleTeacher ? 'scale(1.15)' : 'scale(1.05)',
                 transformOrigin: 'bottom center',
               }}
             >
-              {/* Always show idle PNG — mouth animation is handled by CSS overlay */}
               <img
                 src={teacherImg}
                 alt={teacherAlt}
@@ -188,19 +186,14 @@ export default function QuestionPanel() {
                 style={{
                   imageRendering: 'pixelated',
                   filter: [
-                    'drop-shadow(1px 0px 0px rgba(255,255,255,0.75))',
-                    'drop-shadow(-1px 0px 0px rgba(255,255,255,0.75))',
-                    'drop-shadow(0px 1px 0px rgba(255,255,255,0.75))',
-                    'drop-shadow(0px -1px 0px rgba(255,255,255,0.75))',
-                    'drop-shadow(0px 8px 16px rgba(0,0,0,0.8))',
+                    'drop-shadow(1px 0px 0px rgba(255,255,255,0.85))',
+                    'drop-shadow(-1px 0px 0px rgba(255,255,255,0.85))',
+                    'drop-shadow(0px 1px 0px rgba(255,255,255,0.85))',
+                    'drop-shadow(0px -1px 0px rgba(255,255,255,0.85))',
+                    'drop-shadow(0px 8px 16px rgba(0,0,0,0.85))',
                   ].join(' '),
                 }}
               />
-              {/*
-                CSS Mouth Overlay:
-                - Pak Guru (teacher_idle.png): left 38.5%, bottom 63.5%
-                - Bu Guru (teacher_female_idle.png): left 45.8%, bottom 60.9%
-              */}
               <div
                 aria-hidden="true"
                 style={{
@@ -223,7 +216,7 @@ export default function QuestionPanel() {
         </div>
 
         {/* Options Grid (1 col on mobile, 2 col on tablet/desktop) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
           {question.options.map((opt, i) => {
             let stateClass = '';
             if (revealed) {
@@ -235,11 +228,11 @@ export default function QuestionPanel() {
             return (
               <button
                 key={i}
-                className={`answer-option !text-base sm:!text-2xl !py-2.5 sm:!py-3 !px-3 sm:!px-4 ${stateClass}`}
+                className={`answer-option !text-base sm:!text-2xl !py-3 sm:!py-3.5 !px-4 hover:!border-amber-400 ${stateClass}`}
                 onClick={() => handleSelect(i)}
                 disabled={revealed}
               >
-                <span className="opt-key font-bold font-dialogue text-lg sm:text-2xl shrink-0">
+                <span className="opt-key font-bold font-dialogue text-lg sm:text-2xl shrink-0 text-amber-300">
                   {OPTION_KEYS[i]})
                 </span>
                 <span className="flex-1 font-dialogue leading-tight text-left text-base sm:text-2xl break-words">
@@ -258,7 +251,7 @@ export default function QuestionPanel() {
 
         {/* Next Action Bar */}
         {revealed && !showOwl && (
-          <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 sm:p-3 bg-black/85 border-2 border-stone-600 rounded-lg shadow-lg">
+          <div className="flex flex-wrap items-center justify-between gap-2 p-3 sm:p-4 bg-black/90 border-2 border-amber-500 rounded-xl shadow-2xl">
             <div className="font-dialogue text-lg sm:text-2xl">
               {isCorrect ? (
                 <span className="text-emerald-400 font-bold">✨ JAWABAN TEPAT! (+100 Poin)</span>
@@ -268,7 +261,7 @@ export default function QuestionPanel() {
             </div>
 
             <button
-              className="btn-pixel btn-pixel-gold !py-2 !px-4 sm:!px-6 text-xs sm:text-sm flex items-center gap-2 ml-auto"
+              className="btn-pixel btn-pixel-gold !py-2.5 !px-5 sm:!px-7 text-xs sm:text-sm flex items-center gap-2 ml-auto shadow-lg"
               onClick={handleNext}
             >
               <span>{currentQuestionIndex + 1 < questions.length ? 'SOAL BERIKUTNYA ▶' : 'SELESAIKAN MISI 🏆'}</span>

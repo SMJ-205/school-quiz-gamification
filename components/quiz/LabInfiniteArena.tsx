@@ -348,7 +348,7 @@ export default function LabInfiniteArena() {
       <div className="relative z-20 flex-1 flex flex-col justify-between p-3 sm:p-6 overflow-y-auto">
         
         {/* Comic Dialogue & Guru Lab Sprite Container */}
-        <div className="w-full max-w-4xl mx-auto pt-2 sm:pt-4 mb-2 flex flex-col gap-3">
+        <div className="w-full max-w-2xl sm:max-w-3xl mx-auto pt-2 sm:pt-4 mb-2 flex flex-col gap-4 my-auto">
           <div className="flex flex-row items-end gap-3 sm:gap-4">
             
             {/* Speech Bubble with Cyan Blue Accents */}
@@ -357,7 +357,7 @@ export default function LabInfiniteArena() {
               className="flex-1 comic-bubble-wrapper !border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.35)] flex flex-col justify-center cursor-pointer select-none transition-all hover:border-cyan-300 min-h-[100px] sm:min-h-[135px]"
               title={isTyping ? 'Klik untuk mempercepat teks' : ''}
             >
-              <div className="w-full flex flex-col px-1 sm:px-2 min-h-[55px] sm:min-h-[75px] justify-center">
+              <div className="w-full flex flex-col px-2 sm:px-3 min-h-[55px] sm:min-h-[75px] justify-center">
                 <p className="font-dialogue text-lg sm:text-2xl text-white tracking-wide leading-snug whitespace-pre-line break-words">
                   {displayedText}
                   {isTyping && <span className="typewriter-cursor text-cyan-400">▋</span>}
@@ -427,7 +427,7 @@ export default function LabInfiniteArena() {
             />
           ) : (
             /* Options Grid (A, B, C, D) */
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
               {(currentQuestion?.options || []).map((opt, i) => {
                 let stateClass = '';
                 if (revealed) {
@@ -439,7 +439,7 @@ export default function LabInfiniteArena() {
                 return (
                   <button
                     key={i}
-                    className={`answer-option !text-base sm:!text-2xl !py-2.5 sm:!py-3 !px-3 sm:!px-4 hover:!border-cyan-400 ${stateClass}`}
+                    className={`answer-option !text-base sm:!text-2xl !py-3 sm:!py-3.5 !px-4 hover:!border-cyan-400 ${stateClass}`}
                     onClick={() => handleSelectOption(i)}
                     disabled={revealed}
                   >
@@ -463,7 +463,7 @@ export default function LabInfiniteArena() {
 
           {/* Action Bar for Next Question */}
           {revealed && !showOwl && (
-            <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 sm:p-3 bg-cyan-950/90 border-2 border-cyan-400 rounded-lg shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+            <div className="flex flex-wrap items-center justify-between gap-2 p-3 sm:p-4 bg-cyan-950/90 border-2 border-cyan-400 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.4)]">
               <div className="font-dialogue text-lg sm:text-2xl">
                 {isCorrect ? (
                   <span className="text-emerald-400 font-bold">✨ JAWABAN TEPAT! (+100 Poin)</span>
@@ -473,7 +473,7 @@ export default function LabInfiniteArena() {
               </div>
 
               <button
-                className="btn-pixel !bg-cyan-700 hover:!bg-cyan-600 !border-cyan-400 text-white !py-2 !px-4 sm:!px-6 text-xs sm:text-sm flex items-center gap-2 ml-auto cursor-pointer shadow-lg"
+                className="btn-pixel !bg-cyan-700 hover:!bg-cyan-600 !border-cyan-400 text-white !py-2.5 !px-5 sm:!px-7 text-xs sm:text-sm flex items-center gap-2 ml-auto cursor-pointer shadow-lg"
                 onClick={handleNextQuestion}
               >
                 <span>SOAL SELANJUTNYA ▶</span>
@@ -484,7 +484,7 @@ export default function LabInfiniteArena() {
         </div>
 
         {/* Bottom Floor Stage with Student Sprite */}
-        <div className="w-full mt-auto flex items-end justify-between px-2 sm:px-8 pt-2">
+        <div className="w-full max-w-4xl sm:max-w-5xl mx-auto mt-auto flex items-end justify-between px-2 sm:px-8 pt-2">
           <div className="flex items-end gap-2 sm:gap-4">
             <PixelSprite character={character} pixelSize={0.42} animate />
             <div className="bg-cyan-950/90 border border-cyan-400/60 px-3 py-1 rounded-lg text-cyan-300 font-dialogue text-base sm:text-lg shadow-lg mb-1">
@@ -493,7 +493,7 @@ export default function LabInfiniteArena() {
           </div>
 
           <div className="mb-1">
-            <div className="bg-cyan-950/80 border border-cyan-500/50 text-cyan-200 font-dialogue text-xs sm:text-base px-3 py-1.5 rounded-lg hidden sm:block shadow-md">
+            <div className="bg-cyan-950/80 border border-cyan-500/50 text-cyan-200 font-dialogue text-xs sm:text-base px-3.5 py-1.5 rounded-lg hidden sm:block shadow-md">
               ♾️ Mode Infinite • Jawab sepuasnya & akhiri kapan saja!
             </div>
           </div>
