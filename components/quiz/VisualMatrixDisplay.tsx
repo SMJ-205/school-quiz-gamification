@@ -676,10 +676,10 @@ export default function VisualMatrixDisplay({
 
       {/* Visual Options Grid (Right Side - 2x2 Grid) */}
       {data.optionBoxes && data.optionBoxes.length === 4 && (
-        <div className="grid grid-cols-2 gap-2 sm:gap-2.5 shrink-0">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 shrink-0 items-center justify-center">
           {data.optionBoxes.map((optBox, i) => {
             let stateClass =
-              'border-slate-700 bg-slate-900/90 hover:border-cyan-400 hover:bg-slate-800';
+              'border-slate-700 bg-slate-900/90 hover:border-cyan-400 hover:bg-slate-800 shadow-[0_0_15px_rgba(0,0,0,0.5)]';
             if (revealed) {
               if (i === correctIndex) {
                 stateClass = 'border-emerald-500 bg-emerald-950/90 ring-2 ring-emerald-400';
@@ -697,10 +697,10 @@ export default function VisualMatrixDisplay({
                 key={i}
                 onClick={() => onSelectOption && onSelectOption(i)}
                 disabled={revealed}
-                className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl border-2 transition-all cursor-pointer ${stateClass}`}
+                className={`flex flex-col items-center justify-center p-2 sm:p-3 rounded-xl border-2 transition-all cursor-pointer ${stateClass}`}
               >
-                <QuadrantBoxView box={optBox} size="sm" />
-                <span className="font-bold text-xs sm:text-sm text-cyan-300 mt-1 font-dialogue">
+                <QuadrantBoxView box={optBox} size="md" />
+                <span className="font-bold text-xs sm:text-base text-cyan-300 mt-1.5 font-dialogue">
                   Opsi {OPTION_LABELS[i]}
                 </span>
               </button>
