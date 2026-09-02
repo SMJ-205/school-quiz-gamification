@@ -28,6 +28,8 @@ import {
   sfxTextBlip,
   sfxArchiveUnlock,
   sfxPageTurn,
+  isAudioMuted,
+  toggleAudioMute,
 } from '@/lib/audioEngine';
 
 const OPTION_KEYS = ['A', 'B', 'C', 'D'];
@@ -101,6 +103,17 @@ export default function LabInfiniteArena() {
   // Modals
   const [showReportModal, setShowReportModal] = useState<boolean>(false);
   const [showExitModal, setShowExitModal] = useState<boolean>(false);
+
+  // Sound Mute Toggle
+  const [muted, setMuted] = useState<boolean>(false);
+  useEffect(() => {
+    setMuted(isAudioMuted());
+  }, []);
+
+  function handleToggleSound() {
+    const next = toggleAudioMute();
+    setMuted(next);
+  }
 
   // Confirm Grade Selection and start tailored session
   function handleConfirmGrade(grade: number) {
@@ -292,6 +305,19 @@ export default function LabInfiniteArena() {
 
             <div className="flex items-center gap-2">
               <button
+                onClick={handleToggleSound}
+                className={`btn-pixel !text-[10px] sm:!text-xs !py-1 !px-2.5 flex items-center gap-1 cursor-pointer transition-all ${
+                  muted
+                    ? '!bg-red-950/80 !border-red-500 text-red-300 shadow-[0_0_10px_rgba(239,68,68,0.4)]'
+                    : '!bg-slate-800 hover:!bg-slate-700 !border-slate-600 text-cyan-300'
+                }`}
+                title={muted ? 'Nyalakan Musik & SFX (Unmute)' : 'Matikan Musik & SFX (Mute)'}
+              >
+                <span>{muted ? '🔇' : '🔊'}</span>
+                <span className="font-bold">{muted ? 'MUTED' : 'SUARA'}</span>
+              </button>
+
+              <button
                 onClick={() => setShowExitModal(true)}
                 className="btn-pixel !bg-slate-800 hover:!bg-slate-700 !border-slate-600 text-slate-200 !text-[10px] sm:!text-xs !py-1 !px-2.5 flex items-center gap-1 cursor-pointer"
                 title="Keluar"
@@ -323,8 +349,8 @@ export default function LabInfiniteArena() {
           >
             <div className="absolute inset-0 bg-gradient-to-b from-cyan-950/50 via-black/40 to-cyan-950/75 pointer-events-none z-0" />
 
-            {/* Top Info Banner - Cyan Science Styling */}
-            <div className="relative z-20 w-full max-w-3xl mx-auto flex items-center justify-between text-xs sm:text-sm font-bold text-cyan-300 bg-cyan-950/85 px-3 py-1.5 rounded-lg border border-cyan-400/60 backdrop-blur-sm shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+            {/* Top Info Banner - Cyan Science Styling with Blank Space Gap from Top Bar */}
+            <div className="relative z-20 w-full max-w-3xl mx-auto flex items-center justify-between text-xs sm:text-sm font-bold text-cyan-300 bg-cyan-950/85 px-3 py-1.5 rounded-lg border border-cyan-400/60 backdrop-blur-sm shadow-[0_0_15px_rgba(6,182,212,0.3)] mt-2.5 sm:mt-4 md:mt-5">
               <span className="flex items-center gap-1.5">
                 <span className="text-cyan-400">SOAL #{questionCount}</span>
                 <span className="text-cyan-600">•</span>
