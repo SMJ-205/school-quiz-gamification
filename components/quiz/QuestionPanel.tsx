@@ -155,14 +155,14 @@ export default function QuestionPanel() {
         {/* Natural Chat Dialogue: Speech Bubble on Left, Pak Guru / Bu Guru on Right */}
         <div className="flex flex-row items-end gap-3 sm:gap-6">
 
-          {/* Speech Bubble Container */}
+          {/* Speech Bubble Container — Reserved for 2 lines of chat text by default */}
           <div
             onClick={handleFastForward}
-            className="flex-1 comic-bubble-wrapper flex flex-col justify-center cursor-pointer select-none transition-all hover:border-amber-400 min-h-[120px] sm:min-h-[160px] md:min-h-[180px] shadow-2xl p-2 sm:p-4"
+            className="flex-1 comic-bubble-wrapper flex flex-col justify-center cursor-pointer select-none transition-all hover:border-amber-400 min-h-[140px] sm:min-h-[185px] md:min-h-[210px] shadow-2xl p-3 sm:p-5"
             title={isTyping ? 'Klik untuk mempercepat teks' : ''}
           >
-            {/* Reserved text area with multi-line support for number series */}
-            <div className="w-full flex items-start px-2 sm:px-4 min-h-[65px] sm:min-h-[95px]">
+            {/* Reserved text area for 2 lines of dialogue to naturally space Teacher head */}
+            <div className="w-full flex items-center px-2 sm:px-4 min-h-[90px] sm:min-h-[125px] md:min-h-[145px]">
               <p className="font-dialogue text-xl sm:text-3xl md:text-4xl lg:text-5xl text-white tracking-wide leading-normal sm:leading-relaxed whitespace-pre-line break-words">
                 {displayedText}
                 {isTyping && <span className="typewriter-cursor">▋</span>}
@@ -170,12 +170,12 @@ export default function QuestionPanel() {
             </div>
           </div>
 
-          {/* Teacher Sprite — Sized to fit comfortably within the speech bubble height */}
+          {/* Teacher Sprite — Aligned with 2-line speech bubble height to prevent top border clipping */}
           <div className="shrink-0 flex items-end justify-center self-end mb-1">
             <div
-              className="relative w-20 h-30 sm:w-26 sm:h-38 md:w-30 md:h-44 flex items-end justify-center"
+              className="relative w-22 h-34 sm:w-28 sm:h-44 md:w-34 md:h-52 flex items-end justify-center"
               style={{
-                transform: isFemaleTeacher ? 'scale(1.05)' : 'scale(1.0)',
+                transform: isFemaleTeacher ? 'scale(1.08)' : 'scale(1.02)',
                 transformOrigin: 'bottom center',
               }}
             >

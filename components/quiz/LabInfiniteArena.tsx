@@ -353,13 +353,14 @@ export default function LabInfiniteArena() {
           {/* Top Question Row: Speech Bubble on Left, Guru Lab on Right */}
           <div className="w-full flex flex-row items-end gap-3 sm:gap-6">
             
-            {/* Speech Bubble with Cyan Blue Accents */}
+            {/* Speech Bubble Container — Reserved for 2 lines of chat text by default */}
             <div
               onClick={handleFastForward}
-              className="flex-1 comic-bubble-wrapper !border-cyan-400 shadow-[0_0_25px_rgba(6,182,212,0.4)] flex flex-col justify-center cursor-pointer select-none transition-all hover:border-cyan-300 min-h-[120px] sm:min-h-[160px] md:min-h-[180px] p-2 sm:p-4"
+              className="flex-1 comic-bubble-wrapper !border-cyan-400 shadow-[0_0_25px_rgba(6,182,212,0.4)] flex flex-col justify-center cursor-pointer select-none transition-all hover:border-cyan-300 min-h-[140px] sm:min-h-[185px] md:min-h-[210px] p-3 sm:p-5"
               title={isTyping ? 'Klik untuk mempercepat teks' : ''}
             >
-              <div className="w-full flex flex-col px-2 sm:px-4 min-h-[65px] sm:min-h-[95px] justify-center">
+              {/* Reserved text area for 2 lines of dialogue to naturally space Guru Lab head */}
+              <div className="w-full flex items-center px-2 sm:px-4 min-h-[90px] sm:min-h-[125px] md:min-h-[145px]">
                 <p className="font-dialogue text-xl sm:text-3xl md:text-4xl lg:text-5xl text-white tracking-wide leading-normal sm:leading-relaxed whitespace-pre-line break-words">
                   {displayedText}
                   {isTyping && <span className="typewriter-cursor text-cyan-400">▋</span>}
@@ -367,12 +368,12 @@ export default function LabInfiniteArena() {
               </div>
             </div>
 
-            {/* Guru Lab Sprite — Perfectly sized to prevent top border clipping */}
+            {/* Guru Lab Sprite — Aligned with 2-line speech bubble height to prevent top border clipping */}
             <div className="shrink-0 flex items-end justify-center self-end mb-1">
               <div
-                className="relative w-20 h-30 sm:w-26 sm:h-38 md:w-30 md:h-44 flex items-end justify-center"
+                className="relative w-22 h-34 sm:w-28 sm:h-44 md:w-34 md:h-52 flex items-end justify-center"
                 style={{
-                  transform: `scale(${GURU_LAB_CONFIG.spriteScale})`,
+                  transform: `scale(${GURU_LAB_CONFIG.spriteScale * 1.05})`,
                   transformOrigin: 'bottom center',
                 }}
               >
