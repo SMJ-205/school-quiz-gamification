@@ -35,98 +35,86 @@ export default function EnchantedLibrary() {
   const floorNumber = Math.min(6, Math.floor(currentQuestionIndex / 2) + 1);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#070503]">
-      {/* Top Global Progress Bar (Mobile Responsive) */}
-      <PixelProgressBar />
+    <div
+      className="min-h-screen flex flex-col justify-between relative overflow-hidden select-none bg-[#070503]"
+      style={{
+        backgroundImage: `url(${selectedBackground || '/backgrounds/library_sunlit.jpg'})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center 40%',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* Overlays */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/65 pointer-events-none z-0" />
+      <div className="crt-scanlines-overlay" />
 
-      {/* Main Game Screen Container */}
-      <div className="flex-1 flex flex-col items-center justify-center p-2 sm:p-4 md:p-6">
-        <div className="w-full max-w-5xl crt-arcade-frame bg-[#140E0A] flex flex-col relative overflow-hidden shadow-2xl border-2 sm:border-4 border-[#5A3110]">
-
-          {/* CRT Top Bar */}
-          <div className="p-2 sm:p-4 flex items-center justify-between border-b-2 border-amber-950/80 bg-black/75 backdrop-blur-sm z-20 gap-2">
-            <div className="flex items-center gap-2">
-              <div className="retro-pill-badge !bg-amber-950 !border-amber-400 text-amber-300 !text-[10px] sm:!text-xs !py-1 !px-2.5">
-                📖 RAK ARSIP {floorNumber}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowExitModal(true)}
-                className="btn-pixel !bg-red-950/90 hover:!bg-red-900 !border-red-600/80 text-red-200 !text-[10px] sm:!text-xs !py-1 !px-2.5 flex items-center gap-1 cursor-pointer"
-                title="Kembali ke Menu Utama"
-              >
-                <span>🏠</span>
-                <span>MENU UTAMA</span>
-              </button>
-              <div className="retro-pill-badge !bg-stone-900/90 !border-amber-500/60 text-amber-300 !text-[10px] sm:!text-xs !py-1 !px-2.5">
-                ⚔️ KUIS ILMU
-              </div>
-            </div>
+      {/* ── TOP HUD BAR (Full Width Edge-to-Edge) ────────────────────────── */}
+      <div className="relative z-20 p-2.5 sm:p-3 bg-black/90 border-b-2 border-amber-950 flex items-center justify-between gap-2 font-pixel">
+        <div className="flex items-center gap-2">
+          <div className="retro-pill-badge !bg-amber-950 !border-amber-400 text-amber-300 text-xs sm:text-sm py-1 px-3 font-bold">
+            📖 RAK ARSIP {floorNumber}
           </div>
+        </div>
 
-          {/* Library Arena Stage with Dynamic Background */}
-          <div
-            className="relative w-full min-h-[460px] md:min-h-[520px] flex flex-col justify-between p-3 sm:p-6 overflow-hidden"
-            style={{
-              backgroundImage: `url(${selectedBackground || '/backgrounds/library_sunlit.jpg'})`,
-              backgroundPosition: 'center 40%',
-              backgroundSize: 'cover',
-              backgroundRepeat: 'no-repeat',
-            }}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowExitModal(true)}
+            className="btn-pixel !bg-red-950/90 hover:!bg-red-900 !border-red-600/80 text-red-200 text-xs py-1.5 px-3 flex items-center gap-1.5 cursor-pointer shadow-md"
+            title="Kembali ke Menu Utama"
           >
-            {/* Subtle Warm Atmospheric Lighting Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/60 pointer-events-none z-0" />
-
-            {/* Upper Arena Space: Question & Answers Panel */}
-            <div className="relative z-20 w-full max-w-3xl mx-auto pt-6 sm:pt-8 mb-2">
-              <QuestionPanel />
-            </div>
-
-            {/* Lower Stage: Student Character Standing on Floor */}
-            <div className="relative z-10 w-full mt-auto flex items-end justify-between px-2 sm:px-6 pt-2">
-              {/* Student Sprite on Floor with Name Badge */}
-              <div className="flex items-end gap-2 sm:gap-3">
-                <PixelSprite
-                  character={character}
-                  pixelSize={0.38}
-                  animate
-                />
-                <div className="bg-black/80 border border-amber-500/50 px-2.5 py-1 rounded-lg text-amber-300 font-dialogue text-base sm:text-lg shadow-lg mb-1">
-                  {studentName || 'Petualang'}
-                </div>
-              </div>
-
-              {/* Status Alert if Archive Found */}
-              <div className="mb-1">
-                {archiveOpened ? (
-                  <div className="bg-amber-950/90 border-2 border-amber-400 text-amber-200 font-dialogue text-base sm:text-xl px-3 py-1.5 rounded-lg shadow-xl">
-                    ✨ ARSIP TERBUKA! (+100)
-                  </div>
-                ) : (
-                  <div className="bg-black/60 border border-stone-700 text-stone-300 font-dialogue text-xs sm:text-base px-2.5 py-1 rounded-lg hidden sm:block">
-                    📚 Cari arsip ilmu di rak buku...
-                  </div>
-                )}
-              </div>
-            </div>
-
+            <span>🏠</span>
+            <span>MENU UTAMA</span>
+          </button>
+          <div className="retro-pill-badge !bg-stone-900/90 !border-amber-500/60 text-amber-300 text-xs py-1 px-3 hidden sm:flex">
+            ⚔️ KUIS ILMU PERPUSTAKAAN
           </div>
+        </div>
+      </div>
 
-          {/* CRT Bottom Bar */}
-          <div className="p-2 sm:p-3 flex items-center justify-between border-t-2 border-amber-950/80 bg-black/80 z-20 font-dialogue text-base sm:text-xl tracking-wider text-stone-400">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-stone-300 text-xs sm:text-base">MENJELAJAH</span>
-            </div>
+      {/* ── MAIN ARENA STAGE (Flexible Fill Height) ───────────────────────── */}
+      <div className="relative z-20 flex-1 flex flex-col justify-between p-3 sm:p-6 overflow-y-auto">
+        {/* Upper Arena Space: Question & Answers Panel */}
+        <div className="w-full max-w-4xl mx-auto pt-2 sm:pt-4 my-auto">
+          <QuestionPanel />
+        </div>
 
-            <div className="flex items-center gap-2 text-amber-300 text-xs sm:text-base">
-              <span>ARSIP:</span>
-              <span className="text-white font-bold">{correctAnswersCount}/{questions.length}</span>
+        {/* Lower Stage: Student Character Standing on Floor */}
+        <div className="w-full mt-auto flex items-end justify-between px-2 sm:px-8 pt-4">
+          {/* Student Sprite on Floor with Name Badge */}
+          <div className="flex items-end gap-2 sm:gap-4">
+            <PixelSprite character={character} pixelSize={0.42} animate />
+            <div className="bg-black/85 border border-amber-500/60 px-3 py-1 rounded-lg text-amber-300 font-dialogue text-lg sm:text-xl shadow-xl mb-1">
+              {studentName || 'Petualang'}
             </div>
           </div>
 
+          {/* Status Alert if Archive Found */}
+          <div className="mb-1">
+            {archiveOpened ? (
+              <div className="bg-amber-950/95 border-2 border-amber-400 text-amber-200 font-dialogue text-lg sm:text-2xl px-4 py-2 rounded-xl shadow-2xl animate-bounce">
+                ✨ ARSIP TERBUKA! (+100)
+              </div>
+            ) : (
+              <div className="bg-black/75 border border-stone-700 text-stone-300 font-dialogue text-xs sm:text-base px-3 py-1.5 rounded-lg hidden sm:block shadow-md">
+                📚 Cari arsip ilmu di rak buku...
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── BOTTOM CRT STATUS BAR (Full Width Edge-to-Edge) ───────────────── */}
+      <div className="relative z-20 p-2.5 sm:p-3 bg-black/90 border-t-2 border-amber-950 flex items-center justify-between font-pixel text-sm sm:text-base tracking-wider text-stone-300">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-stone-300 font-bold">MENJELAJAH PERPUSTAKAAN</span>
+        </div>
+
+        <div className="flex items-center gap-3 text-amber-300 font-bold">
+          <span>PROGRES ARSIP:</span>
+          <span className="text-white bg-amber-950/80 px-2.5 py-0.5 rounded border border-amber-500/40">
+            {correctAnswersCount} / {questions.length}
+          </span>
         </div>
       </div>
 

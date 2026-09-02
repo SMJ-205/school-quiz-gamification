@@ -282,246 +282,240 @@ export default function LabInfiniteArena() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#050B14] select-none">
-      
-      {/* Main Container */}
-      <div className="flex-1 flex flex-col items-center justify-center p-2 sm:p-4 md:p-6">
-        <div className="w-full max-w-5xl crt-arcade-frame bg-[#081320] flex flex-col relative overflow-hidden shadow-[0_0_35px_rgba(6,182,212,0.45)] border-2 sm:border-4 border-cyan-500 rounded-xl">
+    <div
+      className="min-h-screen flex flex-col justify-between relative overflow-hidden select-none bg-[#050B14]"
+      style={{
+        backgroundImage: `url('/backgrounds/lab_ipa.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* Overlays */}
+      <div className="absolute inset-0 bg-gradient-to-b from-cyan-950/60 via-black/45 to-cyan-950/80 pointer-events-none z-0" />
+      <div className="crt-scanlines-overlay" />
 
-          {/* CRT Top Bar - Cyan Science Theme */}
-          <div className="px-3 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between border-b-2 border-cyan-900/80 bg-cyan-950/90 backdrop-blur-sm z-20 gap-2">
-            <div className="flex items-center gap-2">
-              <div className="retro-pill-badge !bg-cyan-950 !border-cyan-400 text-cyan-300 !text-[10px] sm:!text-xs !py-1 !px-2.5 flex items-center gap-1 shadow-[0_0_10px_rgba(6,182,212,0.3)]">
-                <span>🔬</span>
-                <span>LAB IPA • DETEKTIF POLA</span>
-              </div>
-
-              {currentStreak > 1 && (
-                <div className="retro-pill-badge !bg-cyan-900 !border-cyan-300 text-cyan-200 !text-[10px] sm:!text-xs !py-1 !px-2.5 animate-pulse shadow-[0_0_12px_rgba(6,182,212,0.5)]">
-                  ⚡ STREAK x{currentStreak}
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleToggleSound}
-                className={`btn-pixel !text-[10px] sm:!text-xs !py-1 !px-2.5 flex items-center gap-1 cursor-pointer transition-all ${
-                  muted
-                    ? '!bg-red-950/80 !border-red-500 text-red-300 shadow-[0_0_10px_rgba(239,68,68,0.4)]'
-                    : '!bg-slate-800 hover:!bg-slate-700 !border-slate-600 text-cyan-300'
-                }`}
-                title={muted ? 'Nyalakan Musik & SFX (Unmute)' : 'Matikan Musik & SFX (Mute)'}
-              >
-                <span>{muted ? '🔇' : '🔊'}</span>
-                <span className="font-bold">{muted ? 'MUTED' : 'SUARA'}</span>
-              </button>
-
-              <button
-                onClick={() => setShowExitModal(true)}
-                className="btn-pixel !bg-slate-800 hover:!bg-slate-700 !border-slate-600 text-slate-200 !text-[10px] sm:!text-xs !py-1 !px-2.5 flex items-center gap-1 cursor-pointer"
-                title="Keluar"
-              >
-                <span>🏠</span>
-                <span className="hidden sm:inline">MENU</span>
-              </button>
-
-              <button
-                onClick={handleTriggerFinish}
-                className="btn-pixel !bg-cyan-700 hover:!bg-cyan-600 !border-cyan-400 text-white !text-[10px] sm:!text-xs !py-1 !px-3 flex items-center gap-1.5 cursor-pointer shadow-[0_0_16px_rgba(6,182,212,0.5)] animate-pulse"
-                title="Selesaikan sesi kuis dan tampilkan summary report"
-              >
-                <span>🏁</span>
-                <span className="font-bold">AKHIRI SESI & LAPORAN</span>
-              </button>
-            </div>
+      {/* ── CRT TOP BAR - Cyan Science Theme (Full Width Edge-to-Edge) ── */}
+      <div className="relative z-20 px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between border-b-2 border-cyan-900/80 bg-black/90 backdrop-blur-sm gap-2 font-pixel">
+        <div className="flex items-center gap-2">
+          <div className="retro-pill-badge !bg-cyan-950 !border-cyan-400 text-cyan-300 text-xs sm:text-sm py-1 px-3 flex items-center gap-1.5 shadow-[0_0_10px_rgba(6,182,212,0.3)]">
+            <span>🔬</span>
+            <span>LAB IPA • DETEKTIF POLA</span>
           </div>
 
-          {/* Lab Arena Stage with Atmospheric Cyan Blue Science Overlay */}
-          <div
-            className="relative w-full min-h-[480px] md:min-h-[540px] flex flex-col justify-between pt-4 sm:pt-6 pb-3 sm:pb-6 px-3 sm:px-6 overflow-hidden"
-            style={{
-              backgroundImage: `url('/backgrounds/lab_ipa.jpg')`,
-              backgroundPosition: 'center center',
-              backgroundSize: 'cover',
-              backgroundRepeat: 'no-repeat',
-            }}
+          {currentStreak > 1 && (
+            <div className="retro-pill-badge !bg-cyan-900 !border-cyan-300 text-cyan-200 text-xs py-1 px-2.5 animate-pulse shadow-[0_0_12px_rgba(6,182,212,0.5)]">
+              ⚡ STREAK x{currentStreak}
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleToggleSound}
+            className={`btn-pixel text-xs py-1 px-2.5 flex items-center gap-1 cursor-pointer transition-all ${
+              muted
+                ? '!bg-red-950/80 !border-red-500 text-red-300 shadow-[0_0_10px_rgba(239,68,68,0.4)]'
+                : '!bg-slate-800 hover:!bg-slate-700 !border-slate-600 text-cyan-300'
+            }`}
+            title={muted ? 'Nyalakan Musik & SFX (Unmute)' : 'Matikan Musik & SFX (Mute)'}
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-cyan-950/50 via-black/40 to-cyan-950/75 pointer-events-none z-0" />
+            <span>{muted ? '🔇' : '🔊'}</span>
+            <span className="font-bold">{muted ? 'MUTED' : 'SUARA'}</span>
+          </button>
 
-            {/* Comic Dialogue & Guru Lab Sprite Container */}
-            <div className="relative z-20 w-full max-w-3xl mx-auto pt-3 sm:pt-4 mb-2 flex flex-col gap-3">
-              <div className="flex flex-row items-end gap-3 sm:gap-4">
-                
-                {/* Speech Bubble with Cyan Blue Accents */}
-                <div
-                  onClick={handleFastForward}
-                  className="flex-1 comic-bubble-wrapper !border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.35)] flex flex-col justify-center cursor-pointer select-none transition-all hover:border-cyan-300 min-h-[100px] sm:min-h-[135px]"
-                  title={isTyping ? 'Klik untuk mempercepat teks' : ''}
-                >
-                  <div className="w-full flex flex-col px-1 sm:px-2 min-h-[55px] sm:min-h-[75px] justify-center">
-                    <p className="font-dialogue text-lg sm:text-2xl text-white tracking-wide leading-snug whitespace-pre-line break-words">
-                      {displayedText}
-                      {isTyping && <span className="typewriter-cursor text-cyan-400">▋</span>}
-                    </p>
-                  </div>
-                </div>
+          <button
+            onClick={() => setShowExitModal(true)}
+            className="btn-pixel !bg-slate-800 hover:!bg-slate-700 !border-slate-600 text-slate-200 text-xs py-1 px-2.5 flex items-center gap-1 cursor-pointer"
+            title="Keluar"
+          >
+            <span>🏠</span>
+            <span className="hidden sm:inline">MENU</span>
+          </button>
 
-                {/* Guru Lab Sprite (Scaled 1.2x & controlled via GURU_LAB_CONFIG) */}
-                <div className="shrink-0 flex items-end justify-center self-end mb-0.5">
-                  <div
-                    className="relative w-22 h-31 sm:w-26 sm:h-38 flex items-end justify-center"
-                    style={{
-                      transform: `scale(${GURU_LAB_CONFIG.spriteScale})`,
-                      transformOrigin: 'bottom center',
-                    }}
-                  >
-                    <img
-                      src="/sprites/teacher_lab_idle.png"
-                      alt="Guru Lab"
-                      className="w-full h-full object-contain object-bottom select-none pointer-events-none"
-                      style={{
-                        imageRendering: 'pixelated',
-                        filter: [
-                          'drop-shadow(1px 0px 0px rgba(6,182,212,0.85))',
-                          'drop-shadow(-1px 0px 0px rgba(6,182,212,0.85))',
-                          'drop-shadow(0px 1px 0px rgba(6,182,212,0.85))',
-                          'drop-shadow(0px -1px 0px rgba(6,182,212,0.85))',
-                          'drop-shadow(0px 8px 16px rgba(0,0,0,0.8))',
-                        ].join(' '),
-                      }}
-                    />
-                    {/* CSS Mouth Overlay synced with speech (controlled by GURU_LAB_CONFIG) */}
-                    <div
-                      aria-hidden="true"
-                      style={{
-                        position: 'absolute',
-                        left: GURU_LAB_CONFIG.mouthPosition.left,
-                        bottom: GURU_LAB_CONFIG.mouthPosition.bottom,
-                        transform: 'translate(-50%, 50%)',
-                        width: mouthOpen
-                          ? GURU_LAB_CONFIG.mouthDimensions.openWidth
-                          : GURU_LAB_CONFIG.mouthDimensions.closedWidth,
-                        height: mouthOpen
-                          ? GURU_LAB_CONFIG.mouthDimensions.openHeight
-                          : GURU_LAB_CONFIG.mouthDimensions.closedHeight,
-                        borderRadius: '50%',
-                        backgroundColor: mouthOpen
-                          ? GURU_LAB_CONFIG.mouthDimensions.openColor
-                          : GURU_LAB_CONFIG.mouthDimensions.closedColor,
-                        boxShadow: mouthOpen ? 'inset 0 1px 2px rgba(255,200,180,0.4)' : 'none',
-                        transition: `height ${GURU_LAB_CONFIG.mouthDimensions.transitionSpeed} ease, width ${GURU_LAB_CONFIG.mouthDimensions.transitionSpeed} ease`,
-                        pointerEvents: 'none',
-                      }}
-                    />
-                  </div>
-                </div>
+          <button
+            onClick={handleTriggerFinish}
+            className="btn-pixel !bg-cyan-700 hover:!bg-cyan-600 !border-cyan-400 text-white text-xs py-1.5 px-3 flex items-center gap-1.5 cursor-pointer shadow-[0_0_16px_rgba(6,182,212,0.5)] animate-pulse"
+            title="Selesaikan sesi kuis dan tampilkan summary report"
+          >
+            <span>🏁</span>
+            <span className="font-bold">AKHIRI SESI & LAPORAN</span>
+          </button>
+        </div>
+      </div>
 
+      {/* ── MAIN LAB ARENA STAGE (Flexible Fill Height) ────────────────── */}
+      <div className="relative z-20 flex-1 flex flex-col justify-between p-3 sm:p-6 overflow-y-auto">
+        
+        {/* Comic Dialogue & Guru Lab Sprite Container */}
+        <div className="w-full max-w-4xl mx-auto pt-2 sm:pt-4 mb-2 flex flex-col gap-3">
+          <div className="flex flex-row items-end gap-3 sm:gap-4">
+            
+            {/* Speech Bubble with Cyan Blue Accents */}
+            <div
+              onClick={handleFastForward}
+              className="flex-1 comic-bubble-wrapper !border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.35)] flex flex-col justify-center cursor-pointer select-none transition-all hover:border-cyan-300 min-h-[100px] sm:min-h-[135px]"
+              title={isTyping ? 'Klik untuk mempercepat teks' : ''}
+            >
+              <div className="w-full flex flex-col px-1 sm:px-2 min-h-[55px] sm:min-h-[75px] justify-center">
+                <p className="font-dialogue text-lg sm:text-2xl text-white tracking-wide leading-snug whitespace-pre-line break-words">
+                  {displayedText}
+                  {isTyping && <span className="typewriter-cursor text-cyan-400">▋</span>}
+                </p>
               </div>
+            </div>
 
-              {/* Render Visual Matrix 2D Grid Puzzle if present, otherwise text options grid */}
-              {currentQuestion?.visualMatrixData ? (
-                <VisualMatrixDisplay
-                  data={currentQuestion.visualMatrixData}
-                  selectedOption={selected}
-                  revealed={revealed}
-                  correctIndex={currentQuestion.correctIndex}
-                  onSelectOption={handleSelectOption}
+            {/* Guru Lab Sprite */}
+            <div className="shrink-0 flex items-end justify-center self-end mb-0.5">
+              <div
+                className="relative w-22 h-31 sm:w-26 sm:h-38 flex items-end justify-center"
+                style={{
+                  transform: `scale(${GURU_LAB_CONFIG.spriteScale})`,
+                  transformOrigin: 'bottom center',
+                }}
+              >
+                <img
+                  src="/sprites/teacher_lab_idle.png"
+                  alt="Guru Lab"
+                  className="w-full h-full object-contain object-bottom select-none pointer-events-none"
+                  style={{
+                    imageRendering: 'pixelated',
+                    filter: [
+                      'drop-shadow(1px 0px 0px rgba(6,182,212,0.85))',
+                      'drop-shadow(-1px 0px 0px rgba(6,182,212,0.85))',
+                      'drop-shadow(0px 1px 0px rgba(6,182,212,0.85))',
+                      'drop-shadow(0px -1px 0px rgba(6,182,212,0.85))',
+                      'drop-shadow(0px 8px 16px rgba(0,0,0,0.8))',
+                    ].join(' '),
+                  }}
                 />
-              ) : (
-                /* Options Grid (A, B, C, D) */
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                  {(currentQuestion?.options || []).map((opt, i) => {
-                    let stateClass = '';
-                    if (revealed) {
-                      if (i === currentQuestion?.correctIndex) stateClass = 'correct';
-                      else if (i === selected && !isCorrect) stateClass = 'wrong';
-                      else stateClass = 'disabled opacity-50';
-                    }
+                <div
+                  aria-hidden="true"
+                  style={{
+                    position: 'absolute',
+                    left: GURU_LAB_CONFIG.mouthPosition.left,
+                    bottom: GURU_LAB_CONFIG.mouthPosition.bottom,
+                    transform: 'translate(-50%, 50%)',
+                    width: mouthOpen
+                      ? GURU_LAB_CONFIG.mouthDimensions.openWidth
+                      : GURU_LAB_CONFIG.mouthDimensions.closedWidth,
+                    height: mouthOpen
+                      ? GURU_LAB_CONFIG.mouthDimensions.openHeight
+                      : GURU_LAB_CONFIG.mouthDimensions.closedHeight,
+                    borderRadius: '50%',
+                    backgroundColor: mouthOpen
+                      ? GURU_LAB_CONFIG.mouthDimensions.openColor
+                      : GURU_LAB_CONFIG.mouthDimensions.closedColor,
+                    boxShadow: mouthOpen ? 'inset 0 1px 2px rgba(255,200,180,0.4)' : 'none',
+                    transition: `height ${GURU_LAB_CONFIG.mouthDimensions.transitionSpeed} ease, width ${GURU_LAB_CONFIG.mouthDimensions.transitionSpeed} ease`,
+                    pointerEvents: 'none',
+                  }}
+                />
+              </div>
+            </div>
 
-                    return (
-                      <button
-                        key={i}
-                        className={`answer-option !text-base sm:!text-2xl !py-2.5 sm:!py-3 !px-3 sm:!px-4 hover:!border-cyan-400 ${stateClass}`}
-                        onClick={() => handleSelectOption(i)}
-                        disabled={revealed}
-                      >
-                        <span className="opt-key font-bold font-dialogue text-lg sm:text-2xl shrink-0 text-cyan-300">
-                          {OPTION_KEYS[i]})
-                        </span>
-                        <span className="flex-1 font-dialogue leading-tight text-left text-base sm:text-2xl break-words">
-                          {opt}
-                        </span>
-                        {revealed && i === currentQuestion?.correctIndex && (
-                          <span className="text-emerald-400 font-bold text-base sm:text-xl ml-auto shrink-0">✓</span>
-                        )}
-                        {revealed && i === selected && !isCorrect && (
-                          <span className="text-red-400 font-bold text-base sm:text-xl ml-auto shrink-0">✗</span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
+          </div>
 
-              {/* Action Bar for Next Question */}
-              {revealed && !showOwl && (
-                <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 sm:p-3 bg-cyan-950/90 border-2 border-cyan-400 rounded-lg shadow-[0_0_20px_rgba(6,182,212,0.4)]">
-                  <div className="font-dialogue text-lg sm:text-2xl">
-                    {isCorrect ? (
-                      <span className="text-emerald-400 font-bold">✨ JAWABAN TEPAT! (+100 Poin)</span>
-                    ) : (
-                      <span className="text-red-400">Pola belum tepat. Pelajari analisisnya!</span>
-                    )}
-                  </div>
+          {/* Render Visual Matrix 2D Grid Puzzle if present, otherwise text options grid */}
+          {currentQuestion?.visualMatrixData ? (
+            <VisualMatrixDisplay
+              data={currentQuestion.visualMatrixData}
+              selectedOption={selected}
+              revealed={revealed}
+              correctIndex={currentQuestion.correctIndex}
+              onSelectOption={handleSelectOption}
+            />
+          ) : (
+            /* Options Grid (A, B, C, D) */
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+              {(currentQuestion?.options || []).map((opt, i) => {
+                let stateClass = '';
+                if (revealed) {
+                  if (i === currentQuestion?.correctIndex) stateClass = 'correct';
+                  else if (i === selected && !isCorrect) stateClass = 'wrong';
+                  else stateClass = 'disabled opacity-50';
+                }
 
+                return (
                   <button
-                    className="btn-pixel !bg-cyan-700 hover:!bg-cyan-600 !border-cyan-400 text-white !py-2 !px-4 sm:!px-6 text-xs sm:text-sm flex items-center gap-2 ml-auto cursor-pointer shadow-lg"
-                    onClick={handleNextQuestion}
+                    key={i}
+                    className={`answer-option !text-base sm:!text-2xl !py-2.5 sm:!py-3 !px-3 sm:!px-4 hover:!border-cyan-400 ${stateClass}`}
+                    onClick={() => handleSelectOption(i)}
+                    disabled={revealed}
                   >
-                    <span>SOAL SELANJUTNYA ▶</span>
+                    <span className="opt-key font-bold font-dialogue text-lg sm:text-2xl shrink-0 text-cyan-300">
+                      {OPTION_KEYS[i]})
+                    </span>
+                    <span className="flex-1 font-dialogue leading-tight text-left text-base sm:text-2xl break-words">
+                      {opt}
+                    </span>
+                    {revealed && i === currentQuestion?.correctIndex && (
+                      <span className="text-emerald-400 font-bold text-base sm:text-xl ml-auto shrink-0">✓</span>
+                    )}
+                    {revealed && i === selected && !isCorrect && (
+                      <span className="text-red-400 font-bold text-base sm:text-xl ml-auto shrink-0">✗</span>
+                    )}
                   </button>
-                </div>
-              )}
-
+                );
+              })}
             </div>
+          )}
 
-            {/* Bottom Floor Stage with Student Sprite */}
-            <div className="relative z-10 w-full mt-auto flex items-end justify-between px-2 sm:px-6 pt-2">
-              <div className="flex items-end gap-2 sm:gap-3">
-                <PixelSprite character={character} pixelSize={0.38} animate />
-                <div className="bg-cyan-950/90 border border-cyan-400/60 px-2.5 py-1 rounded-lg text-cyan-300 font-dialogue text-base sm:text-lg shadow-lg mb-1">
-                  {studentName || 'Petualang'}
-                </div>
+          {/* Action Bar for Next Question */}
+          {revealed && !showOwl && (
+            <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 sm:p-3 bg-cyan-950/90 border-2 border-cyan-400 rounded-lg shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+              <div className="font-dialogue text-lg sm:text-2xl">
+                {isCorrect ? (
+                  <span className="text-emerald-400 font-bold">✨ JAWABAN TEPAT! (+100 Poin)</span>
+                ) : (
+                  <span className="text-red-400">Pola belum tepat. Pelajari analisisnya!</span>
+                )}
               </div>
 
-              <div className="mb-1">
-                <div className="bg-cyan-950/80 border border-cyan-500/50 text-cyan-200 font-dialogue text-xs sm:text-base px-3 py-1 rounded-lg hidden sm:block shadow-md">
-                  ♾️ Mode Infinite • Jawab sepuasnya & akhiri kapan saja!
-                </div>
-              </div>
+              <button
+                className="btn-pixel !bg-cyan-700 hover:!bg-cyan-600 !border-cyan-400 text-white !py-2 !px-4 sm:!px-6 text-xs sm:text-sm flex items-center gap-2 ml-auto cursor-pointer shadow-lg"
+                onClick={handleNextQuestion}
+              >
+                <span>SOAL SELANJUTNYA ▶</span>
+              </button>
             </div>
+          )}
 
-          </div>
+        </div>
 
-          {/* CRT Bottom Bar - Cyan Blue Theme */}
-          <div className="p-2.5 sm:p-3.5 flex flex-col sm:flex-row items-center justify-between gap-2 border-t-2 border-cyan-900/80 bg-cyan-950/95 z-20 font-dialogue text-xs sm:text-sm md:text-base text-cyan-300">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.8)] shrink-0" />
-              <span className="font-bold text-cyan-200 tracking-wide">
-                SOAL #{questionCount} • {currentQuestion?.categoryLabel || 'Detektif Pola'}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3 sm:gap-5 text-cyan-300">
-              <span>BENAR: <strong className="text-emerald-400">{correctCount}</strong></span>
-              <span className="text-cyan-700/80">•</span>
-              <span>AKURASI: <strong className="text-white">{questionCount > 1 ? Math.round((correctCount / (revealed ? questionCount : questionCount - 1)) * 100) : (revealed ? (isCorrect ? 100 : 0) : 0)}%</strong></span>
-              <span className="text-cyan-700/80">•</span>
-              <span>TOTAL POIN: <strong className="text-cyan-200">{score}</strong></span>
+        {/* Bottom Floor Stage with Student Sprite */}
+        <div className="w-full mt-auto flex items-end justify-between px-2 sm:px-8 pt-2">
+          <div className="flex items-end gap-2 sm:gap-4">
+            <PixelSprite character={character} pixelSize={0.42} animate />
+            <div className="bg-cyan-950/90 border border-cyan-400/60 px-3 py-1 rounded-lg text-cyan-300 font-dialogue text-base sm:text-lg shadow-lg mb-1">
+              {studentName || 'Petualang'}
             </div>
           </div>
 
+          <div className="mb-1">
+            <div className="bg-cyan-950/80 border border-cyan-500/50 text-cyan-200 font-dialogue text-xs sm:text-base px-3 py-1.5 rounded-lg hidden sm:block shadow-md">
+              ♾️ Mode Infinite • Jawab sepuasnya & akhiri kapan saja!
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* ── CRT BOTTOM BAR - Cyan Blue Theme (Full Width Edge-to-Edge) ── */}
+      <div className="relative z-20 p-2.5 sm:p-3 flex flex-col sm:flex-row items-center justify-between gap-2 border-t-2 border-cyan-900/80 bg-black/90 font-pixel text-xs sm:text-sm md:text-base text-cyan-300">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.8)] shrink-0" />
+          <span className="font-bold text-cyan-200 tracking-wide">
+            SOAL #{questionCount} • {currentQuestion?.categoryLabel || 'Detektif Pola'}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3 sm:gap-5 text-cyan-300">
+          <span>BENAR: <strong className="text-emerald-400">{correctCount}</strong></span>
+          <span className="text-cyan-700/80">•</span>
+          <span>AKURASI: <strong className="text-white">{questionCount > 1 ? Math.round((correctCount / (revealed ? questionCount : questionCount - 1)) * 100) : (revealed ? (isCorrect ? 100 : 0) : 0)}%</strong></span>
+          <span className="text-cyan-700/80">•</span>
+          <span>SKOR: <strong className="text-amber-300">{score}</strong></span>
         </div>
       </div>
 
