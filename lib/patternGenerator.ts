@@ -252,10 +252,9 @@ export function getDifficultyForGradeAndNumber(qNum: number, grade: number = 6):
   if (grade === 2) return 1; // Kelas 2 SD: STRICTLY Level 1 ONLY (Pola Penjumlahan/Pengurangan & Loncat 2,3,4,5,10)
   if (grade === 3) return qNum <= 5 ? 1 : 2; // Kelas 3 SD: Level 1 s.d. Level 2 (Perkalian Kelipatan 2 & 3 Sederhana)
   if (grade === 4) return qNum <= 4 ? 2 : 3; // Kelas 4 SD: Level 2 s.d. Level 3 (Kuadrat Dasar & Matriks 3x3)
-  if (grade === 5) return 3; // Kelas 5 SD: Level 3 (Deret Kuadrat, Pembelahan Sel, Matriks 3x3)
-  // Kelas 6 SD Peak
-  if (qNum <= 3) return 3;
-  return 4; // Level 4 (Fibonacci, Kuadrat Offset, Matriks 3x3 TPA Peak)
+  if (grade === 5) return qNum <= 3 ? 3 : 4; // Kelas 5 SD: Level 3 (awal) lalu Level 4 (TPA Pentagon, Spiderweb, OrbitDots)
+  // Kelas 6 SD Peak — STRICTLY Level 4 dari soal pertama (TPA Mode Paling Kompleks)
+  return 4;
 }
 
 // ─── 1. Aritmatika & Bertingkat ─────────────────────────────────────────────
@@ -833,44 +832,145 @@ function generateShapesRowQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
     return generateGrade1VisualQuestion();
   }
 
-  // Upper Grades (Level 2+): Latin Square Permutation Pattern
-  const shapes: QuadrantBox['shapeType'][] = [
+  const allShapes: QuadrantBox['shapeType'][] = [
     'circle_filled',
     'triangle_filled',
     'square_filled',
     'star',
     'diamond',
+    'circle_outline',
+    'square_outline',
+    'triangle_outline',
   ];
-  const selected3 = shuffleArray(shapes).slice(0, 3);
-  const [sA, sB, sC] = selected3;
+
+  if (difficulty === 2) {
+    // Level 2 (Kelas 3-4): Latin Square 3 bentuk sederhana
+    const selected3 = shuffleArray(allShapes).slice(0, 3);
+    const [sA, sB, sC] = selected3;
+
+    const boxes: QuadrantBox[] = [
+      { shapeType: sA }, { shapeType: sB }, { shapeType: sC },
+      { shapeType: sB }, { shapeType: sC }, { shapeType: sA },
+      { shapeType: sC }, { shapeType: sA }, { isQuestion: true },
+    ];
+
+    const correctBox: QuadrantBox = { shapeType: sB };
+    const candidateDistractors: QuadrantBox[] = [
+      { shapeType: sA },
+      { shapeType: sC },
+      { shapeType: allShapes.find((s) => !selected3.includes(s)) || 'square_outline' },
+    ];
+
+    const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
+    const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+    return {
+      id: `vis_shape_l2_${Date.now()}_${Math.random()}`,
+      category: 'visual',
+      categoryLabel: `Deret Pola Bentuk Geometri (Level 2 - SD 3/4)`,
+      difficultyLevel: 2,
+      question: `Setiap baris memiliki 3 bentuk berbeda. Bentuk apakah yang mengisi kotak ke-9?`,
+      options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* Setiap baris memiliki 3 bentuk yang sama (Latin Square). Baris ke-3 berisi ${sA?.replace('_',' ')}, ${sC?.replace('_',' ')}, lalu bentuk yang kurang: ${sB?.replace('_',' ')?.toUpperCase()}.`,
+      visualMatrixData: {
+        type: 'shapes_row',
+        gridCols: 3,
+        boxes,
+        optionBoxes,
+      },
+    };
+  }
+
+  if (difficulty === 3) {
+    // Level 3 (Kelas 5): Latin Square 4 bentuk berbeda — siklus ABCD, BCDA, CDAB → ? (DA missing)
+    const selected4 = shuffleArray(allShapes).slice(0, 4);
+    const [sA, sB, sC, sD] = selected4;
+
+    // Row 1: A B C D (tak bisa tampil 4 di 3 kolom) — gunakan pola diagonal shift 4 dalam 3 kolom
+    // Pola: tiap baris = rotasi 1 dari baris sebelumnya (offset +1 di siklus 4-bentuk)
+    // Row1: A B C
+    // Row2: B C D
+    // Row3: C D ? -> jawaban A (siklus mod 4)
+    const boxes: QuadrantBox[] = [
+      { shapeType: sA }, { shapeType: sB }, { shapeType: sC },
+      { shapeType: sB }, { shapeType: sC }, { shapeType: sD },
+      { shapeType: sC }, { shapeType: sD }, { isQuestion: true },
+    ];
+
+    const correctBox: QuadrantBox = { shapeType: sA };
+    const candidateDistractors: QuadrantBox[] = [
+      { shapeType: sB },
+      { shapeType: sC },
+      { shapeType: sD },
+    ];
+
+    const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
+    const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+    return {
+      id: `vis_shape_l3_${Date.now()}_${Math.random()}`,
+      category: 'visual',
+      categoryLabel: `Deret Pola 4 Bentuk Diagonal (Level 3 - SD 5)`,
+      difficultyLevel: 3,
+      question: `Analisis pola diagonal pergeseran 4 bentuk geometri pada matriks 3x3 berikut:`,
+      options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* Setiap baris bergeser 1 langkah maju dalam siklus 4 bentuk (A→B→C→D→A). Kolom ke-3 baris ke-3 kembali ke bentuk awal: ${sA?.replace('_',' ')?.toUpperCase()}.`,
+      visualMatrixData: {
+        type: 'shapes_row',
+        gridCols: 3,
+        boxes,
+        optionBoxes,
+      },
+    };
+  }
+
+  // Level 4 (Kelas 6): Pola Ganda — tiap sel = bentuk UTAMA + POLA ISIAN bergantian
+  // Gunakan 5 bentuk dalam siklus kompleks + filled/outline bergantian
+  // Row1: A_filled, B_outline, C_filled
+  // Row2: B_filled, C_outline, D_filled
+  // Row3: C_filled, D_outline, ?  -> jawaban: E_filled (bentuk ke-5 berikutnya dalam siklus)
+  const selected5 = shuffleArray(allShapes.filter((s): s is NonNullable<typeof s> => s !== undefined && !s.includes('_outline'))).slice(0, 3);
+  const outlineVariants: Record<string, QuadrantBox['shapeType']> = {
+    'circle_filled': 'circle_outline',
+    'triangle_filled': 'triangle_outline',
+    'square_filled': 'square_outline',
+    'star': 'diamond',
+    'diamond': 'star',
+  };
+
+  const [s1, s2, s3] = selected5;
+  const s1o = outlineVariants[s1!] || 'circle_outline';
+  const s2o = outlineVariants[s2!] || 'square_outline';
 
   const boxes: QuadrantBox[] = [
-    { shapeType: sA }, { shapeType: sB }, { shapeType: sC },
-    { shapeType: sB }, { shapeType: sC }, { shapeType: sA },
-    { shapeType: sC }, { shapeType: sA }, { isQuestion: true },
+    { shapeType: s1 }, { shapeType: s1o }, { shapeType: s2 },
+    { shapeType: s2 }, { shapeType: s2o }, { shapeType: s3 },
+    { shapeType: s3 }, { shapeType: outlineVariants[s3!] || 'triangle_outline' }, { isQuestion: true },
   ];
 
-  const correctShape = sB;
-  const correctBox: QuadrantBox = { shapeType: correctShape };
-
+  // Pattern: Col1=Xfilled, Col2=Xoutline, Col3=next_filled; setiap baris col1 = col3 baris sebelumnya
+  // Kotak ke-9 (R3C3) = s1 lagi (siklus kembali ke awal)
+  const correctBox: QuadrantBox = { shapeType: s1 };
   const candidateDistractors: QuadrantBox[] = [
-    { shapeType: sA },
-    { shapeType: sC },
-    { shapeType: shapes.find((s) => !selected3.includes(s)) || 'square_outline' },
+    { shapeType: s2 },
+    { shapeType: s3 },
+    { shapeType: s1o },
   ];
 
   const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
   const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
 
   return {
-    id: `vis_shape_${Date.now()}_${Math.random()}`,
+    id: `vis_shape_l4_${Date.now()}_${Math.random()}`,
     category: 'visual',
-    categoryLabel: `Deret Pola Bentuk Geometri (Level ${difficulty})`,
-    difficultyLevel: difficulty,
-    question: `Analisis permutasi 3 bentuk geometri (Lingkaran, Segitiga, Kotak, Bintang, Belah Ketupat) pada matriks:`,
+    categoryLabel: `Deret Pola Ganda Bentuk & Isian (Level 4 - SD 6)`,
+    difficultyLevel: 4,
+    question: `Analisis pola ganda: pergeseran bentuk DAN perubahan isian (filled/outline) pada matriks 3x3 ini:`,
     options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
     correctIndex,
-    hint: `🔬 *Analisis Guru Lab:* Setiap baris memiliki 3 bentuk yang sama. Kotak ke-9 diisi oleh ${correctShape?.replace('_', ' ').toUpperCase()}.`,
+    hint: `🔬 *Analisis Guru Lab:* Setiap baris: Kolom 1 = bentuk isian penuh, Kolom 2 = bentuk outline (kosong), Kolom 3 = bentuk berikutnya isian penuh. Baris ke-4 kembali ke bentuk pertama: ${s1?.replace('_',' ')?.toUpperCase()}.`,
     visualMatrixData: {
       type: 'shapes_row',
       gridCols: 3,
@@ -1340,20 +1440,43 @@ function generateVisualMatrixQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestio
     return generateGrade1VisualQuestion();
   }
 
-  const mode = pickRandom([
-    'clock_hands',
-    'capsule_symbols',
-    'domino_dots',
-    'shapes_row',
-    'pentagon_arrow',
-    'pointer_circle',
-    'ring_notch',
-    'nested_shapes',
-    'spiderweb_network',
-    'grid_outer_dot',
-    'orbit_dots',
-    'quadrant_grid',
-  ]);
+  // ── STRICT MODE GATING PER DIFFICULTY LEVEL ──────────────────────────────
+  // Level 2 (Kelas 3-4): Mode mudah & intuitif saja
+  const level2Modes = [
+    'clock_hands',       // 90° step — mudah
+    'domino_dots',       // Bintik bertambah
+    'shapes_row',        // Latin Square 3 bentuk
+    'quadrant_grid',     // Kotak hitam berputar
+  ];
+
+  // Level 3 (Kelas 5): Mode menengah
+  const level3Modes = [
+    'clock_hands',       // 45° step — lebih detail
+    'capsule_symbols',   // Dual-track: titik kapsul + O/X
+    'ring_notch',        // Busur cincin berputar
+    'nested_shapes',     // Bentuk bersarang berganti
+    'shapes_row',        // Pola 4 bentuk diagonal
+    'grid_outer_dot',    // Grid + titik sudut luar
+    'quadrant_grid',     // Pola kuadran kompleks
+  ];
+
+  // Level 4 (Kelas 6): Mode PALING KOMPLEKS — TPA Peak
+  const level4Modes = [
+    'pentagon_arrow',    // Pentagon + panah rotasi + titik vertex — DUAL TRACK
+    'pointer_circle',    // Penunjuk + orbit dot keliling — DUAL TRACK
+    'spiderweb_network', // Jaring laba-laba + kilat — DUAL TRACK
+    'orbit_dots',        // Bentuk pusat + 6 satelit orbit — TRIPLE TRACK
+    'nested_shapes',     // Bersarang + filled/outline bergantian
+    'shapes_row',        // Pola ganda bentuk & isian
+    'grid_outer_dot',    // Grid 2x2 aktif + orbit dot luar
+  ];
+
+  let modePool: string[];
+  if (difficulty === 2) modePool = level2Modes;
+  else if (difficulty === 3) modePool = level3Modes;
+  else modePool = level4Modes;
+
+  const mode = pickRandom(modePool);
 
   if (mode === 'clock_hands') return generateClockHandsQuestion(difficulty);
   if (mode === 'capsule_symbols') return generateCapsuleQuestion(difficulty);
