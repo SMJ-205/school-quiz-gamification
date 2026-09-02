@@ -289,7 +289,7 @@ export default function LabInfiniteArena() {
         <div className="w-full max-w-5xl crt-arcade-frame bg-[#081320] flex flex-col relative overflow-hidden shadow-[0_0_35px_rgba(6,182,212,0.45)] border-2 sm:border-4 border-cyan-500 rounded-xl">
 
           {/* CRT Top Bar - Cyan Science Theme */}
-          <div className="p-2 sm:p-4 flex items-center justify-between border-b-2 border-cyan-900/80 bg-cyan-950/90 backdrop-blur-sm z-20 gap-2">
+          <div className="px-3 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between border-b-2 border-cyan-900/80 bg-cyan-950/90 backdrop-blur-sm z-20 gap-2">
             <div className="flex items-center gap-2">
               <div className="retro-pill-badge !bg-cyan-950 !border-cyan-400 text-cyan-300 !text-[10px] sm:!text-xs !py-1 !px-2.5 flex items-center gap-1 shadow-[0_0_10px_rgba(6,182,212,0.3)]">
                 <span>🔬</span>
@@ -339,7 +339,7 @@ export default function LabInfiniteArena() {
 
           {/* Lab Arena Stage with Atmospheric Cyan Blue Science Overlay */}
           <div
-            className="relative w-full min-h-[480px] md:min-h-[540px] flex flex-col justify-between p-3 sm:p-6 overflow-hidden"
+            className="relative w-full min-h-[480px] md:min-h-[540px] flex flex-col justify-between pt-4 sm:pt-6 pb-3 sm:pb-6 px-3 sm:px-6 overflow-hidden"
             style={{
               backgroundImage: `url('/backgrounds/lab_ipa.jpg')`,
               backgroundPosition: 'center center',
@@ -349,8 +349,8 @@ export default function LabInfiniteArena() {
           >
             <div className="absolute inset-0 bg-gradient-to-b from-cyan-950/50 via-black/40 to-cyan-950/75 pointer-events-none z-0" />
 
-            {/* Top Info Banner - Cyan Science Styling with Blank Space Gap from Top Bar */}
-            <div className="relative z-20 w-full max-w-3xl mx-auto flex items-center justify-between text-xs sm:text-sm font-bold text-cyan-300 bg-cyan-950/85 px-3 py-1.5 rounded-lg border border-cyan-400/60 backdrop-blur-sm shadow-[0_0_15px_rgba(6,182,212,0.3)] mt-2.5 sm:mt-4 md:mt-5">
+            {/* Top Info Banner - Cyan Science Styling with Guaranteed Blank Space Gap from Top Bar */}
+            <div className="relative z-20 w-full max-w-3xl mx-auto flex items-center justify-between text-xs sm:text-sm font-bold text-cyan-300 bg-cyan-950/85 px-3 py-1.5 rounded-lg border border-cyan-400/60 backdrop-blur-sm shadow-[0_0_15px_rgba(6,182,212,0.3)] mt-5 sm:mt-7 md:mt-8">
               <span className="flex items-center gap-1.5">
                 <span className="text-cyan-400">SOAL #{questionCount}</span>
                 <span className="text-cyan-600">•</span>
