@@ -72,9 +72,9 @@ export default function EnchantedLibrary() {
       </div>
 
       {/* ── MAIN ARENA STAGE (Flexible Fill Height) ───────────────────────── */}
-      <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-3 sm:p-6 pt-10 sm:pt-16 md:pt-20 overflow-y-auto w-full">
-        {/* Upper Arena Space: Question & Answers Panel (Clearance below top HUD) */}
-        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-4 sm:mt-8 md:mt-10 mb-auto flex flex-col items-center justify-center px-2">
+      <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-3 sm:p-6 pt-12 sm:pt-16 md:pt-20 overflow-y-auto w-full">
+        {/* Upper Arena Space: Question & Answers Panel (Clearance ~0.5cm+ below top HUD) */}
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-6 sm:mt-10 md:mt-12 mb-auto flex flex-col items-center justify-center px-2">
           <QuestionPanel />
         </div>
 

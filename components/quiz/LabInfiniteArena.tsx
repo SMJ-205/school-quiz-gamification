@@ -345,10 +345,10 @@ export default function LabInfiniteArena() {
       </div>
 
       {/* ── MAIN LAB ARENA STAGE (Flexible Fill Height) ────────────────── */}
-      <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-3 sm:p-6 pt-10 sm:pt-16 md:pt-20 overflow-y-auto w-full">
+      <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-3 sm:p-6 pt-12 sm:pt-16 md:pt-20 overflow-y-auto w-full">
         
         {/* Comic Dialogue & Guru Lab Sprite Container (Scaled to Sombo Battle Format) */}
-        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-5xl xl:max-w-6xl mx-auto mt-4 sm:mt-8 md:mt-10 mb-auto flex flex-col items-center justify-center gap-5 sm:gap-8 px-2">
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-5xl xl:max-w-6xl mx-auto mt-6 sm:mt-10 md:mt-12 pt-4 sm:pt-8 md:pt-10 mb-auto flex flex-col items-center justify-center gap-5 sm:gap-8 px-2">
           
           {/* Top Question Row: Speech Bubble on Left, Guru Lab on Right */}
           <div className="w-full flex flex-row items-end gap-3 sm:gap-6">

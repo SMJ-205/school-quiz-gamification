@@ -150,7 +150,7 @@ export default function QuestionPanel() {
 
   return (
     <>
-      <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-5xl xl:max-w-6xl mx-auto flex flex-col gap-5 sm:gap-8 my-auto">
+      <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-5xl xl:max-w-6xl mx-auto flex flex-col gap-5 sm:gap-8 pt-4 sm:pt-8 md:pt-10 mb-auto">
 
         {/* Natural Chat Dialogue: Speech Bubble on Left, Pak Guru / Bu Guru on Right */}
         <div className="flex flex-row items-end gap-3 sm:gap-6">
