@@ -352,24 +352,24 @@ export default function LabInfiniteArena() {
 
       {/* ── MAIN LAB ARENA STAGE (Flexible Fill Height) ────────────────── */}
       <div className="relative z-20 flex-1 flex flex-col items-center justify-between p-2 sm:p-6 overflow-y-auto w-full">
-        {/* Dedicated Top Clearance Spacer (Hidden on Mobile, 0.5cm+ on Desktop) */}
-        <div className="w-full h-1 sm:h-12 md:h-16 shrink-0 pointer-events-none" aria-hidden="true" />
+        {/* Dedicated Top Clearance Spacer */}
+        <div className="w-full h-1 sm:h-3 md:h-4 shrink-0 pointer-events-none" aria-hidden="true" />
         
-        {/* Comic Dialogue & Guru Lab Sprite Container (Scaled to Sombo Battle Format) */}
-        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-5xl xl:max-w-6xl mx-auto my-auto flex flex-col items-center justify-center gap-5 sm:gap-8 px-1 sm:px-2">
+        {/* Comic Dialogue & Guru Lab Sprite Container */}
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-5xl xl:max-w-6xl mx-auto my-auto flex flex-col items-center justify-center gap-2 sm:gap-4 px-1 sm:px-2">
           
           {/* Top Question Row: Speech Bubble on Left, Guru Lab on Right */}
           <div className="w-full flex flex-row items-end gap-2 sm:gap-6">
             
-            {/* Speech Bubble Container — Compact on Mobile, 2-Line Reserved on Desktop */}
+            {/* Speech Bubble Container — Compact & Tighter Line Spacing */}
             <div
               onClick={handleFastForward}
-              className="flex-1 comic-bubble-wrapper !border-cyan-400 shadow-[0_0_25px_rgba(6,182,212,0.4)] flex flex-col justify-center cursor-pointer select-none transition-all hover:border-cyan-300 min-h-[90px] sm:min-h-[185px] md:min-h-[210px] p-2.5 sm:p-5"
+              className="flex-1 comic-bubble-wrapper !border-cyan-400 shadow-[0_0_25px_rgba(6,182,212,0.4)] flex flex-col justify-center cursor-pointer select-none transition-all hover:border-cyan-300 min-h-[70px] sm:min-h-[130px] md:min-h-[150px] p-2 sm:p-3.5"
               title={isTyping ? 'Klik untuk mempercepat teks' : ''}
             >
               {/* Dialogue Text Container */}
-              <div className="w-full flex items-center px-1.5 sm:px-4 min-h-[55px] sm:min-h-[125px] md:min-h-[145px]">
-                <p className="font-dialogue text-lg sm:text-3xl md:text-4xl lg:text-5xl text-white tracking-wide leading-normal sm:leading-relaxed whitespace-pre-line break-words">
+              <div className="w-full flex items-center px-1.5 sm:px-4 min-h-[45px] sm:min-h-[90px] md:min-h-[105px]">
+                <p className="font-dialogue text-base sm:text-2xl md:text-3xl lg:text-4xl text-white tracking-wide leading-snug sm:leading-normal whitespace-pre-line break-words">
                   {displayedText}
                   {isTyping && <span className="typewriter-cursor text-cyan-400">▋</span>}
                 </p>
@@ -453,21 +453,21 @@ export default function LabInfiniteArena() {
                 return (
                   <button
                     key={i}
-                    className={`answer-option !text-base sm:!text-3xl md:!text-4xl !py-2.5 sm:!py-5 !px-3 sm:!px-8 min-h-[50px] sm:min-h-[95px] hover:!border-cyan-400 ${stateClass}`}
+                    className={`answer-option !text-sm sm:!text-2xl md:!text-3xl !py-2 sm:!py-3.5 !px-3 sm:!px-6 min-h-[45px] sm:min-h-[75px] hover:!border-cyan-400 ${stateClass}`}
                     onClick={() => handleSelectOption(i)}
                     disabled={revealed}
                   >
-                    <span className="opt-key font-bold font-dialogue text-base sm:text-3xl md:text-4xl shrink-0 text-cyan-300">
+                    <span className="opt-key font-bold font-dialogue text-sm sm:text-2xl md:text-3xl shrink-0 text-cyan-300">
                       {OPTION_KEYS[i]})
                     </span>
-                    <span className="flex-1 font-dialogue leading-tight text-left text-sm sm:text-3xl md:text-4xl break-words">
+                    <span className="flex-1 font-dialogue leading-tight text-left text-xs sm:text-2xl md:text-3xl break-words">
                       {opt}
                     </span>
                     {revealed && i === currentQuestion?.correctIndex && (
-                      <span className="text-emerald-400 font-bold text-base sm:text-3xl ml-auto shrink-0">✓</span>
+                      <span className="text-emerald-400 font-bold text-sm sm:text-2xl ml-auto shrink-0">✓</span>
                     )}
                     {revealed && i === selected && !isCorrect && (
-                      <span className="text-red-400 font-bold text-base sm:text-3xl ml-auto shrink-0">✗</span>
+                      <span className="text-red-400 font-bold text-sm sm:text-2xl ml-auto shrink-0">✗</span>
                     )}
                   </button>
                 );
@@ -477,41 +477,35 @@ export default function LabInfiniteArena() {
 
         </div>
 
-        {/* Bottom Stage Floor Row — Student Character Sprite & Action Bar Side-by-Side */}
-        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-auto flex items-end justify-start px-2 sm:px-8 pt-1 sm:pt-3 pb-1 sm:pb-2 gap-3 sm:gap-5">
+        {/* Bottom Stage Floor Row — Student Character Sprite & Action Bar Floating Right Next to Head/Badge */}
+        <div className="w-full max-w-4xl sm:max-w-5xl lg:max-w-6xl mx-auto mt-auto flex items-end justify-start px-2 sm:px-8 pt-0.5 pb-1 gap-2 sm:gap-4">
           {/* Student Sprite on Floor with Name Badge */}
-          <div className="flex items-end gap-2 sm:gap-4 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <PixelSprite character={character} pixelSize={isMobile ? 0.35 : 0.65} animate />
-            <div className="bg-cyan-950/90 border-2 border-cyan-400/80 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-cyan-300 font-dialogue text-sm sm:text-2xl shadow-2xl mb-1 shrink-0">
+            <div className="bg-cyan-950/90 border-2 border-cyan-400/80 px-2.5 sm:px-4 py-1 rounded-lg sm:rounded-xl text-cyan-300 font-dialogue text-xs sm:text-xl shadow-2xl shrink-0">
               {studentName || 'Petualang'}
             </div>
           </div>
 
-          {/* Action Bar (when revealed) placed DIRECTLY next to student character badge */}
-          <div className="mb-1">
-            {revealed && !showOwl ? (
-              <div className="flex flex-wrap items-center gap-2 sm:gap-4 p-2 sm:p-2.5 bg-cyan-950/95 border-2 sm:border-3 border-cyan-400 rounded-xl sm:rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.4)]">
-                <div className="font-dialogue text-xs sm:text-lg">
-                  {isCorrect ? (
-                    <span className="text-emerald-400 font-bold">✨ JAWABAN TEPAT! (+100 Poin)</span>
-                  ) : (
-                    <span className="text-red-400 font-bold">Pola belum tepat!</span>
-                  )}
-                </div>
+          {/* Action Bar (when revealed) placed DIRECTLY to the right of student character badge */}
+          {revealed && !showOwl && (
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 p-1.5 sm:p-2.5 bg-cyan-950/95 border-2 sm:border-3 border-cyan-400 rounded-xl sm:rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.4)] my-auto">
+              <div className="font-dialogue text-xs sm:text-base">
+                {isCorrect ? (
+                  <span className="text-emerald-400 font-bold">✨ JAWABAN TEPAT! (+100 Poin)</span>
+                ) : (
+                  <span className="text-red-400 font-bold">Pola belum tepat!</span>
+                )}
+              </div>
 
-                <button
-                  className="btn-pixel !bg-cyan-700 hover:!bg-cyan-600 !border-cyan-400 text-white !py-1.5 sm:!py-2 !px-3 sm:!px-5 text-xs sm:text-base font-bold flex items-center gap-1.5 cursor-pointer shadow-xl"
-                  onClick={handleNextQuestion}
-                >
-                  <span>SOAL SELANJUTNYA ▶</span>
-                </button>
-              </div>
-            ) : (
-              <div className="bg-cyan-950/85 border-2 border-cyan-500/60 text-cyan-200 font-dialogue text-xs sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl hidden sm:block shadow-lg">
-                ♾️ Mode Infinite • Jawab sepuasnya & akhiri kapan saja!
-              </div>
-            )}
-          </div>
+              <button
+                className="btn-pixel !bg-cyan-700 hover:!bg-cyan-600 !border-cyan-400 text-white !py-1 sm:!py-2 !px-2.5 sm:!px-5 text-xs sm:text-sm font-bold flex items-center gap-1 cursor-pointer shadow-xl"
+                onClick={handleNextQuestion}
+              >
+                <span>SOAL SELANJUTNYA ▶</span>
+              </button>
+            </div>
+          )}
         </div>
 
       </div>

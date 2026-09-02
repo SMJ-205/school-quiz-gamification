@@ -134,7 +134,7 @@ export function QuadrantBoxView({
     size === 'sm'
       ? 'w-14 h-14 sm:w-16 sm:h-16'
       : size === 'md'
-      ? 'w-18 h-18 sm:w-22 sm:h-22'
+      ? 'w-16 h-16 sm:w-20 sm:h-20'
       : 'w-22 h-22 sm:w-26 sm:h-26';
 
   if (box.isQuestion) {

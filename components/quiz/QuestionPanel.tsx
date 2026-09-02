@@ -212,15 +212,15 @@ export default function QuestionPanel() {
         {/* Natural Chat Dialogue: Speech Bubble on Left, Pak Guru / Bu Guru on Right */}
         <div className="flex flex-row items-end gap-2 sm:gap-6">
 
-          {/* Speech Bubble Container — Compact on Mobile, 2-Line Reserved on Desktop */}
+          {/* Speech Bubble Container — Compact & Tighter Line Spacing */}
           <div
             onClick={handleFastForward}
-            className="flex-1 comic-bubble-wrapper flex flex-col justify-center cursor-pointer select-none transition-all hover:border-amber-400 min-h-[90px] sm:min-h-[185px] md:min-h-[210px] shadow-2xl p-2.5 sm:p-5"
+            className="flex-1 comic-bubble-wrapper flex flex-col justify-center cursor-pointer select-none transition-all hover:border-amber-400 min-h-[70px] sm:min-h-[130px] md:min-h-[150px] shadow-2xl p-2 sm:p-3.5"
             title={isTyping ? 'Klik untuk mempercepat teks' : ''}
           >
             {/* Dialogue Text Container */}
-            <div className="w-full flex items-center px-1.5 sm:px-4 min-h-[55px] sm:min-h-[125px] md:min-h-[145px]">
-              <p className="font-dialogue text-lg sm:text-3xl md:text-4xl lg:text-5xl text-white tracking-wide leading-normal sm:leading-relaxed whitespace-pre-line break-words">
+            <div className="w-full flex items-center px-1.5 sm:px-4 min-h-[45px] sm:min-h-[90px] md:min-h-[105px]">
+              <p className="font-dialogue text-base sm:text-2xl md:text-3xl lg:text-4xl text-white tracking-wide leading-snug sm:leading-normal whitespace-pre-line break-words">
                 {displayedText}
                 {isTyping && <span className="typewriter-cursor">▋</span>}
               </p>
@@ -294,21 +294,21 @@ export default function QuestionPanel() {
             return (
               <button
                 key={i}
-                className={`answer-option !text-base sm:!text-3xl md:!text-4xl !py-2.5 sm:!py-5 !px-3 sm:!px-8 min-h-[50px] sm:min-h-[95px] hover:!border-amber-400 ${stateClass}`}
+                className={`answer-option !text-sm sm:!text-2xl md:!text-3xl !py-2 sm:!py-3.5 !px-3 sm:!px-6 min-h-[45px] sm:min-h-[75px] hover:!border-amber-400 ${stateClass}`}
                 onClick={() => handleSelect(i)}
                 disabled={revealed}
               >
-                <span className="opt-key font-bold font-dialogue text-base sm:text-3xl md:text-4xl shrink-0 text-amber-300">
+                <span className="opt-key font-bold font-dialogue text-sm sm:text-2xl md:text-3xl shrink-0 text-amber-300">
                   {OPTION_KEYS[i]})
                 </span>
-                <span className="flex-1 font-dialogue leading-tight text-left text-sm sm:text-3xl md:text-4xl break-words">
+                <span className="flex-1 font-dialogue leading-tight text-left text-xs sm:text-2xl md:text-3xl break-words">
                   {opt}
                 </span>
                 {revealed && i === question.correctIndex && (
-                  <span className="text-emerald-400 font-bold text-base sm:text-3xl ml-auto shrink-0">✓</span>
+                  <span className="text-emerald-400 font-bold text-sm sm:text-2xl ml-auto shrink-0">✓</span>
                 )}
                 {revealed && i === selected && !isCorrect && (
-                  <span className="text-red-400 font-bold text-base sm:text-3xl ml-auto shrink-0">✗</span>
+                  <span className="text-red-400 font-bold text-sm sm:text-2xl ml-auto shrink-0">✗</span>
                 )}
               </button>
             );
