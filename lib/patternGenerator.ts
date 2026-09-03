@@ -21,7 +21,7 @@ export interface PatternQuestion {
   options: string[];
   correctIndex: number;
   hint: string;
-  difficultyLevel: 1 | 2 | 3 | 4; // 1: SD 1-2, 2: SD 3-4, 3: SD 5, 4: Max SD 6
+  difficultyLevel: 1 | 2 | 3 | 4 | 5 | 6; // 1: SD 1-2, 2: SD 3-4, 3: SD 5, 4: Max SD 6
   visualMatrixData?: VisualMatrixData;
 }
 
@@ -246,34 +246,44 @@ function buildUniqueOptionBoxes(correctBox: QuadrantBox, candidates: QuadrantBox
 }
 
 // ─── STRICT GRADE-BASED DIFFICULTY CALCULATOR (Kelas 1 - 6 SD) ─────────────
+export type DifficultyLevel = 1 | 2 | 3 | 4 | 5 | 6;
+export type SubLevel = 'easy' | 'mid' | 'hard';
 
-export function getDifficultyForGradeAndNumber(qNum: number, grade: number = 6): 1 | 2 | 3 | 4 {
-  if (grade <= 1) return 1; // Kelas 1 SD: STRICTLY Level 1 ONLY (Termudah & Intuitif)
-  if (grade === 2) return 1; // Kelas 2 SD: STRICTLY Level 1 ONLY (Pola Penjumlahan/Pengurangan & Loncat 2,3,4,5,10)
-  if (grade === 3) return qNum <= 5 ? 1 : 2; // Kelas 3 SD: Level 1 s.d. Level 2 (Perkalian Kelipatan 2 & 3 Sederhana)
-  if (grade === 4) return qNum <= 4 ? 2 : 3; // Kelas 4 SD: Level 2 s.d. Level 3 (Kuadrat Dasar & Matriks 3x3)
-  if (grade === 5) return qNum <= 3 ? 3 : 4; // Kelas 5 SD: Level 3 (awal) lalu Level 4 (TPA Pentagon, Spiderweb, OrbitDots)
-  // Kelas 6 SD Peak — STRICTLY Level 4 dari soal pertama (TPA Mode Paling Kompleks)
-  return 4;
+export function getDifficultyForGrade(grade: number = 6): DifficultyLevel {
+  const g = Math.round(grade);
+  if (g <= 1) return 1;
+  if (g === 2) return 2;
+  if (g === 3) return 3;
+  if (g === 4) return 4;
+  if (g === 5) return 5;
+  return 6;
+}
+
+export function getSubLevelForQuestionNumber(qNum: number): SubLevel {
+  if (qNum <= 3) return 'easy';
+  if (qNum <= 6) return 'mid';
+  return 'hard';
+}
+
+export function getDifficultyForGradeAndNumber(qNum: number, grade: number = 6): DifficultyLevel {
+  return getDifficultyForGrade(grade);
 }
 
 // ─── 1. Aritmatika & Bertingkat ─────────────────────────────────────────────
 
-function generateArithmetic(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+function generateArithmetic(difficulty: DifficultyLevel, subLevel: SubLevel = 'easy'): PatternQuestion {
   if (difficulty === 1) {
-    // Level 1 (Kelas 1 - 2 SD): Super Easy Constant Addition (+1, +2, +3, +4, +5, +10) or Subtraction (-1, -2, -3, -5)
-    const isSub = Math.random() > 0.5;
+    const isSub = subLevel === 'hard' || (subLevel === 'mid' && Math.random() > 0.5);
     if (isSub) {
-      const step = pickRandom([1, 2, 3, 5]);
+      const step = subLevel === 'mid' ? 2 : pickRandom([3, 5]);
       const start = randomInt(10, 25);
       const seq = [start, start - step, start - step * 2, start - step * 3];
       const answer = start - step * 4;
       const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + step + 1, answer - 1, answer + 2]);
-
       return {
-        id: `arit_l1_sub_${Date.now()}_${Math.random()}`,
+        id: `arit_t1_sub_${Date.now()}_${Math.random()}`,
         category: 'aritmatika',
-        categoryLabel: 'Aritmatika Pengurangan (Level 1 - SD 1/2)',
+        categoryLabel: `Aritmatika Pengurangan (Tier 1 - Kelas 1 SD)`,
         difficultyLevel: 1,
         question: `Detektif cilik, tentukan angka berikutnya yang berkurang -${step} ini:\n${seq.join(', ')}, ?`,
         options,
@@ -281,16 +291,15 @@ function generateArithmetic(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
         hint: `🔬 *Analisis Guru Lab:* Setiap langkah selalu berkurang -${step}. Jadi ${seq[seq.length - 1]} - ${step} = ${answer}.`,
       };
     } else {
-      const step = pickRandom([1, 2, 3, 4, 5, 10]);
+      const step = subLevel === 'easy' ? pickRandom([1, 2]) : subLevel === 'mid' ? pickRandom([2, 3, 5]) : pickRandom([5, 10]);
       const start = randomInt(1, 15);
       const seq = [start, start + step, start + step * 2, start + step * 3];
       const answer = start + step * 4;
       const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + step, answer - 1, answer + 2]);
-
       return {
-        id: `arit_l1_add_${Date.now()}_${Math.random()}`,
+        id: `arit_t1_add_${Date.now()}_${Math.random()}`,
         category: 'aritmatika',
-        categoryLabel: 'Aritmatika Penjumlahan (Level 1 - SD 1/2)',
+        categoryLabel: `Aritmatika Penjumlahan (Tier 1 - Kelas 1 SD)`,
         difficultyLevel: 1,
         question: `Detektif cilik, tentukan angka berikutnya dari pola bertambah +${step} ini:\n${seq.join(', ')}, ?`,
         options,
@@ -299,99 +308,142 @@ function generateArithmetic(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
       };
     }
   } else if (difficulty === 2) {
-    const variant = pickRandom(['inc_1', 'inc_2', 'odd', 'mult_3']);
+    const step = subLevel === 'easy' ? pickRandom([3, 4]) : subLevel === 'mid' ? pickRandom([4, 5, 6]) : pickRandom([6, 7, 8]);
+    const start = randomInt(10, 40);
+    const seq = [start, start + step, start + step * 2, start + step * 3];
+    const answer = start + step * 4;
+    const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + step, answer - 2, answer + 3]);
+    return {
+      id: `arit_t2_${Date.now()}_${Math.random()}`,
+      category: 'aritmatika',
+      categoryLabel: `Aritmatika Loncat (Tier 2 - Kelas 2 SD)`,
+      difficultyLevel: 2,
+      question: `Tentukan angka berikutnya dari deret bilangan bertambah +${step} ini:\n${seq.join(', ')}, ?`,
+      options,
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* Pola bertambah +${step} secara konstan. Maka ${seq[seq.length - 1]} + ${step} = ${answer}.`,
+    };
+  } else if (difficulty === 3) {
+    const variant = subLevel === 'easy' ? 'inc_1' : subLevel === 'mid' ? 'inc_2' : pickRandom(['odd', 'mult_3']);
     const start = randomInt(1, 20);
-
     let seq: number[] = [];
     let answer = 0;
     let hintStr = '';
-
     if (variant === 'inc_1') {
-      const initialStep = randomInt(1, 3);
-      seq = [start, start + initialStep, start + initialStep * 2 + 1, start + initialStep * 3 + 3];
-      answer = start + initialStep * 4 + 6;
-      hintStr = `Selisihnya terus bertambah (+1 tiap tahap). Langkah berikutnya bertambah +${initialStep + 3}.`;
+      seq = [start, start + 2, start + 5, start + 9];
+      answer = start + 14;
+      hintStr = 'Selisihnya bertambah satu (+2, +3, +4, lalu +5).';
     } else if (variant === 'inc_2') {
       seq = [start, start + 2, start + 6, start + 12];
       answer = start + 20;
-      hintStr = `Tambahan angka melompat genap: +2, +4, +6, lalu +8.`;
+      hintStr = 'Lompatan genap bertambah: +2, +4, +6, lalu +8.';
     } else if (variant === 'odd') {
       seq = [start, start + 1, start + 4, start + 9];
       answer = start + 16;
-      hintStr = `Tambahan angka bertambah ganjil: +1, +3, +5, lalu +7.`;
+      hintStr = 'Lompatan ganjil: +1, +3, +5, lalu +7.';
     } else {
       seq = [start, start + 3, start + 9, start + 18];
       answer = start + 30;
-      hintStr = `Beda kelipatan 3: +3, +6, +9, lalu +12.`;
+      hintStr = 'Kelipatan 3: +3, +6, +9, lalu +12.';
     }
-
     const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + 2, answer - 2, answer + 4]);
-
     return {
-      id: `arit_l2_${Date.now()}_${Math.random()}`,
+      id: `arit_t3_${Date.now()}_${Math.random()}`,
       category: 'aritmatika',
-      categoryLabel: 'Aritmatika Bertingkat (Level 2)',
-      difficultyLevel: 2,
+      categoryLabel: `Aritmatika Bertingkat (Tier 3 - Kelas 3 SD)`,
+      difficultyLevel: 3,
       question: `Temukan angka selanjutnya dari pola bertingkat ini:\n${seq.join(', ')}, ?`,
       options,
       correctIndex,
-      hint: `🔬 *Analisis Guru Lab:* ${hintStr} Jadi ${seq[seq.length - 1]} ➔ ${answer}.`,
+      hint: `🔬 *Analisis Guru Lab:* ${hintStr} Hasilnya adalah ${answer}.`,
     };
-  } else if (difficulty === 3) {
-    const addVal = randomInt(4, 12);
-    const subVal = randomInt(1, 4);
-    const start = randomInt(10, 40);
+  } else if (difficulty === 4) {
+    const addVal = randomInt(5, 12);
+    const subVal = randomInt(2, 5);
+    const start = randomInt(15, 50);
     const seq = [start, start + addVal, start + addVal - subVal, start + addVal * 2 - subVal];
     const answer = start + addVal * 2 - subVal * 2;
-
-    const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + addVal, answer + 1, answer - addVal]);
-
+    const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + addVal, answer - subVal, answer + 3]);
     return {
-      id: `arit_l3_${Date.now()}_${Math.random()}`,
+      id: `arit_t4_${Date.now()}_${Math.random()}`,
       category: 'aritmatika',
-      categoryLabel: 'Pola Alternatif (Level 3)',
-      difficultyLevel: 3,
-      question: `Deteksi angka selanjutnya pada deret berayun ini:\n${seq.join(', ')}, ?`,
+      categoryLabel: `Pola Bergantian (Tier 4 - Kelas 4 SD)`,
+      difficultyLevel: 4,
+      question: `Deteksi angka selanjutnya pada deret berayun (+/–) ini:\n${seq.join(', ')}, ?`,
       options,
       correctIndex,
-      hint: `🔬 *Analisis Guru Lab:* Pola ini selang-seling antara +${addVal} lalu -${subVal}. Giliran berikutnya adalah berkurang -${subVal} (${seq[seq.length - 1]} - ${subVal} = ${answer}).`,
+      hint: `🔬 *Analisis Guru Lab:* Pola selang-seling (+${addVal}, -${subVal}). Giliran berikutnya berkurang -${subVal} = ${answer}.`,
     };
-  } else {
-    const a = randomInt(1, 8);
-    const b = randomInt(1, 10);
+  } else if (difficulty === 5) {
+    const a = randomInt(2, 7);
+    const b = randomInt(3, 9);
     const seq = [a, b, a + b, a + 2 * b, 2 * a + 3 * b];
     const answer = 3 * a + 5 * b;
-
     const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + a, answer - b, answer + 4]);
-
     return {
-      id: `arit_l4_${Date.now()}_${Math.random()}`,
+      id: `arit_t5_${Date.now()}_${Math.random()}`,
       category: 'aritmatika',
-      categoryLabel: 'Deret Fibonacci (Level 4 - SD 6)',
-      difficultyLevel: 4,
-      question: `Penyelidikan Tingkat Lanjut — Selesaikan deret Fibonacci ini:\n${seq.join(', ')}, ?`,
+      categoryLabel: `Deret Fibonacci Dasar (Tier 5 - Kelas 5 SD)`,
+      difficultyLevel: 5,
+      question: `Selesaikan deret Fibonacci dua suku sebelumnya ini:\n${seq.join(', ')}, ?`,
       options,
       correctIndex,
-      hint: `🔬 *Analisis Guru Lab:* Setiap angka adalah hasil penjumlahan 2 angka di depannya! (${seq[seq.length - 2]} + ${seq[seq.length - 1]} = ${answer}).`,
+      hint: `🔬 *Analisis Guru Lab:* Setiap angka adalah hasil penjumlahan 2 angka di depannya: ${seq[seq.length - 2]} + ${seq[seq.length - 1]} = ${answer}.`,
     };
+  } else {
+    // Tier 6: Kelas 6 SD Peak
+    const isInterleaved = subLevel !== 'easy' && Math.random() > 0.4;
+    if (isInterleaved) {
+      const aStart = randomInt(2, 6);
+      const bStart = randomInt(40, 60);
+      const aStep = randomInt(2, 4);
+      const bStep = randomInt(3, 5);
+      const seq = [aStart, bStart, aStart + aStep, bStart - bStep, aStart + aStep * 2, bStart - bStep * 2];
+      const answer = aStart + aStep * 3;
+      const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + aStep, answer - 2, answer + 4]);
+      return {
+        id: `arit_t6_inter_${Date.now()}_${Math.random()}`,
+        category: 'aritmatika',
+        categoryLabel: `Deret Bersilangan Dua Jalur TPA (Tier 6 - Kelas 6 SD)`,
+        difficultyLevel: 6,
+        question: `Penyelidikan TPA Lanjutan — Temukan suku berikutnya dari deret dua jalur bersilangan ini:\n${seq.join(', ')}, ?`,
+        options,
+        correctIndex,
+        hint: `🔬 *Analisis Guru Lab:* Deret ini terdiri dari dua jalur berselang-seling! Jalur ganjil bertambah +${aStep}. Maka jawabannya adalah ${answer}.`,
+      };
+    } else {
+      const a = randomInt(3, 10);
+      const b = randomInt(5, 12);
+      const seq = [a, b, a + b, a + 2 * b, 2 * a + 3 * b];
+      const answer = 3 * a + 5 * b;
+      const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + a, answer - b, answer + 6]);
+      return {
+        id: `arit_t6_fibo_${Date.now()}_${Math.random()}`,
+        category: 'aritmatika',
+        categoryLabel: `Deret Fibonacci TPA Penalaran (Tier 6 - Kelas 6 SD)`,
+        difficultyLevel: 6,
+        question: `Analisis Deret Penalaran Logika TPA:\n${seq.join(', ')}, ?`,
+        options,
+        correctIndex,
+        hint: `🔬 *Analisis Guru Lab:* Setiap angka adalah penjumlahan dua suku di depannya (${seq[seq.length - 2]} + ${seq[seq.length - 1]} = ${answer}).`,
+      };
+    }
   }
 }
 
 // ─── 2. Geometris & Kuadrat ─────────────────────────────────────────────────
 
-function generateGeometric(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+function generateGeometric(difficulty: DifficultyLevel, subLevel: SubLevel = 'easy'): PatternQuestion {
   if (difficulty === 1) {
-    const step = pickRandom([2, 3, 4, 5, 10]);
-    const start = randomInt(1, 5) * step;
+    const step = subLevel === 'easy' ? 2 : subLevel === 'mid' ? pickRandom([3, 5]) : 10;
+    const start = randomInt(1, 4) * step;
     const seq = [start, start + step, start + step * 2, start + step * 3];
     const answer = start + step * 4;
-
-    const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + 1, answer - 1, answer + 2]);
-
+    const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + step, answer - 1, answer + 2]);
     return {
-      id: `geo_l1_${Date.now()}_${Math.random()}`,
+      id: `geo_t1_${Date.now()}_${Math.random()}`,
       category: 'geometris',
-      categoryLabel: `Pola Loncat ${step} (Level 1 - SD 1/2)`,
+      categoryLabel: `Pola Loncat ${step} (Tier 1 - Kelas 1 SD)`,
       difficultyLevel: 1,
       question: `Tentukan angka berikutnya dari pola loncat +${step} ini:\n${seq.join(', ')}, ?`,
       options,
@@ -399,67 +451,58 @@ function generateGeometric(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
       hint: `🔬 *Analisis Guru Lab:* Angka selalu melompat +${step}. ${seq[seq.length - 1]} + ${step} = ${answer}.`,
     };
   } else if (difficulty === 2) {
-    const mult = pickRandom([2, 3]);
-    const start = mult === 2 ? randomInt(1, 4) : randomInt(1, 2);
+    const mult = subLevel === 'hard' ? 3 : 2;
+    const start = mult === 2 ? randomInt(1, 3) : 1;
     const seq = [start, start * mult, start * mult * mult, start * mult * mult * mult];
-    const answer = start * mult * mult * mult * mult;
-
+    const answer = start * Math.pow(mult, 4);
     const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + mult, answer - start, answer + start * mult]);
-
     return {
-      id: `geo_l2_${Date.now()}_${Math.random()}`,
+      id: `geo_t2_${Date.now()}_${Math.random()}`,
       category: 'geometris',
-      categoryLabel: `Perkalian Kelipatan ×${mult} (Level 2)`,
+      categoryLabel: `Perkalian Kelipatan ×${mult} (Tier 2 - Kelas 2 SD)`,
       difficultyLevel: 2,
       question: `Tentukan angka berikutnya dari pola kelipatan ×${mult} ini:\n${seq.join(', ')}, ?`,
       options,
       correctIndex,
-      hint: `🔬 *Analisis Guru Lab:* Setiap angka dikali ${mult} (×${mult})! ${seq[seq.length - 1]} × ${mult} = ${answer}.`,
+      hint: `🔬 *Analisis Guru Lab:* Setiap angka dikali ${mult} (×${mult})! Maka ${seq[seq.length - 1]} × ${mult} = ${answer}.`,
     };
   } else if (difficulty === 3) {
-    const isTriangular = Math.random() > 0.5;
-    if (isTriangular) {
-      const startN = randomInt(1, 4);
-      const seq = [
-        (startN * (startN + 1)) / 2,
-        ((startN + 1) * (startN + 2)) / 2,
-        ((startN + 2) * (startN + 3)) / 2,
-        ((startN + 3) * (startN + 4)) / 2,
-      ];
-      const answer = ((startN + 4) * (startN + 5)) / 2;
-
-      const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + 3, answer - 2, answer + 5]);
-
-      return {
-        id: `geo_l3_tri_${Date.now()}_${Math.random()}`,
-        category: 'geometris',
-        categoryLabel: 'Deret Angka Segitiga (Level 3)',
-        difficultyLevel: 3,
-        question: `Temukan angka selanjutnya dari pola deret segitiga (+2, +3, +4, +5...) ini:\n${seq.join(', ')}, ?`,
-        options,
-        correctIndex,
-        hint: `🔬 *Analisis Guru Lab:* Penambahan bertambah +1 tiap tahap. Angka berikutnya bertambah +${startN + 5}, jadi ${seq[seq.length - 1]} ➔ ${answer}.`,
-      };
-    } else {
-      const startN = randomInt(1, 5);
-      const seq = [startN ** 2, (startN + 1) ** 2, (startN + 2) ** 2, (startN + 3) ** 2];
-      const answer = (startN + 4) ** 2;
-
-      const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + 5, answer - 4, answer + 8]);
-
-      return {
-        id: `geo_l3_sq_${Date.now()}_${Math.random()}`,
-        category: 'geometris',
-        categoryLabel: 'Pangkat Dua Kuadrat (Level 3)',
-        difficultyLevel: 3,
-        question: `Temukan pola kuadrat angka berikutnya:\n${seq.join(', ')}, ?`,
-        options,
-        correctIndex,
-        hint: `🔬 *Analisis Guru Lab:* Ini adalah deret angka kuadrat (${startN}², ${startN + 1}², ${startN + 2}²...). Angka berikutnya adalah ${startN + 4}² = ${answer}.`,
-      };
-    }
-  } else {
-    const offset = pickRandom([1, -1, 2, -2, 3]);
+    const startN = randomInt(1, 3);
+    const seq = [
+      (startN * (startN + 1)) / 2,
+      ((startN + 1) * (startN + 2)) / 2,
+      ((startN + 2) * (startN + 3)) / 2,
+      ((startN + 3) * (startN + 4)) / 2,
+    ];
+    const answer = ((startN + 4) * (startN + 5)) / 2;
+    const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + 3, answer - 2, answer + 5]);
+    return {
+      id: `geo_t3_${Date.now()}_${Math.random()}`,
+      category: 'geometris',
+      categoryLabel: 'Deret Angka Segitiga (Tier 3 - Kelas 3 SD)',
+      difficultyLevel: 3,
+      question: `Temukan angka selanjutnya dari pola deret segitiga (+2, +3, +4...) ini:\n${seq.join(', ')}, ?`,
+      options,
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* Penambahan bertambah +1 tiap tahap. Suku berikutnya adalah ${answer}.`,
+    };
+  } else if (difficulty === 4) {
+    const startN = randomInt(1, 4);
+    const seq = [startN ** 2, (startN + 1) ** 2, (startN + 2) ** 2, (startN + 3) ** 2];
+    const answer = (startN + 4) ** 2;
+    const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + 5, answer - 4, answer + 8]);
+    return {
+      id: `geo_t4_${Date.now()}_${Math.random()}`,
+      category: 'geometris',
+      categoryLabel: 'Pangkat Dua Kuadrat (Tier 4 - Kelas 4 SD)',
+      difficultyLevel: 4,
+      question: `Temukan pola kuadrat angka berikutnya:\n${seq.join(', ')}, ?`,
+      options,
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* Ini adalah deret angka kuadrat (${startN}², ${startN + 1}²...). Angka berikutnya adalah ${startN + 4}² = ${answer}.`,
+    };
+  } else if (difficulty === 5) {
+    const offset = pickRandom([1, -1, 2, -2]);
     const startN = randomInt(1, 4);
     const seq = [
       startN ** 2 + offset,
@@ -468,21 +511,52 @@ function generateGeometric(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
       (startN + 3) ** 2 + offset,
     ];
     const answer = (startN + 4) ** 2 + offset;
-
     const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + 3, answer - 3, answer + 7]);
-
     const signStr = offset > 0 ? `+ ${offset}` : `- ${Math.abs(offset)}`;
-
     return {
-      id: `geo_l4_${Date.now()}_${Math.random()}`,
+      id: `geo_t5_${Date.now()}_${Math.random()}`,
       category: 'geometris',
-      categoryLabel: 'Pola Kuadrat Offset (Level 4 - SD 6)',
-      difficultyLevel: 4,
-      question: `Soal Penalaran Lanjutan — Lengkapi deret kuadrat (${signStr}) ini:\n${seq.join(', ')}, ?`,
+      categoryLabel: `Pola Kuadrat Offset (Tier 5 - Kelas 5 SD)`,
+      difficultyLevel: 5,
+      question: `Lengkapi deret kuadrat (${signStr}) ini:\n${seq.join(', ')}, ?`,
       options,
       correctIndex,
-      hint: `🔬 *Analisis Guru Lab:* Pola ini adalah (n² ${signStr})! Langkah berikutnya adalah ${startN + 4}² ${signStr} = ${answer}.`,
+      hint: `🔬 *Analisis Guru Lab:* Pola ini adalah (n² ${signStr})! Maka ${startN + 4}² ${signStr} = ${answer}.`,
     };
+  } else {
+    // Tier 6: Pola Kuadrat Dinamis / Kubik TPA
+    const isCubic = subLevel === 'hard';
+    if (isCubic) {
+      const startN = randomInt(1, 3);
+      const seq = [startN ** 3, (startN + 1) ** 3, (startN + 2) ** 3, (startN + 3) ** 3];
+      const answer = (startN + 4) ** 3;
+      const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + 9, answer - 7, answer + 15]);
+      return {
+        id: `geo_t6_cube_${Date.now()}_${Math.random()}`,
+        category: 'geometris',
+        categoryLabel: 'Deret Pangkat Kubik TPA (Tier 6 - Kelas 6 SD)',
+        difficultyLevel: 6,
+        question: `Penyelidikan TPA Lanjutan — Tentukan suku berikutnya dari deret pangkat tiga ini:\n${seq.join(', ')}, ?`,
+        options,
+        correctIndex,
+        hint: `🔬 *Analisis Guru Lab:* Pola bilangan kubik (n³). Suku berikutnya adalah ${startN + 4}³ = ${answer}.`,
+      };
+    } else {
+      const startN = randomInt(1, 4);
+      const seq = [startN ** 2 + startN, (startN + 1) ** 2 + (startN + 1), (startN + 2) ** 2 + (startN + 2), (startN + 3) ** 2 + (startN + 3)];
+      const answer = (startN + 4) ** 2 + (startN + 4);
+      const { options, correctIndex } = buildUniqueTextOptions(answer, [answer + 4, answer - 4, answer + 8]);
+      return {
+        id: `geo_t6_poly_${Date.now()}_${Math.random()}`,
+        category: 'geometris',
+        categoryLabel: 'Pola Kuadrat Polinomial TPA (Tier 6 - Kelas 6 SD)',
+        difficultyLevel: 6,
+        question: `Lengkapi deret penalaran kuadrat dinamis TPA ini:\n${seq.join(', ')}, ?`,
+        options,
+        correctIndex,
+        hint: `🔬 *Analisis Guru Lab:* Pola ini adalah (n² + n)! Maka ${startN + 4}² + ${startN + 4} = ${answer}.`,
+      };
+    }
   }
 }
 
@@ -493,7 +567,7 @@ function createVisualBox(tl: boolean, tr: boolean, bl: boolean, br: boolean, isQ
 }
 
 // 3.0. SPECIAL KELAS 1 SD VISUAL PUZZLES (Intuitive, Clear, & Pedagogical)
-function generateGrade1VisualQuestion(): PatternQuestion {
+function generateGrade1VisualQuestion(subLevel: SubLevel = 'easy'): PatternQuestion {
   const variant = pickRandom(['row_repeat', 'latin_square', 'simple_rotate', 'simple_ray']);
 
   if (variant === 'row_repeat') {
@@ -528,7 +602,7 @@ function generateGrade1VisualQuestion(): PatternQuestion {
       categoryLabel: 'Pola Perulangan Baris Gambar (Level 1 - SD 1)',
       difficultyLevel: 1,
       question: `Detektif cilik, perhatikan gambar di setiap baris! Gambar apakah yang melengkapi baris ke-3?`,
-      options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+      options: ['A', 'B', 'C', 'D'],
       correctIndex,
       hint: `🔬 *Analisis Guru Lab:* Setiap baris berisi 3 gambar yang sama persis! Baris ke-3 berisi bentuk ${shapeC?.replace('_', ' ').toUpperCase()}.`,
       visualMatrixData: {
@@ -569,7 +643,7 @@ function generateGrade1VisualQuestion(): PatternQuestion {
       categoryLabel: 'Pola Kelompok 3 Bentuk (Level 1 - SD 1)',
       difficultyLevel: 1,
       question: `Setiap baris memiliki 3 bentuk gambar. Gambar manakah yang kurang pada baris ke-3?`,
-      options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+      options: ['A', 'B', 'C', 'D'],
       correctIndex,
       hint: `🔬 *Analisis Guru Lab:* Setiap baris harus memiliki ${shapeA?.replace('_',' ')}, ${shapeB?.replace('_',' ')}, dan ${shapeC?.replace('_',' ')}. Pada baris ke-3 yang belum ada adalah ${shapeB?.replace('_',' ')}.`,
       visualMatrixData: {
@@ -607,7 +681,7 @@ function generateGrade1VisualQuestion(): PatternQuestion {
       categoryLabel: 'Rotasi Garis Sinar 90° (Level 1 - SD 1)',
       difficultyLevel: 1,
       question: `Perhatikan garis jarum berputar 90° searah jarum jam. Ke manakah arah jarum pada kotak ke-9?`,
-      options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+      options: ['A', 'B', 'C', 'D'],
       correctIndex,
       hint: `🔬 *Analisis Guru Lab:* Jarum berputar 90° searah jarum jam (Atas ➔ Kanan ➔ Bawah ➔ Kiri).`,
       visualMatrixData: {
@@ -657,7 +731,7 @@ function generateGrade1VisualQuestion(): PatternQuestion {
       categoryLabel: 'Rotasi Kotak Hitam (Level 1 - SD 1)',
       difficultyLevel: 1,
       question: `Perhatikan pergerakan kotak hitam yang berputar searah jarum jam!`,
-      options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+      options: ['A', 'B', 'C', 'D'],
       correctIndex,
       hint: `🔬 *Analisis Guru Lab:* Kotak hitam berpindah posisi searah jarum jam pada setiap langkah.`,
       visualMatrixData: {
@@ -671,7 +745,7 @@ function generateGrade1VisualQuestion(): PatternQuestion {
 }
 
 // 3.1. Mode: Clock Hands & Line Rays (Problem 5 TPA Reference)
-function generateClockHandsQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+function generateClockHandsQuestion(difficulty: DifficultyLevel, subLevel?: SubLevel): PatternQuestion {
   const angleSteps = [0, 45, 90, 135, 180, 225, 270, 315];
   const stepIncrement = pickRandom([45, 90, 135]);
   const startAngle = pickRandom(angleSteps);
@@ -702,7 +776,7 @@ function generateClockHandsQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion 
     categoryLabel: `Deret Jarum & Garis Sinar 45° (Level ${difficulty})`,
     difficultyLevel: difficulty,
     question: `Analisis rotasi jarum/garis arah sinar (${stepIncrement}°) pada matriks gambar 3x3 berikut:`,
-    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    options: ['A', 'B', 'C', 'D'],
     correctIndex,
     hint: `🔬 *Analisis Guru Lab:* Jarum garis berputar +${stepIncrement}° searah jarum jam pada setiap langkah. Kotak ke-9 berada di posisi sudut ${correctAngle}°.`,
     visualMatrixData: {
@@ -715,7 +789,7 @@ function generateClockHandsQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion 
 }
 
 // 3.2. Mode: Capsule & Corner O/X Symbols (Problem 4 TPA Reference)
-function generateCapsuleQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+function generateCapsuleQuestion(difficulty: DifficultyLevel, subLevel?: SubLevel): PatternQuestion {
   const positions: ('tl' | 'tr' | 'br' | 'bl')[] = ['tl', 'tr', 'br', 'bl'];
   const startIdx = randomInt(0, 3);
 
@@ -772,7 +846,7 @@ function generateCapsuleQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
     categoryLabel: `Pola Kapsul & Simbol O/X (Level ${difficulty})`,
     difficultyLevel: difficulty,
     question: `Analisis pergerakan titik pusat kapsul dan rotasi simbol lingkar (O) serta silang (X):`,
-    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    options: ['A', 'B', 'C', 'D'],
     correctIndex,
     hint: `🔬 *Analisis Guru Lab:* Titik pusat kapsul bergantian hitam-putih, sedangkan simbol lingkar (O) dan silang (X) berputar pada sudut berseberangan.`,
     visualMatrixData: {
@@ -785,7 +859,7 @@ function generateCapsuleQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
 }
 
 // 3.3. Mode: Domino Dots Grouping
-function generateDominoQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+function generateDominoQuestion(difficulty: DifficultyLevel, subLevel?: SubLevel): PatternQuestion {
   const step = pickRandom([1, 2]);
   const startDots = randomInt(1, 2);
 
@@ -814,7 +888,7 @@ function generateDominoQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
     categoryLabel: `Deret Kelompok Bintik Domino (Level ${difficulty})`,
     difficultyLevel: difficulty,
     question: `Perhatikan pola pertambahan kelompok bintik hitam pada wadah domino 2D:`,
-    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    options: ['A', 'B', 'C', 'D'],
     correctIndex,
     hint: `🔬 *Analisis Guru Lab:* Jumlah bintik bertambah +${step} di setiap tahap. Kotak ke-9 berisi ${correctDots} bintik hitam.`,
     visualMatrixData: {
@@ -827,7 +901,7 @@ function generateDominoQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
 }
 
 // 3.4. Mode: Geometric Shapes Sequence
-function generateShapesRowQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+function generateShapesRowQuestion(difficulty: DifficultyLevel, subLevel?: SubLevel): PatternQuestion {
   if (difficulty === 1) {
     return generateGrade1VisualQuestion();
   }
@@ -870,7 +944,7 @@ function generateShapesRowQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
       categoryLabel: `Deret Pola Bentuk Geometri (Level 2 - SD 3/4)`,
       difficultyLevel: 2,
       question: `Setiap baris memiliki 3 bentuk berbeda. Bentuk apakah yang mengisi kotak ke-9?`,
-      options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+      options: ['A', 'B', 'C', 'D'],
       correctIndex,
       hint: `🔬 *Analisis Guru Lab:* Setiap baris memiliki 3 bentuk yang sama (Latin Square). Baris ke-3 berisi ${sA?.replace('_',' ')}, ${sC?.replace('_',' ')}, lalu bentuk yang kurang: ${sB?.replace('_',' ')?.toUpperCase()}.`,
       visualMatrixData: {
@@ -914,7 +988,7 @@ function generateShapesRowQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
       categoryLabel: `Deret Pola 4 Bentuk Diagonal (Level 3 - SD 5)`,
       difficultyLevel: 3,
       question: `Analisis pola diagonal pergeseran 4 bentuk geometri pada matriks 3x3 berikut:`,
-      options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+      options: ['A', 'B', 'C', 'D'],
       correctIndex,
       hint: `🔬 *Analisis Guru Lab:* Setiap baris bergeser 1 langkah maju dalam siklus 4 bentuk (A→B→C→D→A). Kolom ke-3 baris ke-3 kembali ke bentuk awal: ${sA?.replace('_',' ')?.toUpperCase()}.`,
       visualMatrixData: {
@@ -968,7 +1042,7 @@ function generateShapesRowQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
     categoryLabel: `Deret Pola Ganda Bentuk & Isian (Level 4 - SD 6)`,
     difficultyLevel: 4,
     question: `Analisis pola ganda: pergeseran bentuk DAN perubahan isian (filled/outline) pada matriks 3x3 ini:`,
-    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    options: ['A', 'B', 'C', 'D'],
     correctIndex,
     hint: `🔬 *Analisis Guru Lab:* Setiap baris: Kolom 1 = bentuk isian penuh, Kolom 2 = bentuk outline (kosong), Kolom 3 = bentuk berikutnya isian penuh. Baris ke-4 kembali ke bentuk pertama: ${s1?.replace('_',' ')?.toUpperCase()}.`,
     visualMatrixData: {
@@ -981,7 +1055,7 @@ function generateShapesRowQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
 }
 
 // 3.6. Mode: Pentagon & Arrow (Reference Row 1)
-function generatePentagonArrowQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+function generatePentagonArrowQuestion(difficulty: DifficultyLevel, subLevel?: SubLevel): PatternQuestion {
   const stepAngle = pickRandom([45, 90, 72]);
   const startAngle = pickRandom([0, 45, 90, 180]);
   const startVertex = randomInt(0, 4);
@@ -1021,7 +1095,7 @@ function generatePentagonArrowQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuesti
     categoryLabel: `Deret Pentagon, Panah & Titik Orbit (Level ${difficulty})`,
     difficultyLevel: difficulty,
     question: `Analisis rotasi panah dalam pentagon (${stepAngle}°) dan pergeseran titik orbit pada sudutnya:`,
-    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    options: ['A', 'B', 'C', 'D'],
     correctIndex,
     hint: `🔬 *Analisis Guru Lab:* Panah berputar +${stepAngle}° searah jarum jam dan titik melompat ke sudut (vertex) berikutnya di tiap tahap.`,
     visualMatrixData: {
@@ -1034,7 +1108,7 @@ function generatePentagonArrowQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuesti
 }
 
 // 3.7. Mode: Pointer Hand Circle with Perimeter Orbiting Dot (Reference Row 2)
-function generatePointerCircleQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+function generatePointerCircleQuestion(difficulty: DifficultyLevel, subLevel?: SubLevel): PatternQuestion {
   const stepAngle = pickRandom([45, 90]);
   const startAngle = pickRandom([0, 45, 90, 180, 270]);
 
@@ -1070,7 +1144,7 @@ function generatePointerCircleQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuesti
     categoryLabel: `Deret Penunjuk & Orbit Keliling Lingkaran (Level ${difficulty})`,
     difficultyLevel: difficulty,
     question: `Perhatikan posisi penunjuk tangan dan rotasi titik pada keliling lingkaran pusat (${stepAngle}°):`,
-    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    options: ['A', 'B', 'C', 'D'],
     correctIndex,
     hint: `🔬 *Analisis Guru Lab:* Titik mengelilingi keliling lingkaran dengan perpindahan sudut +${stepAngle}°.`,
     visualMatrixData: {
@@ -1083,7 +1157,7 @@ function generatePointerCircleQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuesti
 }
 
 // 3.8. Mode: Rotating Ring Notch / Arc (Reference Row 3)
-function generateRingNotchQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+function generateRingNotchQuestion(difficulty: DifficultyLevel, subLevel?: SubLevel): PatternQuestion {
   const stepAngle = pickRandom([45, 90, 135]);
   const startAngle = pickRandom([0, 45, 90, 180]);
 
@@ -1119,7 +1193,7 @@ function generateRingNotchQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
     categoryLabel: `Deret Rotasi Cincin Takik / Busur (Level ${difficulty})`,
     difficultyLevel: difficulty,
     question: `Analisis arah rotasi busur cincin berlubang pada matriks berikut:`,
-    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    options: ['A', 'B', 'C', 'D'],
     correctIndex,
     hint: `🔬 *Analisis Guru Lab:* Cincin berlubang berputar +${stepAngle}° searah jarum jam pada setiap langkah.`,
     visualMatrixData: {
@@ -1132,7 +1206,7 @@ function generateRingNotchQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
 }
 
 // 3.9. Mode: Concentric / Nested Shapes (Reference Row 4)
-function generateNestedShapesQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+function generateNestedShapesQuestion(difficulty: DifficultyLevel, subLevel?: SubLevel): PatternQuestion {
   const shapePool: ('circle' | 'triangle' | 'square' | 'diamond')[] = ['circle', 'triangle', 'diamond', 'square'];
   const outerIdx = randomInt(0, 3);
   const outerShape = shapePool[outerIdx];
@@ -1174,7 +1248,7 @@ function generateNestedShapesQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestio
     categoryLabel: `Deret Gambar Bersarang (Level ${difficulty})`,
     difficultyLevel: difficulty,
     question: `Amati pergantian bentuk dalam (inner shape) dan pengisian warna pada gambar bersarang:`,
-    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    options: ['A', 'B', 'C', 'D'],
     correctIndex,
     hint: `🔬 *Analisis Guru Lab:* Bentuk luar tetap (${outerShape.toUpperCase()}), sedangkan bentuk dalam berganti secara teratur dan isian warnanya selang-seling.`,
     visualMatrixData: {
@@ -1187,7 +1261,7 @@ function generateNestedShapesQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestio
 }
 
 // 3.10. Mode: Spiderweb Network & Lightning (Reference Row 5)
-function generateSpiderwebQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+function generateSpiderwebQuestion(difficulty: DifficultyLevel, subLevel?: SubLevel): PatternQuestion {
   const startBug = randomInt(0, 4);
   const startLightning = randomInt(0, 4);
 
@@ -1228,7 +1302,7 @@ function generateSpiderwebQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
     categoryLabel: `Deret Jaring Laba-Laba & Kilat Petir (Level ${difficulty})`,
     difficultyLevel: difficulty,
     question: `Analisis lintasan pergerakan serangga dan posisi sambaran petir pada simpul jaring:`,
-    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    options: ['A', 'B', 'C', 'D'],
     correctIndex,
     hint: `🔬 *Analisis Guru Lab:* Serangga berpindah +1 simpul searah jarum jam dan petir menyambar simpul berikutnya secara berurutan.`,
     visualMatrixData: {
@@ -1241,7 +1315,7 @@ function generateSpiderwebQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
 }
 
 // 3.11. Mode: Grid 2x2 with Outer Corner Orbiting Dot (Reference Row 6)
-function generateGridOuterDotQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+function generateGridOuterDotQuestion(difficulty: DifficultyLevel, subLevel?: SubLevel): PatternQuestion {
   const positions: ('tl' | 'tr' | 'br' | 'bl')[] = ['tl', 'tr', 'br', 'bl'];
   const startDotIdx = randomInt(0, 3);
   const startGridIdx = randomInt(0, 3);
@@ -1313,7 +1387,7 @@ function generateGridOuterDotQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestio
     categoryLabel: `Deret Grid 2x2 & Titik Sudut Luar (Level ${difficulty})`,
     difficultyLevel: difficulty,
     question: `Analisis pergerakan shading grid dalam dan orbit titik pada 4 sudut luar:`,
-    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    options: ['A', 'B', 'C', 'D'],
     correctIndex,
     hint: `🔬 *Analisis Guru Lab:* Titik sudut luar berputar searah jarum jam mengelilingi 4 sudut kotak grid.`,
     visualMatrixData: {
@@ -1326,7 +1400,7 @@ function generateGridOuterDotQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestio
 }
 
 // 3.12. Mode: Central Shape with Orbiting Satellite Dots Ring (Reference Row 7)
-function generateOrbitDotsQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+function generateOrbitDotsQuestion(difficulty: DifficultyLevel, subLevel?: SubLevel): PatternQuestion {
   const shapes: ('diamond' | 'square' | 'triangle' | 'circle')[] = ['diamond', 'square', 'triangle', 'circle'];
   const centerShape = pickRandom(shapes);
   const startIdx = randomInt(0, 5);
@@ -1386,7 +1460,7 @@ function generateOrbitDotsQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
     categoryLabel: `Deret Bentuk Pusat & Ring Satelit Dot (Level ${difficulty})`,
     difficultyLevel: difficulty,
     question: `Analisis pergeseran 2 titik hitam aktif pada ring 6 satelit di sekeliling bentuk pusat:`,
-    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    options: ['A', 'B', 'C', 'D'],
     correctIndex,
     hint: `🔬 *Analisis Guru Lab:* Dua titik aktif berputar 1 langkah searah jarum jam mengelilingi 6 posisi satelit.`,
     visualMatrixData: {
@@ -1405,7 +1479,7 @@ function buildVisualMatrixQuestion(
   hintText: string,
   boxes: QuadrantBox[],
   correctBox: QuadrantBox,
-  difficulty: 1 | 2 | 3 | 4
+  difficulty: DifficultyLevel
 ): PatternQuestion {
   const candidateDistractors: QuadrantBox[] = [
     createVisualBox(!correctBox.tl, !!correctBox.tr, !!correctBox.bl, !!correctBox.br),
@@ -1423,7 +1497,7 @@ function buildVisualMatrixQuestion(
     categoryLabel,
     difficultyLevel: difficulty,
     question: questionText,
-    options: ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'],
+    options: ['A', 'B', 'C', 'D'],
     correctIndex,
     hint: hintText,
     visualMatrixData: {
@@ -1435,63 +1509,63 @@ function buildVisualMatrixQuestion(
   };
 }
 
-function generateVisualMatrixQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+function generateVisualMatrixQuestion(difficulty: DifficultyLevel, subLevel: SubLevel = 'easy'): PatternQuestion {
   if (difficulty === 1) {
-    return generateGrade1VisualQuestion();
+    return generateGrade1VisualQuestion(subLevel);
   }
 
-  // ── STRICT MODE GATING PER DIFFICULTY LEVEL ──────────────────────────────
-  // Level 2 (Kelas 3-4): Mode mudah & intuitif saja
-  const level2Modes = [
-    'clock_hands',       // 90° step — mudah
-    'domino_dots',       // Bintik bertambah
-    'shapes_row',        // Latin Square 3 bentuk
-    'quadrant_grid',     // Kotak hitam berputar
-  ];
+  // ── STRICT MODE GATING & INTRA-TIER GRADATION (Kelas 1 - 6 SD) ───────────
+  let mode: string;
 
-  // Level 3 (Kelas 5): Mode menengah
-  const level3Modes = [
-    'clock_hands',       // 45° step — lebih detail
-    'capsule_symbols',   // Dual-track: titik kapsul + O/X
-    'ring_notch',        // Busur cincin berputar
-    'nested_shapes',     // Bentuk bersarang berganti
-    'shapes_row',        // Pola 4 bentuk diagonal
-    'grid_outer_dot',    // Grid + titik sudut luar
-    'quadrant_grid',     // Pola kuadran kompleks
-  ];
+  if (difficulty === 2) {
+    // Kelas 2 SD: Pola intuitif sederhana
+    if (subLevel === 'easy') mode = 'domino_dots';
+    else if (subLevel === 'mid') mode = 'clock_hands';
+    else mode = pickRandom(['shapes_row', 'quadrant_grid_1']);
+  } else if (difficulty === 3) {
+    // Kelas 3 SD: Pola rotasi & bentuk dasar
+    if (subLevel === 'easy') mode = 'clock_hands';
+    else if (subLevel === 'mid') mode = 'shapes_row';
+    else mode = pickRandom(['domino_dots', 'quadrant_grid_2', 'quadrant_grid_3']);
+  } else if (difficulty === 4) {
+    // Kelas 4 SD: Pola geometri menengah & cincin
+    if (subLevel === 'easy') mode = 'shapes_row';
+    else if (subLevel === 'mid') mode = 'ring_notch';
+    else mode = pickRandom(['capsule_symbols', 'nested_shapes', 'quadrant_grid_4']);
+  } else if (difficulty === 5) {
+    // Kelas 5 SD: Pola TPA lanjutan
+    if (subLevel === 'easy') mode = 'nested_shapes';
+    else if (subLevel === 'mid') mode = 'grid_outer_dot';
+    else mode = pickRandom(['pentagon_arrow', 'spiderweb_network', 'shapes_row']);
+  } else {
+    // Kelas 6 SD: STRICTLY AUTHENTIC TPA PEAK (TIDAK ADA SOAL MUDAH)
+    if (subLevel === 'easy') {
+      mode = pickRandom(['pentagon_arrow', 'spiderweb_network']);
+    } else if (subLevel === 'mid') {
+      mode = pickRandom(['pointer_circle', 'orbit_dots', 'grid_outer_dot']);
+    } else {
+      mode = pickRandom(['orbit_dots', 'spiderweb_network', 'pentagon_arrow', 'grid_outer_dot', 'quadrant_grid_5']);
+    }
+  }
 
-  // Level 4 (Kelas 6): Mode PALING KOMPLEKS — TPA Peak
-  const level4Modes = [
-    'pentagon_arrow',    // Pentagon + panah rotasi + titik vertex — DUAL TRACK
-    'pointer_circle',    // Penunjuk + orbit dot keliling — DUAL TRACK
-    'spiderweb_network', // Jaring laba-laba + kilat — DUAL TRACK
-    'orbit_dots',        // Bentuk pusat + 6 satelit orbit — TRIPLE TRACK
-    'nested_shapes',     // Bersarang + filled/outline bergantian
-    'shapes_row',        // Pola ganda bentuk & isian
-    'grid_outer_dot',    // Grid 2x2 aktif + orbit dot luar
-  ];
+  if (mode === 'clock_hands') return generateClockHandsQuestion(difficulty, subLevel);
+  if (mode === 'capsule_symbols') return generateCapsuleQuestion(difficulty, subLevel);
+  if (mode === 'domino_dots') return generateDominoQuestion(difficulty, subLevel);
+  if (mode === 'shapes_row') return generateShapesRowQuestion(difficulty, subLevel);
+  if (mode === 'pentagon_arrow') return generatePentagonArrowQuestion(difficulty, subLevel);
+  if (mode === 'pointer_circle') return generatePointerCircleQuestion(difficulty, subLevel);
+  if (mode === 'ring_notch') return generateRingNotchQuestion(difficulty, subLevel);
+  if (mode === 'nested_shapes') return generateNestedShapesQuestion(difficulty, subLevel);
+  if (mode === 'spiderweb_network') return generateSpiderwebQuestion(difficulty, subLevel);
+  if (mode === 'grid_outer_dot') return generateGridOuterDotQuestion(difficulty, subLevel);
+  if (mode === 'orbit_dots') return generateOrbitDotsQuestion(difficulty, subLevel);
 
-  let modePool: string[];
-  if (difficulty === 2) modePool = level2Modes;
-  else if (difficulty === 3) modePool = level3Modes;
-  else modePool = level4Modes;
+  // Quadrant variations
+  const qType = mode === 'quadrant_grid_1' ? 1 : mode === 'quadrant_grid_2' ? 2 : mode === 'quadrant_grid_3' ? 3 : mode === 'quadrant_grid_4' ? 4 : 5;
+  return generateQuadrantVariation(qType, difficulty);
+}
 
-  const mode = pickRandom(modePool);
-
-  if (mode === 'clock_hands') return generateClockHandsQuestion(difficulty);
-  if (mode === 'capsule_symbols') return generateCapsuleQuestion(difficulty);
-  if (mode === 'domino_dots') return generateDominoQuestion(difficulty);
-  if (mode === 'shapes_row') return generateShapesRowQuestion(difficulty);
-  if (mode === 'pentagon_arrow') return generatePentagonArrowQuestion(difficulty);
-  if (mode === 'pointer_circle') return generatePointerCircleQuestion(difficulty);
-  if (mode === 'ring_notch') return generateRingNotchQuestion(difficulty);
-  if (mode === 'nested_shapes') return generateNestedShapesQuestion(difficulty);
-  if (mode === 'spiderweb_network') return generateSpiderwebQuestion(difficulty);
-  if (mode === 'grid_outer_dot') return generateGridOuterDotQuestion(difficulty);
-  if (mode === 'orbit_dots') return generateOrbitDotsQuestion(difficulty);
-
-  // 5 Sub-variations for quadrant_grid
-  const patternType = pickRandom([1, 2, 3, 4, 5]);
+function generateQuadrantVariation(patternType: number, difficulty: DifficultyLevel): PatternQuestion {
 
   if (patternType === 1) {
     const quadOrder: (keyof QuadrantBox)[] = ['tl', 'tr', 'br', 'bl'];
@@ -1642,25 +1716,20 @@ function generateVisualMatrixQuestion(difficulty: 1 | 2 | 3 | 4): PatternQuestio
 
 // ─── 4. Sains & Lab Experiments ─────────────────────────────────────────────
 
-function generateLabScience(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
+function generateLabScience(difficulty: DifficultyLevel, subLevel: SubLevel = 'easy'): PatternQuestion {
   if (difficulty <= 2) {
-    const variant = pickRandom(['temp', 'vol']);
-    if (variant === 'temp') {
-      const startTemp = randomInt(10, 45);
-      const step = pickRandom([2, 3, 4, 5, 6, 8, 10]);
+    const isTemp = Math.random() > 0.5;
+    if (isTemp) {
+      const startTemp = randomInt(15, 35);
+      const step = difficulty === 1 ? (subLevel === 'easy' ? 1 : 2) : (subLevel === 'easy' ? 3 : 5);
       const seq = [`${startTemp}°C`, `${startTemp + step}°C`, `${startTemp + step * 2}°C`];
       const answer = `${startTemp + step * 3}°C`;
-
-      const { options, correctIndex } = buildUniqueTextOptions(
-        startTemp + step * 3,
-        [startTemp + step * 4, startTemp + step * 2 + 1, startTemp + step * 3 + 3]
-      );
+      const { options, correctIndex } = buildUniqueTextOptions(startTemp + step * 3, [startTemp + step * 4, startTemp + step * 2 + 1, startTemp + step * 3 + 3]);
       const allOpts = options.map((o) => (o.endsWith('°C') ? o : `${o}°C`));
-
       return {
-        id: `lab_l1_temp_${Date.now()}_${Math.random()}`,
+        id: `lab_t${difficulty}_temp_${Date.now()}_${Math.random()}`,
         category: 'lab_science',
-        categoryLabel: `Suhu Larutan Lab (Level ${difficulty})`,
+        categoryLabel: `Suhu Larutan Lab (Tier ${difficulty} - Kelas ${difficulty} SD)`,
         difficultyLevel: difficulty,
         question: `Suhu pemanasan larutan di lab naik teratur +${step}°C setiap menit:\n${seq.join(' ➔ ')} ➔ ?`,
         options: allOpts,
@@ -1668,74 +1737,77 @@ function generateLabScience(difficulty: 1 | 2 | 3 | 4): PatternQuestion {
         hint: `🔬 *Analisis Guru Lab:* Tambahkan +${step}°C ke suhu terakhir: ${seq[seq.length - 1]} + ${step}°C = ${answer}.`,
       };
     } else {
-      const startVol = randomInt(5, 25);
-      const step = pickRandom([5, 10, 15, 20]);
+      const startVol = randomInt(5, 20);
+      const step = difficulty === 1 ? (subLevel === 'easy' ? 2 : 5) : 10;
       const seq = [`${startVol} ml`, `${startVol + step} ml`, `${startVol + step * 2} ml`];
       const answer = `${startVol + step * 3} ml`;
-
-      const { options, correctIndex } = buildUniqueTextOptions(
-        startVol + step * 3,
-        [startVol + step * 4, startVol + step * 2 + 5, startVol + step * 3 + 10]
-      );
+      const { options, correctIndex } = buildUniqueTextOptions(startVol + step * 3, [startVol + step * 4, startVol + step * 2 + 5, startVol + step * 3 + 10]);
       const allOpts = options.map((o) => (o.endsWith('ml') ? o : `${o} ml`));
-
       return {
-        id: `lab_l1_vol_${Date.now()}_${Math.random()}`,
+        id: `lab_t${difficulty}_vol_${Date.now()}_${Math.random()}`,
         category: 'lab_science',
-        categoryLabel: `Volume Larutan (Level ${difficulty})`,
+        categoryLabel: `Volume Larutan Lab (Tier ${difficulty} - Kelas ${difficulty} SD)`,
         difficultyLevel: difficulty,
-        question: `Volume penambahan cairan sampel lab bertambah +${step} ml setiap tahap:\n${seq.join(' ➔ ')} ➔ ?`,
+        question: `Volume penambahan cairan sampel bertambah +${step} ml setiap tahap:\n${seq.join(' ➔ ')} ➔ ?`,
         options: allOpts,
         correctIndex,
         hint: `🔬 *Analisis Guru Lab:* Tambahkan +${step} ml ke volume terakhir: ${seq[seq.length - 1]} + ${step} ml = ${answer}.`,
       };
     }
-  } else {
-    const isHalfLife = Math.random() > 0.6;
+  } else if (difficulty <= 4) {
+    const isHalfLife = subLevel === 'hard' || difficulty === 4;
     if (isHalfLife) {
-      const startMass = pickRandom([160, 320, 480, 640, 800]);
+      const startMass = pickRandom([160, 240, 320, 480]);
       const seq = [`${startMass} g`, `${startMass / 2} g`, `${startMass / 4} g`];
       const answer = `${startMass / 8} g`;
-
-      const { options, correctIndex } = buildUniqueTextOptions(
-        startMass / 8,
-        [startMass / 6, startMass / 10, startMass / 16]
-      );
+      const { options, correctIndex } = buildUniqueTextOptions(startMass / 8, [startMass / 6, startMass / 10, startMass / 16]);
       const allOpts = options.map((o) => (o.endsWith('g') ? o : `${o} g`));
-
       return {
-        id: `lab_l4_halflife_${Date.now()}_${Math.random()}`,
+        id: `lab_t${difficulty}_half_${Date.now()}_${Math.random()}`,
         category: 'lab_science',
-        categoryLabel: `Waktu Paruh Zat Lab (Level ${difficulty})`,
+        categoryLabel: `Waktu Paruh Zat Lab (Tier ${difficulty} - Kelas ${difficulty} SD)`,
         difficultyLevel: difficulty,
-        question: `Eksperimen Kimia — Peluruhan massa zat menyusut setengahnya (÷2) setiap periode:\n${seq.join(' ➔ ')} ➔ ?`,
+        question: `Peluruhan zat aktif berkurang setengahnya (÷2) setiap periode:\n${seq.join(' ➔ ')} ➔ ?`,
         options: allOpts,
         correctIndex,
-        hint: `🔬 *Analisis Guru Lab:* Massa zat berkurang setengahnya (dibagi 2). Maka ${seq[seq.length - 1]} ÷ 2 = ${answer}.`,
+        hint: `🔬 *Analisis Guru Lab:* Massa zat dibagi 2 di setiap tahap: ${seq[seq.length - 1]} ÷ 2 = ${answer}.`,
       };
     } else {
-      const mult = pickRandom([2, 3, 4]);
-      const startCells = randomInt(2, 20);
-      const seq = [`${startCells} Sel`, `${startCells * mult} Sel`, `${startCells * mult * mult} Sel`, `${startCells * mult * mult * mult} Sel`];
-      const answer = `${startCells * mult * mult * mult * mult} Sel`;
-
-      const { options, correctIndex } = buildUniqueTextOptions(
-        startCells * mult ** 4,
-        [startCells * mult * 3, startCells * mult ** 2 * 2, startCells * mult ** 3 * 2]
-      );
+      const mult = 2;
+      const startCells = randomInt(2, 8);
+      const seq = [`${startCells} Sel`, `${startCells * mult} Sel`, `${startCells * mult * mult} Sel`];
+      const answer = `${startCells * mult * mult * mult} Sel`;
+      const { options, correctIndex } = buildUniqueTextOptions(startCells * mult ** 3, [startCells * mult * 2, startCells * mult * 3, startCells * mult ** 3 + 2]);
       const allOpts = options.map((o) => (o.endsWith('Sel') ? o : `${o} Sel`));
-
       return {
-        id: `lab_l4_bacteria_${Date.now()}_${Math.random()}`,
+        id: `lab_t${difficulty}_bac_${Date.now()}_${Math.random()}`,
         category: 'lab_science',
-        categoryLabel: `Pembelahan Bakteri (Level ${difficulty})`,
+        categoryLabel: `Pembelahan Bakteri (Tier ${difficulty} - Kelas ${difficulty} SD)`,
         difficultyLevel: difficulty,
-        question: `Eksperimen Biologi — Bakteri membelah diri ×${mult} kali lipat setiap jam:\n${seq.join(' ➔ ')} ➔ ?`,
+        question: `Bakteri membelah diri ×${mult} setiap jam:\n${seq.join(' ➔ ')} ➔ ?`,
         options: allOpts,
         correctIndex,
-        hint: `🔬 *Analisis Guru Lab:* Setiap tahap dikali ${mult} (×${mult}). Maka ${seq[seq.length - 1]} × ${mult} = ${answer}.`,
+        hint: `🔬 *Analisis Guru Lab:* Setiap jam jumlah sel dikali ${mult}. Maka ${seq[seq.length - 1]} × ${mult} = ${answer}.`,
       };
     }
+  } else {
+    // Tier 5 & 6: Eksperimen Tingkat Lanjut / TPA Kimia-Biologi
+    const mult = difficulty === 6 ? pickRandom([3, 4]) : 3;
+    const startCells = randomInt(2, 6);
+    const seq = [`${startCells} Sel`, `${startCells * mult} Sel`, `${startCells * mult * mult} Sel`];
+    const answer = `${startCells * mult ** 3} Sel`;
+    const { options, correctIndex } = buildUniqueTextOptions(startCells * mult ** 3, [startCells * mult ** 2 * 2, startCells * mult ** 3 - mult, startCells * mult ** 3 + mult]);
+    const allOpts = options.map((o) => (o.endsWith('Sel') ? o : `${o} Sel`));
+    return {
+      id: `lab_t${difficulty}_peak_${Date.now()}_${Math.random()}`,
+      category: 'lab_science',
+      categoryLabel: `Eksperimen Eksponensial Lab TPA (Tier ${difficulty} - Kelas ${difficulty} SD)`,
+      difficultyLevel: difficulty,
+      question: `Kultur mikroba berkembang biak secara eksponensial ×${mult} kali lipat setiap siklus:\n${seq.join(' ➔ ')} ➔ ?`,
+      options: allOpts,
+      correctIndex,
+      hint: `🔬 *Analisis Guru Lab:* Setiap siklus dikali ${mult}. Maka ${seq[seq.length - 1]} × ${mult} = ${answer}.`,
+    };
   }
 }
 
@@ -1746,13 +1818,14 @@ function dispatchPatternQuestion(
   previousCategory?: PatternCategory,
   grade: number = 6
 ): PatternQuestion {
-  const difficulty = getDifficultyForGradeAndNumber(questionNumber, grade);
+  const difficulty = getDifficultyForGrade(grade);
+  const subLevel = getSubLevelForQuestionNumber(questionNumber);
 
-  // User Requirement: 60% Visual Image Series (3x3 Matrix) vs 40% Number/Math Logic
+  // 60% Visual Image Series (3x3 Matrix) vs 40% Number/Math Logic
   const isVisual = Math.random() < 0.60;
 
   if (isVisual) {
-    return generateVisualMatrixQuestion(difficulty);
+    return generateVisualMatrixQuestion(difficulty, subLevel);
   } else {
     const mathCategories: PatternCategory[] = ['aritmatika', 'geometris', 'lab_science'];
     const available =
@@ -1763,13 +1836,13 @@ function dispatchPatternQuestion(
 
     switch (chosenCategory) {
       case 'aritmatika':
-        return generateArithmetic(difficulty);
+        return generateArithmetic(difficulty, subLevel);
       case 'geometris':
-        return generateGeometric(difficulty);
+        return generateGeometric(difficulty, subLevel);
       case 'lab_science':
-        return generateLabScience(difficulty);
+        return generateLabScience(difficulty, subLevel);
       default:
-        return generateArithmetic(difficulty);
+        return generateArithmetic(difficulty, subLevel);
     }
   }
 }

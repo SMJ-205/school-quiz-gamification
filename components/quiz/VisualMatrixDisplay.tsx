@@ -701,7 +701,7 @@ export default function VisualMatrixDisplay({
               >
                 <QuadrantBoxView box={optBox} size="md" />
                 <span className="font-bold text-xs sm:text-base text-cyan-300 mt-1.5 font-dialogue">
-                  Opsi {OPTION_LABELS[i]}
+                  {OPTION_LABELS[i]}
                 </span>
               </button>
             );

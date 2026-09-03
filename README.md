@@ -10,22 +10,22 @@
 
 | Fitur | Deskripsi |
 |---|---|
-| 🔬 **Laboratorium IPA (Detektif Pola)** | Mode kuis tanpa batas (*Infinite Mode*) "Detektif Pola" (*Pattern & Sequence Predictor*). Menjelajah pola aritmatika, geometris, selang-seling, deret sains lab, dan rotasi visual 2D bersama **Guru Lab** |
-| 🏫 **Konfirmasi Tingkat Kelas SD (Kelas 1 - 6 SD)** | Modal konfirmasi tingkat kelas sebelum memulai kuis bersama Guru Lab. Soal digenerate otomatis dengan skala kesulitan presisi sesuai tingkat kelas SD pilihan |
-| 🧩 **Format Soal Deret Gambar (Matriks 3x3)** | Tipe soal gambar visual matriks 3x3 kotak 2D 4-kuadran (standar soal psikotes / penalaran spasial) dengan opsi A, B, C, D berbentuk kotak visual interaktif |
+| 🔬 **Laboratorium IPA (Identifikasi Pola)** | Mode kuis tanpa batas (*Infinite Mode*) "Identifikasi Pola" (*Pattern & Sequence Predictor*). Menjelajah pola deret visual matriks 3x3, aritmatika bertingkat, geometris, deret bersilangan, dan eksperimen sains lab bersama **Guru Lab** |
+| 🎯 **Kalibrasi Kesulitan 6 Tier (Kelas 1 - 6 SD)** | Sistem kesulitan 6 Tier mandiri terisolasi sesuai tingkat kelas SD (Tier 1 s.d. Tier 6), dilengkapi **gradasi internal intra-tier** (`easy` soal #1-3, `mid` soal #4-6, `hard` soal #7+) untuk pengalaman belajar bertahap yang presisi |
+| 🧩 **Format Soal Deret Gambar (Matriks 3x3 TPA Otentik)** | Matriks gambar 3x3 berstandar psikotes / TPA resmi (Pentagon & Titik Orbit, Jaring Laba-Laba & Kilat, Pointer Circle, Satelit Orbit 6-Dot, Cincin Takik, Kapsul & Simbol O/X, dsb.) dengan pilihan jawaban alfabet ringkas (**A, B, C, D**) |
 | 🥼 **PIC Guru Lab & Animasi Mulut Synced** | Sprite piksel Guru Lab dengan animasi gerakan mulut berbicara (*mouth flap overlay*) terintegrasi *typewriter sound blip*. Dapat dikustomisasi via `GURU_LAB_CONFIG` |
 | 💎 **Atmosfer Neon Cyan-Blue Science** | Efek *cyan-blue ambient glow* (`border-cyan-500 shadow-[0_0_35px_rgba(6,182,212,0.45)]`), gradient sains biru, dan badge cyan retro di arena Laboratorium IPA |
-| 🏁 **Trigger Finish & Laporan Summary** | Menyudahi sesi kuis secara manual kapan saja via tombol **"AKHIRI SESI & LAPORAN 🏁"** untuk menampilkan Laporan Detektif Pola lengkap dengan Gelar Pangkat & pencantuman Tier Kelas SD |
-| ⚔️ **Sombo Dynamic Boss Battle** | Pertarungan QuickMath lawan Arithmo-Boss Sombo di *Ruang Kelas Unggulan* tanpa batasan wave kaku dengan **soal murni 2-digit** (10..99). Target ~20-25 pertanyaan (menoleransi kesalahan). Dilengkapi mekanik **Sombo Passive Auto Recover** (+200 HP tiap 10s) dan **Tier 4 Tersulit** (soal 15+)! |
+| 🏁 **Trigger Finish & Laporan Summary** | Menyudahi sesi kuis secara manual kapan saja via tombol **"AKHIRI SESI & LAPORAN 🏁"** untuk menampilkan Laporan Identifikasi Pola lengkap dengan Gelar Pangkat & pencantuman Tier Kelas SD |
+| ⚔️ **Sombo Dynamic Boss Battle** | Pertarungan QuickMath lawan Arithmo-Boss Sombo di *Ruang Kelas Unggulan* tanpa batasan wave kaku dengan **soal murni 2-digit** (10..99). Target ~20-25 pertanyaan. Dilengkapi mekanik **Sombo Passive Auto Recover** (+200 HP tiap 10s) dan **Tier 4 Tersulit** (soal 15+)! |
 | ❤️ **Sistem 3 Nyawa Tepat (3 Hearts)** | Pemain memiliki tepat 3 kesempatan hati. Setiap jawaban salah atau waktu habis akan menguras 1 hati; rekor streak 5x mengembalikan 1 hati |
 | 📊 **Analisis Kesalahan & Evaluasi Belajar** | Laporan evaluasi interaktif pada layar Kalah, Sombo Kalah, & Unlimited Math yang mengelompokkan rincian kesalahan per tipe soal (`Simpan`, `Pinjam`, `Hitung Dasar`, `Timeout`) serta memberikan saran bimbingan pedagogis terarah |
 | ⚡ **Unlimited Math Battle Mode** | Mode pertarungan tanpa batas soal setelah Sombo dikalahkan untuk mencetak rekor *High Score* tertinggi dengan tampilan **Upskilled Sombo** (versi Sombo pintar bergelembung ide matematika)! |
-| 📜 **Upload Materi Markdown** | Unggah file `.md` berisi materi pelajaran — kuis akan dibuat otomatis untuk sesi kelas Pak Guru / Bu Guru di Perpustakaan |
-| 🎓 **Kustomisasi Petualang** | Pilih avatar petualang (Murid Laki-laki / Murid Perempuan) & tentukan nama pemain |
+| 📜 **Upload Materi Markdown** | Unggah file `.md` berisi materi pelajaran — kuis akan dibuat otomatis untuk sesi kelas Pak Guru / Bu Guru di Perpustakaan Ajaib (*Kuis Ilmu Pengetahuan*) |
+| 🎓 **Kustomisasi Petualang** | Pilih avatar petualang (Murid Laki-laki bersneaker charcoal / Murid Perempuan berhijab) & tentukan nama pemain |
 | 📺 **Font Universal VT323** | Antarmuka CRT retro diseragamkan dengan font pixelated *VT323* yang tegas dan sangat mudah dibaca |
 | 👨‍👩‍👧 **Laporan Evaluasi Orang Tua** | Rangkuman evaluasi belajar & analisis kesalahan jawab untuk bimbingan di rumah |
 | 📸 **Ekspor Laporan & Sertifikat** | Unduh laporan evaluasi dalam bentuk gambar PNG/WhatsApp serta sertifikat digital kelulusan berkualitas tinggi (PNG & PDF) |
-| 🎵 **Engine Audio BGM & SFX Arcade** | Musik BGM *arcade synth loop* + efek suara *8-bit Arcade Power-Hit SFX* & chime kelulusan |
+| 🎵 **Engine Audio BGM & SFX Arcade** | Musik BGM *arcade synth loop* + efek suara *8-bit Arcade Power-Hit SFX* & toggle audio sound effect langsung di bar HUD kuis |
 | 🏆 **Achievement Report** | Laporan pencapaian kelulusan pertarungan Math Battle lengkap dengan gambar *Defeated Sombo*, ringkasan sesi normal & unlimited, dapat diunduh sebagai **PNG & PDF** |
 | 📒 **Integrasi NotebookLM** | Buat kuis otomatis dari dokumen/materi pelajaran via Google NotebookLM |
 
@@ -38,7 +38,7 @@
 ### 1. Halaman Utama — Masukkan Nama & Unggah Materi
 Saat pertama membuka aplikasi, pelajar dapat:
 1. Memasukkan **nama petualang** pada kolom yang tersedia
-2. Pilih avatar **Murid Laki-laki** (seragam merah putih) atau **Murid Perempuan** (seragam hijab)
+2. Pilih avatar **Murid Laki-laki** (seragam merah putih & sneaker charcoal) atau **Murid Perempuan** (seragam hijab)
 3. **Mengunggah file Markdown** (`.md`) atau menekan **"Coba Kuis Contoh"** / **"Buat Kuis via NotebookLM"**
 
 ![Home Screen](./public/screenshots/screen_home.png)
@@ -47,18 +47,28 @@ Saat pertama membuka aplikasi, pelajar dapat:
 
 ### 2. 🏫 Pilihan Tempat Belajar (3 Map Utama)
 Pemain dapat memilih lokasi petualangan dengan efek visual tema yang unik:
-1. **Perpustakaan Taman Pagi / Klasik**: Sesi kuis materi pelajaran sekolah dari file Markdown bersama Bu Guru / Pak Guru.
-2. **Laboratorium IPA (♾️ Detektif Pola)**: Sesi kuis tanpa batas memprediksi pola aritmatika, geometris, & matriks gambar 3x3 bersama Guru Lab dengan **efek atmosfer cyan-blue**.
+1. **Perpustakaan Ajaib (Kuis Ilmu Pengetahuan)**: Sesi kuis materi pelajaran sekolah dari file Markdown bersama Bu Guru / Pak Guru dengan toggle audio langsung di HUD.
+2. **Laboratorium IPA (Identifikasi Pola)**: Sesi kuis tanpa batas memprediksi pola deret visual matriks 3x3, aritmatika, geometris, dan sains lab bersama Guru Lab dengan **efek atmosfer cyan-blue**.
 3. **Ruang Kelas Unggulan (⚡ Sombo Boss Battle)**: Pertarungan hitung cepat *QuickMath* dinamis melawan Boss Sombo dengan **efek atmosfer merah membara**.
 
 ---
 
-### 3. 🔬 Sesi Laboratorium IPA — Detektif Pola (Infinite Mode)
-Saat memasuki Laboratorium IPA:
-1. **Konfirmasi Kelas SD (Kelas 1 - 6 SD)**: Guru Lab menyapa player untuk memilih tingkat kelas SD. Soal baru di-generate setelah kelas dikonfirmasi.
-2. **Procedural Pattern Generator**: Menggenerasi deret angka & deret gambar 3x3 secara otomatis dengan kesulitan presisi sesuai kelas SD pilihan.
-3. **Mouth Flap Sync & Dialogue**: Dialog Guru Lab mengetik teks soal dan mulut bergerak sinkron dengan audio blip.
-4. **Trigger Selesai & Summary Report**: Kuis berjalan tanpa batas (*infinite*) hingga player menekan tombol **"AKHIRI SESI & LAPORAN 🏁"** untuk menampilkan laporan ringkasan (*PatternReportModal*) lengkap dengan Akurasi, Poin, Rekor Streak, Statistik Kategori, & Tier Kelas SD.
+### 3. 🔬 Sesi Laboratorium IPA — Identifikasi Pola (6-Tier Difficulty)
+Sistem kesulitan telah dirombak menjadi **6 Tier Terisolasi** yang merepresentasikan Kelas 1 s.d. Kelas 6 SD:
+
+```
+Tier 1 (Kelas 1 SD) : Pola Visual Intuitif (Baris Kembar, Kelompok 3 Bentuk, Rotasi Sinar 90°), Penjumlahan/Pengurangan Sederhana (+1, +2, -1, +5).
+Tier 2 (Kelas 2 SD) : Bintik Domino, Rotasi Jarum 90°, Kelipatan Perkalian ×2 dan ×3, Deret Loncat Bilangan.
+Tier 3 (Kelas 3 SD) : Rotasi Jarum 45°, Latin Square 3 Bentuk Geometri, Deret Angka Segitiga, Selisih Bertingkat.
+Tier 4 (Kelas 4 SD) : Pola 4 Bentuk Diagonal Shift, Rotasi Busur Cincin Takik, Simbol Kapsul O/X, Kuadrat Murni (n²).
+Tier 5 (Kelas 5 SD) : Bentuk Bersarang Berganti Isian, Shading Grid 2x2 + Orbit Titik Luar, Fibonacci Standar, Kuadrat Offset.
+Tier 6 (Kelas 6 SD) : Puncak TPA Otentik (Pentagon & Vertex Dot, Jaring Laba-Laba & Kilat, Pointer Circle, Satelit Orbit 6-Dot, Deret Bersilangan Dua Jalur).
+```
+
+- **Intra-Tier Progression**: Di setiap tier, pertanyaan diawali dari pengenalan (`easy`), lalu pola kombinasi (`mid`), hingga penalaran tertinggi (`hard`).
+- **Pilihan Jawaban Bersih**: Label opsi visual disederhanakan murni menjadi alfabet **A, B, C, D**.
+- **Mouth Flap Sync & Dialogue**: Dialog Guru Lab mengetik teks soal dan mulut bergerak sinkron dengan audio blip.
+- **Trigger Selesai & Summary Report**: Kuis berjalan tanpa batas (*infinite*) hingga player menekan tombol **"AKHIRI SESI & LAPORAN 🏁"** untuk menampilkan laporan ringkasan (*PatternReportModal*) lengkap dengan Akurasi, Poin, Rekor Streak, Statistik Kategori, & Tier Kelas SD.
 
 ---
 
@@ -127,9 +137,9 @@ school-quiz-gamification/
 ├── app/
 │   ├── page.tsx                 # Global BGM manager & screen switcher
 │   ├── layout.tsx               # Root layout, Google Fonts (VT323)
-│   └── globals.css              # Global styles, tema VT323 & komik CRT
+│   └── globals.css              # Global styles, tema VT323, animasi hero poster & CRT
 ├── components/
-│   ├── IngestionScreen.tsx      # Upload Markdown & input nama siswa
+│   ├── IngestionScreen.tsx      # Upload Markdown, input nama siswa, & poster hero hidup
 │   ├── CharacterCustomizer.tsx  # Pemilihan avatar petualang
 │   ├── BackgroundSelectScreen.tsx # Pilihan tempat belajar (Perpustakaan / Lab IPA / Sesi Sombo)
 │   ├── ParentReportModal.tsx    # Modal laporan evaluasi orang tua & ekspor PNG/WA
@@ -138,13 +148,13 @@ school-quiz-gamification/
 │   ├── PixelProgressBar.tsx     # Progress bar + kontrol audio
 │   └── quiz/
 │       ├── QuestionPanel.tsx    # Dialog komik Pak Guru / Bu Guru
-│       ├── EnchantedLibrary.tsx # Arena kuis perpustakaan ajaib
+│       ├── EnchantedLibrary.tsx # Arena kuis perpustakaan ajaib (Kuis Ilmu Pengetahuan)
 │       ├── BossBattleArena.tsx  # Sesi Boss Battle Sombo & Unlimited Math
-│       ├── LabInfiniteArena.tsx # Sesi Laboratorium IPA (Detektif Pola Infinite Mode & Konfirmasi Kelas SD)
-│       ├── VisualMatrixDisplay.tsx # Render matriks gambar 3x3 kotak 2D 4-kuadran (Deret Gambar Psikotes)
-│       └── PatternReportModal.tsx # Laporan ringkasan hasil Detektif Pola & Pangkat Gelar
+│       ├── LabInfiniteArena.tsx # Sesi Laboratorium IPA (Identifikasi Pola Infinite Mode)
+│       ├── VisualMatrixDisplay.tsx # Render matriks gambar 3x3 kotak 2D TPA Otentik (opsi A, B, C, D)
+│       └── PatternReportModal.tsx # Laporan ringkasan hasil Identifikasi Pola & Pangkat Gelar
 ├── lib/
-│   ├── patternGenerator.ts      # Generator soal pola aritmatika, geometris, & matriks gambar 3x3 per Grade SD
+│   ├── patternGenerator.ts      # Generator soal pola 6-tier presisi (Kelas 1 - 6 SD) & TPA visual otentik
 │   ├── audioEngine.ts           # BGM synth loop, SFX power-hit, & unlock audio engine
 │   ├── markdownParser.ts        # Parser materi Markdown → kuis
 │   └── constants.ts             # Opsi karakter, rating bintang, prompt NotebookLM
@@ -163,13 +173,13 @@ school-quiz-gamification/
 
 Musik latar belakang (*Background Music*) yang digunakan pada proyek ini berlisensi bebas royalti:
 
-1. **Laboratorium IPA (Detektif Pola Session)**
+1. **Laboratorium IPA (Identifikasi Pola Session)**
    - **Track**: **Creativity**
    - **Artis**: **Aylex**
    - **Sumber Musik**: [Free To Use - Aylex (Creativity)](https://freetouse.com/music/aylex/creativity)
    - **Ketentuan Lisensi**: [Free To Use Music License](https://freetouse.com/license)
 
-2. **Perpustakaan Ajaib (Quiz Session)**
+2. **Perpustakaan Ajaib (Kuis Ilmu Pengetahuan)**
    - **Track**: **Momo Island**
    - **Artis**: **Piki**
    - **Sumber Musik**: [Free To Use - Piki (Momo Island)](https://freetouse.com/music/piki/momo-island)
