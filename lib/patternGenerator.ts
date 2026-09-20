@@ -228,6 +228,19 @@ function buildUniqueOptionBoxes(correctBox: QuadrantBox, candidates: QuadrantBox
     } else if (correctBox.dotCount !== undefined) {
       const unusedDot = [1, 2, 3, 4, 5, 6].find((d) => !uniqueList.some((b) => b.dotCount === d));
       fallback = { dotCount: unusedDot ?? 1 };
+    } else if (correctBox.symbols !== undefined || correctBox.capsuleTopDot !== undefined) {
+      const positions: ('tl' | 'tr' | 'br' | 'bl')[] = ['tl', 'tr', 'br', 'bl'];
+      const unusedPos = positions.find(
+        (p) => !uniqueList.some((b) => b.symbols?.[0]?.pos === p)
+      ) || 'tr';
+      fallback = {
+        capsuleTopDot: !correctBox.capsuleTopDot,
+        capsuleBottomDot: !correctBox.capsuleBottomDot,
+        symbols: [
+          { pos: unusedPos, type: 'circle' },
+          { pos: positions[(positions.indexOf(unusedPos) + 2) % 4], type: 'cross' },
+        ],
+      };
     } else {
       fallback = {
         tl: Math.random() > 0.5,
@@ -887,10 +900,10 @@ function generateDominoQuestion(difficulty: DifficultyLevel, subLevel?: SubLevel
     category: 'visual',
     categoryLabel: `Deret Kelompok Bintik Domino (Level ${difficulty})`,
     difficultyLevel: difficulty,
-    question: `Perhatikan pola pertambahan kelompok bintik hitam pada wadah domino 2D:`,
+    question: `Perhatikan pola siklus pertambahan bintik hitam (mata dadu 1 sampai 6):`,
     options: ['A', 'B', 'C', 'D'],
     correctIndex,
-    hint: `🔬 *Analisis Guru Lab:* Jumlah bintik bertambah +${step} di setiap tahap. Kotak ke-9 berisi ${correctDots} bintik hitam.`,
+    hint: `🔬 *Analisis Guru Lab:* Bintik bertambah +${step} dalam siklus mata dadu 1–6 (setelah 6 kembali berulang ke 1). Kotak ke-9 berisi ${correctDots} bintik hitam.`,
     visualMatrixData: {
       type: 'domino_dots',
       gridCols: 3,
@@ -906,20 +919,18 @@ function generateShapesRowQuestion(difficulty: DifficultyLevel, subLevel?: SubLe
     return generateGrade1VisualQuestion();
   }
 
-  const allShapes: QuadrantBox['shapeType'][] = [
+  // Pure distinct geometric shapes for pure shape-permutation puzzles (no confusing outline mix-ins)
+  const pureShapes: QuadrantBox['shapeType'][] = [
     'circle_filled',
     'triangle_filled',
     'square_filled',
     'star',
     'diamond',
-    'circle_outline',
-    'square_outline',
-    'triangle_outline',
   ];
 
   if (difficulty === 2) {
     // Level 2 (Kelas 3-4): Latin Square 3 bentuk sederhana
-    const selected3 = shuffleArray(allShapes).slice(0, 3);
+    const selected3 = shuffleArray(pureShapes).slice(0, 3);
     const [sA, sB, sC] = selected3;
 
     const boxes: QuadrantBox[] = [
@@ -932,7 +943,7 @@ function generateShapesRowQuestion(difficulty: DifficultyLevel, subLevel?: SubLe
     const candidateDistractors: QuadrantBox[] = [
       { shapeType: sA },
       { shapeType: sC },
-      { shapeType: allShapes.find((s) => !selected3.includes(s)) || 'square_outline' },
+      { shapeType: pureShapes.find((s) => !selected3.includes(s)) || 'star' },
     ];
 
     const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
@@ -946,7 +957,7 @@ function generateShapesRowQuestion(difficulty: DifficultyLevel, subLevel?: SubLe
       question: `Setiap baris memiliki 3 bentuk berbeda. Bentuk apakah yang mengisi kotak ke-9?`,
       options: ['A', 'B', 'C', 'D'],
       correctIndex,
-      hint: `🔬 *Analisis Guru Lab:* Setiap baris memiliki 3 bentuk yang sama (Latin Square). Baris ke-3 berisi ${sA?.replace('_',' ')}, ${sC?.replace('_',' ')}, lalu bentuk yang kurang: ${sB?.replace('_',' ')?.toUpperCase()}.`,
+      hint: `🔬 *Analisis Guru Lab:* Setiap baris memiliki 3 bentuk yang sama (Latin Square). Baris ke-3 berisi ${sA?.replace('_filled','')?.replace('_',' ')}, ${sC?.replace('_filled','')?.replace('_',' ')}, lalu bentuk yang kurang: ${sB?.replace('_filled','')?.replace('_',' ')?.toUpperCase()}.`,
       visualMatrixData: {
         type: 'shapes_row',
         gridCols: 3,
@@ -957,8 +968,8 @@ function generateShapesRowQuestion(difficulty: DifficultyLevel, subLevel?: SubLe
   }
 
   if (difficulty === 3) {
-    // Level 3 (Kelas 5): Latin Square 4 bentuk berbeda — siklus ABCD, BCDA, CDAB → ? (DA missing)
-    const selected4 = shuffleArray(allShapes).slice(0, 4);
+    // Level 3 (Kelas 5): 4 bentuk berbeda pola diagonal shift dalam 3 kolom
+    const selected4 = shuffleArray(pureShapes).slice(0, 4);
     const [sA, sB, sC, sD] = selected4;
 
     // Row 1: A B C D (tak bisa tampil 4 di 3 kolom) — gunakan pola diagonal shift 4 dalam 3 kolom
@@ -990,7 +1001,7 @@ function generateShapesRowQuestion(difficulty: DifficultyLevel, subLevel?: SubLe
       question: `Analisis pola diagonal pergeseran 4 bentuk geometri pada matriks 3x3 berikut:`,
       options: ['A', 'B', 'C', 'D'],
       correctIndex,
-      hint: `🔬 *Analisis Guru Lab:* Setiap baris bergeser 1 langkah maju dalam siklus 4 bentuk (A→B→C→D→A). Kolom ke-3 baris ke-3 kembali ke bentuk awal: ${sA?.replace('_',' ')?.toUpperCase()}.`,
+      hint: `🔬 *Analisis Guru Lab:* Setiap baris bergeser 1 langkah maju dalam siklus 4 bentuk (A→B→C→D→A). Kolom ke-3 baris ke-3 kembali ke bentuk awal: ${sA?.replace('_filled','')?.replace('_',' ')?.toUpperCase()}.`,
       visualMatrixData: {
         type: 'shapes_row',
         gridCols: 3,
@@ -1001,40 +1012,41 @@ function generateShapesRowQuestion(difficulty: DifficultyLevel, subLevel?: SubLe
   }
 
   // Level 4 (Kelas 6): Pola Ganda — tiap sel = bentuk UTAMA + POLA ISIAN bergantian
-  // Gunakan 5 bentuk dalam siklus kompleks + filled/outline bergantian
-  // Row1: A_filled, B_outline, C_filled
-  // Row2: B_filled, C_outline, D_filled
-  // Row3: C_filled, D_outline, ?  -> jawaban: E_filled (bentuk ke-5 berikutnya dalam siklus)
-  const selected5 = shuffleArray(allShapes.filter((s): s is NonNullable<typeof s> => s !== undefined && !s.includes('_outline'))).slice(0, 3);
-  const outlineVariants: Record<string, QuadrantBox['shapeType']> = {
-    'circle_filled': 'circle_outline',
-    'triangle_filled': 'triangle_outline',
-    'square_filled': 'square_outline',
-    'star': 'diamond',
-    'diamond': 'star',
-  };
-
-  const [s1, s2, s3] = selected5;
-  const s1o = outlineVariants[s1!] || 'circle_outline';
-  const s2o = outlineVariants[s2!] || 'square_outline';
+  // Hanya gunakan bentuk yang punya pasangan outline sejati: circle, triangle, square.
+  // Pola per baris: Col1=X_filled, Col2=X_outline, Col3=Y_filled
+  //   Row1: s1_filled | s1_outline | s2_filled
+  //   Row2: s2_filled | s2_outline | s3_filled
+  //   Row3: s3_filled | s3_outline | ?  → jawaban: s1_filled (siklus 3-bentuk kembali ke awal)
+  const shapesWithOutline: Array<{ filled: QuadrantBox['shapeType']; outline: QuadrantBox['shapeType'] }> = [
+    { filled: 'circle_filled',   outline: 'circle_outline'   },
+    { filled: 'triangle_filled', outline: 'triangle_outline' },
+    { filled: 'square_filled',   outline: 'square_outline'   },
+  ];
+  // Shuffle order so we get varied combinations each time (e.g. triangle→square→circle)
+  const shuffled = shuffleArray(shapesWithOutline);
+  // Always 3 elements (one per shape pair), safe to assert non-null
+  const p1 = shuffled[0]!;
+  const p2 = shuffled[1]!;
+  const p3 = shuffled[2]!;
 
   const boxes: QuadrantBox[] = [
-    { shapeType: s1 }, { shapeType: s1o }, { shapeType: s2 },
-    { shapeType: s2 }, { shapeType: s2o }, { shapeType: s3 },
-    { shapeType: s3 }, { shapeType: outlineVariants[s3!] || 'triangle_outline' }, { isQuestion: true },
+    { shapeType: p1.filled },   { shapeType: p1.outline },   { shapeType: p2.filled },
+    { shapeType: p2.filled },   { shapeType: p2.outline },   { shapeType: p3.filled },
+    { shapeType: p3.filled },   { shapeType: p3.outline },   { isQuestion: true },
   ];
 
-  // Pattern: Col1=Xfilled, Col2=Xoutline, Col3=next_filled; setiap baris col1 = col3 baris sebelumnya
-  // Kotak ke-9 (R3C3) = s1 lagi (siklus kembali ke awal)
-  const correctBox: QuadrantBox = { shapeType: s1 };
+  // R3C3 completes the cycle: next after p3 is p1 again (filled)
+  const correctBox: QuadrantBox = { shapeType: p1.filled };
   const candidateDistractors: QuadrantBox[] = [
-    { shapeType: s2 },
-    { shapeType: s3 },
-    { shapeType: s1o },
+    { shapeType: p1.outline }, // same shape but outline — common wrong pick
+    { shapeType: p2.filled }, // wrong shape
+    { shapeType: p3.filled }, // wrong shape
   ];
 
   const optionBoxes = buildUniqueOptionBoxes(correctBox, candidateDistractors);
   const correctIndex = optionBoxes.findIndex((b) => areBoxesEqual(b, correctBox));
+
+  const s1Name = (p1.filled ?? 'circle_filled').replace('_filled', '').replace('_', ' ').toUpperCase();
 
   return {
     id: `vis_shape_l4_${Date.now()}_${Math.random()}`,
@@ -1044,7 +1056,7 @@ function generateShapesRowQuestion(difficulty: DifficultyLevel, subLevel?: SubLe
     question: `Analisis pola ganda: pergeseran bentuk DAN perubahan isian (filled/outline) pada matriks 3x3 ini:`,
     options: ['A', 'B', 'C', 'D'],
     correctIndex,
-    hint: `🔬 *Analisis Guru Lab:* Setiap baris: Kolom 1 = bentuk isian penuh, Kolom 2 = bentuk outline (kosong), Kolom 3 = bentuk berikutnya isian penuh. Baris ke-4 kembali ke bentuk pertama: ${s1?.replace('_',' ')?.toUpperCase()}.`,
+    hint: `🔬 *Analisis Guru Lab:* Aturan setiap baris: Kolom 1 = bentuk ISIAN PENUH, Kolom 2 = bentuk OUTLINE (kosong), Kolom 3 = bentuk BERIKUTNYA isian penuh. Setelah 3 bentuk, siklus kembali ke awal → jawaban: ${s1Name} isian penuh.`,
     visualMatrixData: {
       type: 'shapes_row',
       gridCols: 3,
@@ -1143,7 +1155,7 @@ function generatePointerCircleQuestion(difficulty: DifficultyLevel, subLevel?: S
     category: 'visual',
     categoryLabel: `Deret Penunjuk & Orbit Keliling Lingkaran (Level ${difficulty})`,
     difficultyLevel: difficulty,
-    question: `Perhatikan posisi penunjuk tangan dan rotasi titik pada keliling lingkaran pusat (${stepAngle}°):`,
+    question: `Analisis pergeseran sudut dan rotasi titik orbit pada keliling lingkaran pusat (${stepAngle}°):`,
     options: ['A', 'B', 'C', 'D'],
     correctIndex,
     hint: `🔬 *Analisis Guru Lab:* Titik mengelilingi keliling lingkaran dengan perpindahan sudut +${stepAngle}°.`,
@@ -1213,7 +1225,7 @@ function generateNestedShapesQuestion(difficulty: DifficultyLevel, subLevel?: Su
 
   const boxes: QuadrantBox[] = [];
   for (let i = 0; i < 8; i++) {
-    const innerShape = shapePool[(i + 1) % 4];
+    const innerShape = shapePool[(outerIdx + i + 1) % 4];
     boxes.push({
       nestedShapeData: {
         outerShape,
@@ -1224,7 +1236,7 @@ function generateNestedShapesQuestion(difficulty: DifficultyLevel, subLevel?: Su
   }
   boxes.push({ isQuestion: true });
 
-  const correctInner = shapePool[(8 + 1) % 4];
+  const correctInner = shapePool[(outerIdx + 8 + 1) % 4];
   const correctBox: QuadrantBox = {
     nestedShapeData: {
       outerShape,
@@ -1234,8 +1246,8 @@ function generateNestedShapesQuestion(difficulty: DifficultyLevel, subLevel?: Su
   };
 
   const candidateDistractors: QuadrantBox[] = [
-    { nestedShapeData: { outerShape, innerShape: shapePool[0], innerFilled: !(8 % 2 === 0) } },
-    { nestedShapeData: { outerShape, innerShape: shapePool[2], innerFilled: 8 % 2 === 0 } },
+    { nestedShapeData: { outerShape, innerShape: shapePool[(outerIdx + 2) % 4], innerFilled: !(8 % 2 === 0) } },
+    { nestedShapeData: { outerShape, innerShape: shapePool[(outerIdx + 3) % 4], innerFilled: 8 % 2 === 0 } },
     { nestedShapeData: { outerShape, innerShape: correctInner, innerFilled: !(8 % 2 === 0) } },
   ];
 
@@ -1263,7 +1275,8 @@ function generateNestedShapesQuestion(difficulty: DifficultyLevel, subLevel?: Su
 // 3.10. Mode: Spiderweb Network & Lightning (Reference Row 5)
 function generateSpiderwebQuestion(difficulty: DifficultyLevel, subLevel?: SubLevel): PatternQuestion {
   const startBug = randomInt(0, 4);
-  const startLightning = randomInt(0, 4);
+  // Ensure lightning is offset by at least 1 vertex so bug and lightning never overlap into a messy blob
+  const startLightning = (startBug + randomInt(1, 4)) % 5;
 
   const boxes: QuadrantBox[] = [];
   for (let i = 0; i < 8; i++) {
@@ -1479,9 +1492,10 @@ function buildVisualMatrixQuestion(
   hintText: string,
   boxes: QuadrantBox[],
   correctBox: QuadrantBox,
-  difficulty: DifficultyLevel
+  difficulty: DifficultyLevel,
+  customDistractors?: QuadrantBox[]
 ): PatternQuestion {
-  const candidateDistractors: QuadrantBox[] = [
+  const candidateDistractors: QuadrantBox[] = customDistractors || [
     createVisualBox(!correctBox.tl, !!correctBox.tr, !!correctBox.bl, !!correctBox.br),
     createVisualBox(!!correctBox.tl, !correctBox.tr, !!correctBox.bl, !!correctBox.br),
     createVisualBox(!!correctBox.tl, !!correctBox.tr, !correctBox.bl, !!correctBox.br),
@@ -1591,13 +1605,24 @@ function generateQuadrantVariation(patternType: number, difficulty: DifficultyLe
       bl: correctQuad === 'bl',
     };
 
+    // Realistic distractors: all have 1 shaded square at other positions so user must analyze rotation
+    const distractors: QuadrantBox[] = quadOrder
+      .filter((q) => q !== correctQuad)
+      .map((q) => ({
+        tl: q === 'tl',
+        tr: q === 'tr',
+        br: q === 'br',
+        bl: q === 'bl',
+      }));
+
     return buildVisualMatrixQuestion(
       `Deret Gambar Rotasi Searah Jam (Level ${difficulty})`,
       `Perhatikan rotasi kotak hitam searah jarum jam pada matriks gambar 3x3 berikut:`,
       `🔬 *Analisis Guru Lab:* Kotak hitam berputar searah jarum jam. Kotak ke-9 menempati posisi ${correctQuad.toUpperCase()}.`,
       boxes,
       correctBox,
-      difficulty
+      difficulty,
+      distractors
     );
   } else if (patternType === 2) {
     const quadOrder: (keyof QuadrantBox)[] = ['tl', 'bl', 'br', 'tr'];
@@ -1623,13 +1648,24 @@ function generateQuadrantVariation(patternType: number, difficulty: DifficultyLe
       bl: correctQuad === 'bl',
     };
 
+    // Realistic distractors: all have 1 shaded square at other positions
+    const distractors: QuadrantBox[] = quadOrder
+      .filter((q) => q !== correctQuad)
+      .map((q) => ({
+        tl: q === 'tl',
+        tr: q === 'tr',
+        br: q === 'br',
+        bl: q === 'bl',
+      }));
+
     return buildVisualMatrixQuestion(
       `Deret Gambar Rotasi Berlawanan Jam (Level ${difficulty})`,
       `Analisis pergerakan kotak hitam yang berputar berlawanan arah jarum jam berikut:`,
       `🔬 *Analisis Guru Lab:* Kotak hitam berputar mundur/berlawanan jarum jam. Kotak ke-9 menempati posisi ${correctQuad.toUpperCase()}.`,
       boxes,
       correctBox,
-      difficulty
+      difficulty,
+      distractors
     );
   } else if (patternType === 3) {
     const isStartMainDiag = Math.random() > 0.5;
@@ -1654,13 +1690,21 @@ function generateQuadrantVariation(patternType: number, difficulty: DifficultyLe
       br: isCorrectMain,
     };
 
+    // High quality distractors: opposite diagonal, and horizontal/vertical pairs
+    const distractors: QuadrantBox[] = [
+      { tl: !isCorrectMain, tr: isCorrectMain, bl: isCorrectMain, br: !isCorrectMain },
+      { tl: true, tr: true, bl: false, br: false },
+      { tl: false, tr: false, bl: true, br: true },
+    ];
+
     return buildVisualMatrixQuestion(
       `Deret Gambar Penyilangan Diagonal (Level ${difficulty})`,
       `Amati pola selang-seling penyilangan diagonal hitam pada matriks berikut:`,
       `🔬 *Analisis Guru Lab:* Pola ini bergantian antara diagonal utama (TL-BR) dan diagonal samping (TR-BL). Kotak ke-9 kembali ke ${isCorrectMain ? 'diagonal utama' : 'diagonal samping'}.`,
       boxes,
       correctBox,
-      difficulty
+      difficulty,
+      distractors
     );
   } else if (patternType === 4) {
     const accumOrder: QuadrantBox[] = [
@@ -1759,8 +1803,14 @@ function generateLabScience(difficulty: DifficultyLevel, subLevel: SubLevel = 'e
     if (isHalfLife) {
       const startMass = pickRandom([160, 240, 320, 480]);
       const seq = [`${startMass} g`, `${startMass / 2} g`, `${startMass / 4} g`];
-      const answer = `${startMass / 8} g`;
-      const { options, correctIndex } = buildUniqueTextOptions(startMass / 8, [startMass / 6, startMass / 10, startMass / 16]);
+      const answerNum = startMass / 8;
+      const answer = `${answerNum} g`;
+      // Clean integer distractors (e.g. 2x half-life, 0.5x half-life, or offset)
+      const { options, correctIndex } = buildUniqueTextOptions(answerNum, [
+        answerNum * 2,
+        Math.max(1, Math.round(answerNum / 2)),
+        answerNum + 10,
+      ]);
       const allOpts = options.map((o) => (o.endsWith('g') ? o : `${o} g`));
       return {
         id: `lab_t${difficulty}_half_${Date.now()}_${Math.random()}`,

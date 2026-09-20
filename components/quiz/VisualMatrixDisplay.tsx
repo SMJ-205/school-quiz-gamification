@@ -430,16 +430,16 @@ export function QuadrantBoxView({
       {isNestedShape && box.nestedShapeData && (
         <svg viewBox="0 0 64 64" className="w-full h-full">
           {box.nestedShapeData.outerShape === 'circle' && (
-            <circle cx="32" cy="32" r="22" fill="#0f172a" />
+            <circle cx="32" cy="32" r="22" fill="#e2e8f0" stroke="#0f172a" strokeWidth="3" />
           )}
           {box.nestedShapeData.outerShape === 'triangle' && (
-            <polygon points="32,8 56,54 8,54" fill="#0f172a" />
+            <polygon points="32,8 56,54 8,54" fill="#e2e8f0" stroke="#0f172a" strokeWidth="3" />
           )}
           {box.nestedShapeData.outerShape === 'square' && (
-            <rect x="10" y="10" width="44" height="44" fill="#0f172a" />
+            <rect x="10" y="10" width="44" height="44" fill="#e2e8f0" stroke="#0f172a" strokeWidth="3" />
           )}
           {box.nestedShapeData.outerShape === 'diamond' && (
-            <polygon points="32,8 56,32 32,56 8,32" fill="#0f172a" />
+            <polygon points="32,8 56,32 32,56 8,32" fill="#e2e8f0" stroke="#0f172a" strokeWidth="3" />
           )}
 
           {box.nestedShapeData.innerShape === 'circle' && (
@@ -448,16 +448,16 @@ export function QuadrantBoxView({
               cy="32"
               r="11"
               fill={box.nestedShapeData.innerFilled ? '#0f172a' : '#ffffff'}
-              stroke="#ffffff"
-              strokeWidth="2"
+              stroke="#0f172a"
+              strokeWidth="2.5"
             />
           )}
           {box.nestedShapeData.innerShape === 'triangle' && (
             <polygon
               points="32,20 44,42 20,42"
               fill={box.nestedShapeData.innerFilled ? '#0f172a' : '#ffffff'}
-              stroke="#ffffff"
-              strokeWidth="2"
+              stroke="#0f172a"
+              strokeWidth="2.5"
             />
           )}
           {box.nestedShapeData.innerShape === 'square' && (
@@ -467,16 +467,16 @@ export function QuadrantBoxView({
               width="22"
               height="22"
               fill={box.nestedShapeData.innerFilled ? '#0f172a' : '#ffffff'}
-              stroke="#ffffff"
-              strokeWidth="2"
+              stroke="#0f172a"
+              strokeWidth="2.5"
             />
           )}
           {box.nestedShapeData.innerShape === 'diamond' && (
             <polygon
               points="32,18 46,32 32,46 18,32"
               fill={box.nestedShapeData.innerFilled ? '#0f172a' : '#ffffff'}
-              stroke="#ffffff"
-              strokeWidth="2"
+              stroke="#0f172a"
+              strokeWidth="2.5"
             />
           )}
         </svg>
